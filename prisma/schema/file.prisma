@@ -1,0 +1,17 @@
+model File {
+    id         String        @id @default(cuid())
+    fileName   String // Tên file duy nhất sau khi đổi tên để tránh trùng (ví dụ: 1718663400-anh-chan-dung.jpg)
+    extension  String // Đuôi file (ví dụ: jpg, pdf, mp4)
+    size       BigInt
+    path       String        @unique
+    providerId StoreProvider @map("provider_id")
+
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+    createdBy String?
+
+    // 
+    createdByUser User?  @relation("fileAuth",fields: [createdBy], references: [id])
+    posts         Post[] @relation("postThumbnail")
+    users         User[] @relation("userThumbnail")
+}

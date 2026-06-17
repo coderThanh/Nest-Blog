@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:16-alpine # Bản alpine nhẹ và ổn định
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-root}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: ${POSTGRES_DB:-blog}
+    ports:
+      - "5435:5432" # Máy thật : Container
+    volumes:
+      - pg_data:/var/lib/postgresql/data # Đây là volume để giữ dữ liệu
+
+volumes:
+  pg_data: # Khai báo volume

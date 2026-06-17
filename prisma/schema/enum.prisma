@@ -1,0 +1,9 @@
+enum RecordStatus {
+    DRAFT
+    PUBLISHED
+    PENDING
+}
+
+enum StoreProvider {
+    LOCAL
+}

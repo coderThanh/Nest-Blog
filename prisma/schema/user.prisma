@@ -1,0 +1,26 @@
+model User {
+    id           String    @id @default(cuid())
+    name         String
+    phone        String?
+    dob          DateTime?
+    email        String
+    username     String
+    passwordHash String    @map("password_hash")
+    thumbnailId  String?   @map("thumbnail_id")
+    createdAt    DateTime  @default(now()) @map("created_at")
+    updatedAt    DateTime  @default(now()) @updatedAt @map("updated_at")
+    deletedAt    DateTime? @map("deleted_at")
+    deletedby    String? @map("deleted_by")
+
+
+    // 
+    posts    Post[] @relation("postAuth")
+    thumbnal File?  @relation("userThumbnail", fields: [thumbnailId], references: [id])
+    files    File[] @relation("fileAuth")
+    deletedByUser User? @relation("userDelete", fields: [deletedby], references: [id])
+    usersDeleted User[] @relation("userDelete")
+
+    @@unique([email, deletedAt])
+    @@unique([username, deletedAt])
+
+}
