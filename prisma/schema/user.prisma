@@ -1,7 +1,6 @@
 model User {
     id           String    @id @default(cuid())
     name         String
-    search       String?   @ignore
     phone        String?
     dob          DateTime?
     email        String
@@ -22,5 +21,4 @@ model User {
 
     @@unique([email, deletedAt])
     @@unique([username, deletedAt])
-    @@index([search])
 }

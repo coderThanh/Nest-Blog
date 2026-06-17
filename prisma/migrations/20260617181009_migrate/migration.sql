@@ -1,5 +1,0 @@
--- AlterTable
-ALTER TABLE "Post" ALTER COLUMN "search" DROP DEFAULT;
-
--- AlterTable
-ALTER TABLE "User" ALTER COLUMN "search" DROP DEFAULT;
