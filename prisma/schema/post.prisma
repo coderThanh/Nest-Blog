@@ -1,17 +1,17 @@
 model Post {
-    id Int @id @default(autoincrement())
-    status RecordStatus @default(DRAFT) 
-    name String
-    search String? @ignore @map("search")
-    content String
-    thumbnailId String? @map("thumbnail_id")
-    createdAt DateTime @default(now()) @map("created_at")
-    updatedAt DateTime @default(now()) @updatedAt  @map("updated_at")
-    createdBy String? 
+    id          Int          @id @default(autoincrement())
+    status      RecordStatus @default(DRAFT)
+    name        String
+    search      String?      @ignore
+    content     String
+    thumbnailId String?      @map("thumbnail_id")
+    createdAt   DateTime     @default(now()) @map("created_at")
+    updatedAt   DateTime     @default(now()) @updatedAt @map("updated_at")
+    createdBy   String?
 
     // 
-    createdByUser User? @relation("postAuth",fields: [createdBy], references: [id])
-    thumbnal File? @relation("postThumbnail",fields: [thumbnailId], references: [id]) 
+    createdByUser User? @relation("postAuth", fields: [createdBy], references: [id])
+    thumbnal      File? @relation("postThumbnail", fields: [thumbnailId], references: [id])
+
+    @@index([search])
 }
-
-

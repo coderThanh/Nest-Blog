@@ -1,6 +1,6 @@
 model File {
     id         String        @id @default(cuid())
-    fileName   String // Tên file duy nhất sau khi đổi tên để tránh trùng (ví dụ: 1718663400-anh-chan-dung.jpg)
+    fileName   String @map("file_name") // Tên file duy nhất sau khi đổi tên để tránh trùng (ví dụ: 1718663400-anh-chan-dung.jpg)
     extension  String // Đuôi file (ví dụ: jpg, pdf, mp4)
     size       BigInt
     path       String        @unique
@@ -11,7 +11,9 @@ model File {
     createdBy String?
 
     // 
-    createdByUser User?  @relation("fileAuth",fields: [createdBy], references: [id])
+    createdByUser User?  @relation("fileAuth", fields: [createdBy], references: [id])
     posts         Post[] @relation("postThumbnail")
     users         User[] @relation("userThumbnail")
+
+    @@index([fileName])
 }
