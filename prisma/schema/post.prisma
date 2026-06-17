@@ -2,6 +2,7 @@ model Post {
     id          Int          @id @default(autoincrement())
     status      RecordStatus @default(DRAFT)
     name        String
+    search      String?      @default(dbgenerated())
     content     String
     thumbnailId String?      @map("thumbnail_id")
     createdAt   DateTime     @default(now()) @map("created_at")
@@ -11,4 +12,6 @@ model Post {
     // 
     createdByUser User? @relation("postAuth", fields: [createdBy], references: [id])
     thumbnal      File? @relation("postThumbnail", fields: [thumbnailId], references: [id])
+
+    @@index([search])
 }
