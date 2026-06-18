@@ -1,5 +1,7 @@
 import { appConfiguration, configValidationSchema } from '@/config/app.config';
 
+import { APP_FILTER } from '@nestjs/core';
+import { AllExceptionsFilter } from '@/common/exception/all-exception-filter';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
@@ -18,6 +20,12 @@ import { PrismaModule } from '@/prisma/prisma.module';
     PostModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_FILTER,
+      useClass: AllExceptionsFilter,
+    },
+  ],
 })
 export class AppModule {}

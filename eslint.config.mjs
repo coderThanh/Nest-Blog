@@ -38,6 +38,7 @@ export default tseslint.config(
 
       'prettier/prettier': 'off',
       'prefer-const': 'off',
+      'no-empty': 'off',
     },
   },
 );

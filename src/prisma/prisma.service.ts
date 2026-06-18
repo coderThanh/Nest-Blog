@@ -11,10 +11,11 @@ export class PrismaService
   implements OnModuleInit, OnModuleDestroy
 {
   constructor(configService: ConfigService) {
-    const connectionString = configService.get<string>('DATABASE_URL');
-    if (!connectionString) throw new Error('DATABASE_URL is not set');
+    const connectString = configService.get<string>('DATABASE_URL');
 
-    const pool = new pg.Pool({ connectionString });
+    if (!connectString) throw new Error('DATABASE_URL is not set');
+
+    const pool = new pg.Pool({ connectionString: connectString });
     const adapter = new PrismaPg(pool);
 
     super({ adapter });
@@ -23,7 +24,6 @@ export class PrismaService
   async onModuleInit() {
     await this.$connect();
   }
-
   async onModuleDestroy() {
     await this.$disconnect();
   }

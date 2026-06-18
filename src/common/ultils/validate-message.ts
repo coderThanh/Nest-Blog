@@ -1,0 +1,97 @@
+import { ValidationArguments } from 'class-validator';
+
+class ValidateMessageBuilder {
+  constructor(private readonly message: string) {}
+
+  rawMsg() {
+    return this.message;
+  }
+
+  exceptionMsg() {
+    return (args: ValidationArguments) => `${args.property}-${this.message}`;
+  }
+}
+
+export class ValidateMessage {
+  private static buildMessage(message: string, name: string) {
+    const text = name
+      ? `${name} ${message}`
+      : message.charAt(0).toUpperCase() + message.slice(1);
+
+    return new ValidateMessageBuilder(text);
+  }
+
+  static isString(name: string = '') {
+    return this.buildMessage('phải là chuỗi', name);
+  }
+
+  static isRequired(name: string = '') {
+    return this.buildMessage('không được để trống', name);
+  }
+
+  static isNotEmpty(name: string = '') {
+    return this.isRequired(name);
+  }
+
+  static isNumber(name: string = '') {
+    return this.buildMessage('phải là số', name);
+  }
+
+  static isBoolean(name: string = '') {
+    return this.buildMessage('phải là true hoặc false', name);
+  }
+
+  static isEmail(name: string = '') {
+    return this.buildMessage('không đúng định dạng email', name);
+  }
+
+  static isPhone(region: any, name: string = '') {
+    return this.buildMessage('không đúng định dạng số điện thoại', name);
+  }
+
+  static isEnum(name: string = '') {
+    return this.buildMessage('không hợp lệ', name);
+  }
+
+  static isArray(name: string = '') {
+    return this.buildMessage('phải là mảng', name);
+  }
+
+  static isDateString(name: string = '') {
+    return this.buildMessage('không đúng định dạng ngày tháng', name);
+  }
+
+  static isUrl(name: string = '') {
+    return this.buildMessage('không đúng định dạng URL', name);
+  }
+
+  static min(min: number, name: string = '') {
+    return this.buildMessage(`phải lớn hơn hoặc bằng ${min}`, name);
+  }
+
+  static max(max: number, name: string = '') {
+    return this.buildMessage(`phải nhỏ hơn hoặc bằng ${max}`, name);
+  }
+
+  static minLength(minLength: number, name: string = '') {
+    return this.buildMessage(`phải có ít nhất ${minLength} ký tự`, name);
+  }
+
+  static maxLength(maxLength: number, name: string = '') {
+    return this.buildMessage(`không được vượt quá ${maxLength} ký tự`, name);
+  }
+
+  static arrayMinSize(minSize: number, name: string = '') {
+    return this.buildMessage(`phải có ít nhất ${minSize} phần tử`, name);
+  }
+
+  static arrayMaxSize(maxSize: number, name: string = '') {
+    return this.buildMessage(`không được vượt quá ${maxSize} phần tử`, name);
+  }
+
+  static matches(example: string = '', name: string = '') {
+    return example
+      ? this.buildMessage(`không đúng định dạng. Ví dụ: ${example}`, name)
+      : this.buildMessage('không đúng định dạng', name);
+  }
+}

@@ -1,11 +1,12 @@
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { INestApplication, Logger } from '@nestjs/common';
 
+import { Environment } from '@/common/enum/ultil.enum';
 import { SWAGGER_JWT_AUTH } from 'src/common/constant/ultil';
 
 export function setupSwagger(app: INestApplication): void {
   // Nếu là môi trường Production thì không khởi tạo Swagger
-  if (process.env.NODE_ENV === 'production') {
+  if (process.env.NODE_ENV === Environment.Production) {
     return;
   }
 
