@@ -8,9 +8,9 @@
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "prisma:resolve": "ts-node script/prisma-resolve.ts",
-    "prisma:resolve:dry": "ts-node script/prisma-resolve.ts --dry-run",
-    "prisma:resolve:deploy": "ts-node script/prisma-resolve.ts --deploy",
+    "pm:resolve": "ts-node script/prisma-resolve.ts",
+    "pm:resolve:dry": "ts-node script/prisma-resolve.ts --dry-run",
+    "pm:resolve:deploy": "ts-node script/prisma-resolve.ts --deploy",
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
