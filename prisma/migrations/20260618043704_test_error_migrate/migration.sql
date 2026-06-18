@@ -1,0 +1,3 @@
+-- This is an empty migration.
+-- nếu file lỗi dev hãy sửa file trực tiếp vì prisma chưa lưu checksum
+-- 
