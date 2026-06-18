@@ -16,3 +16,10 @@ export const RecordStatus = {
 } as const
 
 export type RecordStatus = (typeof RecordStatus)[keyof typeof RecordStatus]
+
+
+export const StoreProvider = {
+  LOCAL: 'LOCAL'
+} as const
+
+export type StoreProvider = (typeof StoreProvider)[keyof typeof StoreProvider]
