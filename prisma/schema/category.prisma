@@ -1,0 +1,37 @@
+model Category {
+    id          BigInt  @id @default(autoincrement())
+    name        String
+    slug        String  @unique @default(dbgenerated())
+    search      String? @default(dbgenerated())
+    description String?
+
+    thumbnailId String? @map("thumbnail_id")
+    thumbnail   File?   @relation("categoryThumbnail", fields: [thumbnailId], references: [id], onDelete: SetNull)
+
+    parentId BigInt?    @map("parent_id")
+    parent   Category?  @relation("parent", fields: [parentId], references: [id], onDelete: SetNull)
+    children Category[] @relation("parent")
+
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+    createdBy     String? @map("created_by")
+    createdByUser User?   @relation("categoryAuthor", fields: [createdBy], references: [id], onDelete: SetNull)
+
+    postCategories PostCategory[] @relation("categoryOfPost")
+
+    @@unique([name, parentId])
+    @@index([search])
+}
+
+model PostCategory {
+    postId     BigInt   @map("post_id")
+    categoryId BigInt   @map("category_id")
+    post       Post     @relation("postOfCategory", fields: [postId], references: [id], onDelete: Cascade)
+    category   Category @relation("categoryOfPost", fields: [categoryId], references: [id], onDelete: Cascade)
+
+    assignedAt DateTime @default(now())  @map("assigned_at")
+
+    @@id([postId, categoryId])
+    @@index([categoryId])
+}

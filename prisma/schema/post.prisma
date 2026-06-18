@@ -1,17 +1,20 @@
 model Post {
-    id          Int          @id @default(autoincrement())
-    status      RecordStatus @default(DRAFT)
-    name        String
-    search      String?      @default(dbgenerated())
-    content     String
-    thumbnailId String?      @map("thumbnail_id")
-    createdAt   DateTime     @default(now()) @map("created_at")
-    updatedAt   DateTime     @default(now()) @updatedAt @map("updated_at")
-    createdBy   String?
+    id               BigInt       @id @default(autoincrement())
+    status           RecordStatus @default(DRAFT)
+    name             String
+    slug             String       @unique @default(dbgenerated())
+    search           String?      @default(dbgenerated())
+    content          String
+    shortDescription String?      @map("short_description")
+    thumbnailId      String?      @map("thumbnail_id")
+    createdAt        DateTime     @default(now()) @map("created_at")
+    updatedAt        DateTime     @default(now()) @updatedAt @map("updated_at")
+    createdBy        String?
 
     // 
-    createdByUser User? @relation("postAuth", fields: [createdBy], references: [id])
-    thumbnal      File? @relation("postThumbnail", fields: [thumbnailId], references: [id])
+    createdByUser User? @relation("postAuth", fields: [createdBy], references: [id], onDelete: SetNull)
+    thumbnal      File? @relation("postThumbnail", fields: [thumbnailId], references: [id], onDelete: SetNull)
+    postCategories PostCategory[] @relation("postOfCategory")
 
     @@index([search])
 }

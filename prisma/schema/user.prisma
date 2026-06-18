@@ -19,6 +19,7 @@ model User {
     files         File[] @relation("fileAuth")
     deletedByUser User?  @relation("userDelete", fields: [deletedby], references: [id])
     usersDeleted  User[] @relation("userDelete")
+    categories Category[] @relation("categoryAuthor")
 
     @@unique([email, deletedAt])
     @@unique([username, deletedAt])
