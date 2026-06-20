@@ -14,12 +14,18 @@ export class PrismaClientExceptionFilter implements ExceptionFilter {
   catch(exception: Prisma.PrismaClientKnownRequestError, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
+    const request = ctx.getRequest<Request>();
+
+    const { url, method, body, headers } = request;
 
     let statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
     let message = 'Internal server error';
     let errorFields: ResponseBase['errorFields'] = undefined;
 
-    console.error('Chi tiết lỗi:', exception);
+    console.error(
+      `-- [${method}] ${url} PrismaClientExceptionFilter Chi tiết lỗi:`,
+      exception,
+    );
 
     switch (exception.code) {
       // P2002: Unique constraint failed
@@ -83,6 +89,7 @@ export class PrismaClientExceptionFilter implements ExceptionFilter {
       statusCode,
       message,
       errorFields,
+      timstamp: new Date().toISOString(),
     };
 
     response.status(statusCode).json(finalResponse);

@@ -10,6 +10,11 @@ import {
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import { plainToInstance } from 'class-transformer';
+import { CategoryRelation } from '@/modules/category/entities/category.entity';
+import { ApiCustomResponseOK } from '@/common/decorator/api-response-ok';
+import { ApiExtraModels } from '@nestjs/swagger';
+import { ApiResponseOkDto } from '@/shared/dto';
 
 @Controller('category')
 export class CategoryController {
@@ -26,8 +31,14 @@ export class CategoryController {
   }
 
   @Get(':id')
+  @ApiExtraModels(ApiResponseOkDto, CategoryRelation)
+  @ApiCustomResponseOK(CategoryRelation)
   async findOne(@Param('id') id: string) {
-    return await this.categoryService.findOne(+id);
+    const record = await this.categoryService.findOne(+id);
+
+    return plainToInstance(CategoryRelation, record, {
+      excludeExtraneousValues: true,
+    });
   }
 
   @Patch(':id')

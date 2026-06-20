@@ -1,13 +1,8 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
-import { DatabaseUltil, ValidateMessage } from '@/common/ultils';
-
 import { Category } from '@prisma/client';
 import { CategoryRepository } from '@/modules/category/category.repository';
 import { CreateCategoryDto } from './dto/create-category.dto';
+import { DatabaseUltil } from '@/common/ultils';
+import { Injectable } from '@nestjs/common';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 
 @Injectable()
@@ -16,18 +11,7 @@ export class CategoryService {
 
   async create(createCategoryDto: CreateCategoryDto) {
     // check slug
-    const findRecordBySlug = async (slug: string) => {
-      return await this.categoryRepo.findUnique({
-        where: { slug },
-        select: { id: true },
-      });
-    };
-
-    const slug = await DatabaseUltil.generateSlugFromDBOrthrow(
-      createCategoryDto.slug,
-      findRecordBySlug,
-      'slug',
-    );
+    const slug = await this.getSlugUnqiueOrThrow(createCategoryDto.slug);
 
     // check unique parentId + name
     await this.validateUniqueName(
@@ -47,13 +31,13 @@ export class CategoryService {
   }
 
   async findOne(id: number) {
-    return `This action returns a #${id} category`;
+    return this.categoryRepo.findUniqueOrThrow({ where: { id } });
   }
 
   async update(id: number, updateCategoryDto: UpdateCategoryDto) {
-    const current = await this.categoryRepo.findUnique({ where: { id } });
-
-    if (!current) throw new NotFoundException('Không tìm thấy bảng ghi');
+    const current = await this.categoryRepo.findUniqueOrThrow({
+      where: { id },
+    });
 
     if (updateCategoryDto.name) {
       // Cần lấy parentId hiện tại hoặc từ DTO để validate
@@ -71,17 +55,9 @@ export class CategoryService {
     let uniqueSlugNew: string | undefined;
 
     if (updateCategoryDto.slug && current.slug !== updateCategoryDto.slug) {
-      const findRecordBySlug = async (slug: string) => {
-        return await this.categoryRepo.findFirst({
-          where: { slug, id: { not: id } },
-          select: { id: true },
-        });
-      };
-
-      uniqueSlugNew = await DatabaseUltil.generateSlugFromDBOrthrow(
+      uniqueSlugNew = await this.getSlugUnqiueOrThrow(
         updateCategoryDto.slug,
-        findRecordBySlug,
-        'slug',
+        current.id,
       );
     }
 
@@ -116,5 +92,23 @@ export class CategoryService {
       });
 
     await DatabaseUltil.validateUniqueName(fnCheck, 'name');
+  }
+
+  private async getSlugUnqiueOrThrow(
+    defaultSlug: string,
+    id?: number,
+  ): Promise<string> {
+    const findRecordBySlug = async (slug: string) => {
+      return await this.categoryRepo.findFirst({
+        where: { slug, id: id ? { not: id } : undefined },
+        select: { id: true },
+      });
+    };
+
+    return await DatabaseUltil.generateSlugFromDBOrthrow(
+      defaultSlug,
+      findRecordBySlug,
+      'slug',
+    );
   }
 }

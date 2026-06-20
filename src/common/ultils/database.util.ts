@@ -8,6 +8,7 @@ export class DatabaseUltil {
   ): Promise<string | null> {
     let uniqueSlug = defaultSlug;
     let currentIndexSlug = 1;
+    const maxSlugCountCheck = 100;
 
     while (true) {
       const currRecordBySlug = await findUnique(uniqueSlug);
@@ -20,7 +21,7 @@ export class DatabaseUltil {
       currentIndexSlug++;
 
       // Safety break to prevent infinite loops
-      if (currentIndexSlug > 10) {
+      if (currentIndexSlug > maxSlugCountCheck) {
         return null;
       }
     }

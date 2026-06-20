@@ -2,6 +2,7 @@ import { Logger, ValidationPipe } from '@nestjs/common';
 
 import { AppModule } from './app.module';
 import { NestFactory } from '@nestjs/core';
+import { TransformResponseOkInterceptor } from '@/common/interceptor/transfrom-response-ok.interceptor';
 import { setupSwagger } from 'src/config/swagger.config';
 
 // Fix BigInt serialization
@@ -15,6 +16,9 @@ async function bootstrap() {
   const logger = new Logger('Bootstrap');
 
   setupSwagger(app);
+
+  //
+  app.useGlobalInterceptors(new TransformResponseOkInterceptor());
 
   // Pipes
   app.useGlobalPipes(

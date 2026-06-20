@@ -31,11 +31,11 @@ import { UserModule } from './modules/user/user.module';
     AppService,
     {
       provide: APP_FILTER,
-      useClass: PrismaClientExceptionFilter,
+      useClass: AllExceptionsFilter,
     },
     {
       provide: APP_FILTER,
-      useClass: AllExceptionsFilter,
+      useClass: PrismaClientExceptionFilter,
     },
   ],
 })

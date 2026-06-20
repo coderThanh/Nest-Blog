@@ -14,16 +14,28 @@ export class AllExceptionsFilter implements ExceptionFilter {
   catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
+    const request = ctx.getRequest<Request>();
+    const { method, url } = request;
 
     let statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
     let message = 'Internal server error';
     let fieldErrors: ResponseBase['errorFields'] = undefined;
 
-    // console.error('Chi tiết lỗi:', exception);
+    // Bỏ qua log cho các request "rác" hoặc không quan trọng (ví dụ: 404 từ browser extensions)
+    const ignoredPaths = ['/.well-known', '/favicon.ico', '/robots.txt'];
+    const isIgnoredPath = ignoredPaths.some((path) => url.startsWith(path));
 
     if (exception instanceof HttpException) {
       statusCode = exception.getStatus();
       const resResponse = exception.getResponse();
+
+      // Chỉ log lỗi nếu không phải là path bị bỏ qua hoặc không phải lỗi 404
+      if (!(isIgnoredPath && statusCode === HttpStatus.NOT_FOUND)) {
+        console.error(
+          `-- [${method}] ${url} - AllExceptionsFilter Chi tiết lỗi:`,
+          exception,
+        );
+      }
 
       if (
         statusCode === HttpStatus.BAD_REQUEST &&
@@ -73,6 +85,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
       statusCode,
       message,
       errorFields: fieldErrors,
+      timstamp: new Date().toISOString(),
     };
 
     response.status(statusCode).json(finalResponse);
