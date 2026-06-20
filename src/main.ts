@@ -1,8 +1,10 @@
-import { Logger, ValidationPipe } from '@nestjs/common';
+import { APP_VERSION_CODE, APP_VERSION_PREFIX } from '@/common/constant/ultil';
+import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
 
 import { AppModule } from './app.module';
 import { NestFactory } from '@nestjs/core';
 import { TransformResponseOkInterceptor } from '@/common/interceptor/transfrom-response-ok.interceptor';
+import { getUrl } from '@/common/ultils/helper';
 import { setupSwagger } from 'src/config/swagger.config';
 
 // Fix BigInt serialization
@@ -15,9 +17,20 @@ async function bootstrap() {
 
   const logger = new Logger('Bootstrap');
 
-  setupSwagger(app);
+  // versiont
+  app.setGlobalPrefix(APP_VERSION_PREFIX);
+  app.enableVersioning({
+    type: VersioningType.URI,
+    defaultVersion: APP_VERSION_CODE,
+  });
 
   //
+  app.enableShutdownHooks();
+
+  // swagger
+  setupSwagger(app);
+
+  // Interceptors
   app.useGlobalInterceptors(new TransformResponseOkInterceptor());
 
   // Pipes
@@ -32,6 +45,12 @@ async function bootstrap() {
   const port = process.env.PORT || 3000;
   await app.listen(port);
 
-  logger.log(`🚀 Ứng dụng đang chạy tại: http://localhost:${port}`);
+  let url = await getUrl(app);
+
+  logger.log(`🚀 Ứng dụng đang chạy tại: ${url}`);
+  logger.log(
+    `🚀 API đang chạy tại: ${url}/${APP_VERSION_PREFIX}/v${APP_VERSION_CODE}`,
+  );
 }
+
 bootstrap();

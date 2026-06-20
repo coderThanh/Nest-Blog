@@ -42,8 +42,6 @@ export function setupSwagger(app: INestApplication): void {
     },
   });
 
-  if (process.env.NODE_ENV !== 'production') {
-    const port = process.env.PORT || 3000;
-    logger.log(`📱 Client API Docs: http://localhost:${port}/docs/client`);
-  }
+  const port = process.env.PORT || 3000;
+  logger.log(`📱 Client API Docs: http://localhost:${port}/docs/client`);
 }
