@@ -4,38 +4,47 @@ import {
   ExceptionFilter,
   HttpException,
   HttpStatus,
+  Logger,
 } from '@nestjs/common';
+import { ConfigUltils, getLoggerMessage } from '@/common/ultils';
 
+import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
 import { ResponseBase } from '@/shared/types';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
+  constructor(private readonly configService: ConfigService) {}
+
   catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
-    const { method, url } = request;
+    const { method, url, body } = request;
+
+    const log = new Logger('AllException');
 
     let statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
     let message = 'Internal server error';
     let fieldErrors: ResponseBase['errorFields'] = undefined;
 
     // Bỏ qua log cho các request "rác" hoặc không quan trọng (ví dụ: 404 từ browser extensions)
-    const ignoredPaths = ['/.well-known', '/favicon.ico', '/robots.txt'];
-    const isIgnoredPath = ignoredPaths.some((path) => url.startsWith(path));
+    // const ignoredPaths = ['/.well-known', '/favicon.ico', '/robots.txt'];
+    // const isIgnoredPath = ignoredPaths.some((path) => url.startsWith(path));
 
     if (exception instanceof HttpException) {
       statusCode = exception.getStatus();
       const resResponse = exception.getResponse();
 
-      // Chỉ log lỗi nếu không phải là path bị bỏ qua hoặc không phải lỗi 404
-      if (!(isIgnoredPath && statusCode === HttpStatus.NOT_FOUND)) {
-        console.error(
-          `-- [${method}] ${url} - AllExceptionsFilter Chi tiết lỗi:`,
-          exception,
-        );
-      }
+      // const isDebug = new ConfigUltils(this.configService).getDebugCheck();
+
+      // // Chỉ log lỗi nếu không phải là path bị bỏ qua
+      // if (!isIgnoredPath && isDebug) {
+      //   console.error(
+      //     `-- [${method}] ${url} - AllExceptionsFilter Chi tiết lỗi:`,
+      //     exception.stack,
+      //   );
+      // }
 
       if (
         statusCode === HttpStatus.BAD_REQUEST &&
@@ -78,6 +87,35 @@ export class AllExceptionsFilter implements ExceptionFilter {
             ? resResponse
             : (resResponse as any).message || message;
       }
+    }
+
+    // Log
+    if (statusCode === HttpStatus.INTERNAL_SERVER_ERROR) {
+      let stack: string | undefined;
+      if (typeof exception === 'object' && exception && 'stack' in exception) {
+        stack = exception.stack as string;
+      }
+
+      log.error(
+        getLoggerMessage({
+          statusCode,
+          url,
+          message,
+          method,
+          stack,
+          body,
+        }),
+      );
+    } else {
+      log.warn(
+        getLoggerMessage({
+          statusCode,
+          url,
+          message,
+          method,
+          body,
+        }),
+      );
     }
 
     const finalResponse: ResponseBase = {

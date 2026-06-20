@@ -3,29 +3,40 @@ import {
   Catch,
   ExceptionFilter,
   HttpStatus,
+  Logger,
 } from '@nestjs/common';
 
+import { ConfigService } from '@nestjs/config';
 import { Prisma } from '@prisma/client';
 import { Response } from 'express';
 import { ResponseBase } from '@/shared/types';
+import { getLoggerMessage } from '@/common/ultils';
 
 @Catch(Prisma.PrismaClientKnownRequestError)
 export class PrismaClientExceptionFilter implements ExceptionFilter {
+  constructor(private readonly configService: ConfigService) {}
+
   catch(exception: Prisma.PrismaClientKnownRequestError, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
 
-    const { url, method, body, headers } = request;
+    const log = new Logger('PrismaException');
+
+    const { url, method, body } = request;
 
     let statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
     let message = 'Internal server error';
     let errorFields: ResponseBase['errorFields'] = undefined;
 
-    console.error(
-      `-- [${method}] ${url} PrismaClientExceptionFilter Chi tiết lỗi:`,
-      exception,
-    );
+    // const isDebug = new ConfigUltils(this.configService).getDebugCheck();
+
+    // if (isDebug) {
+    //   console.error(
+    //     `-- [${method}] ${url} PrismaClientExceptionFilter Chi tiết lỗi:`,
+    //     exception,
+    //   );
+    // }
 
     switch (exception.code) {
       // P2002: Unique constraint failed
@@ -82,6 +93,30 @@ export class PrismaClientExceptionFilter implements ExceptionFilter {
       default:
         message = `Lỗi hệ thống Database (${exception.code})`;
         break;
+    }
+
+    // Log
+    if (statusCode === HttpStatus.INTERNAL_SERVER_ERROR) {
+      log.error(
+        getLoggerMessage({
+          statusCode,
+          url,
+          message,
+          method,
+          stack: exception.stack,
+          body,
+        }),
+      );
+    } else {
+      log.warn(
+        getLoggerMessage({
+          statusCode,
+          url,
+          message,
+          method,
+          body,
+        }),
+      );
     }
 
     const finalResponse: ResponseBase = {

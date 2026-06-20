@@ -1,7 +1,10 @@
 import * as joi from 'joi';
 
+import { toBoolean } from '@/common/ultils/helper';
+
 export const configValidationSchema = joi.object({
   PORT: joi.number().default(3000),
+  IS_DEBUG: joi.bool().default(false),
   DATABASE_URL: joi.string().required(),
 
   // JWT Access Config
@@ -12,6 +15,7 @@ export const configValidationSchema = joi.object({
 });
 
 export const appConfiguration = () => ({
+  isDebug: toBoolean(process.env.IS_DEBUG) ?? false,
   port: parseInt(process.env.PORT ?? '3000'),
   DATABASE_URL: process.env.DATABASE_URL,
   jwt: {
