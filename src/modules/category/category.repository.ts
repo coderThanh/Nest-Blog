@@ -51,6 +51,7 @@ export class CategoryRepository {
       where: {
         id,
       },
+      select: { id: true },
     });
   }
 }
