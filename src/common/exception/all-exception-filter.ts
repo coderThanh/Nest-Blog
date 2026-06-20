@@ -19,6 +19,8 @@ export class AllExceptionsFilter implements ExceptionFilter {
     let message = 'Internal server error';
     let fieldErrors: ResponseBase['errorFields'] = undefined;
 
+    // console.error('Chi tiết lỗi:', exception);
+
     if (exception instanceof HttpException) {
       statusCode = exception.getStatus();
       const resResponse = exception.getResponse();

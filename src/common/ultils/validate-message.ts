@@ -37,6 +37,10 @@ export class ValidateMessage {
     return this.buildMessage('phải là số', name);
   }
 
+  static isInt(name: string = '') {
+    return this.buildMessage('phải là số nguyên', name);
+  }
+
   static isBoolean(name: string = '') {
     return this.buildMessage('phải là true hoặc false', name);
   }
@@ -49,12 +53,23 @@ export class ValidateMessage {
     return this.buildMessage('không đúng định dạng số điện thoại', name);
   }
 
-  static isEnum(name: string = '') {
-    return this.buildMessage('không hợp lệ', name);
+  static isEnum(enums: string = '', name: string = '') {
+    return this.buildMessage(
+      `không hợp lệ${enums ? `, giá trị phải nằm trong ${enums}` : ''}`,
+      name,
+    );
   }
 
   static isArray(name: string = '') {
     return this.buildMessage('phải là mảng', name);
+  }
+
+  static isArrayNumber(name: string = '') {
+    return this.buildMessage('phải là mảng chứa số', name);
+  }
+
+  static isArrayString(name: string = '') {
+    return this.buildMessage('phải là mảng chứa chuỗi', name);
   }
 
   static isDateString(name: string = '') {
@@ -93,5 +108,13 @@ export class ValidateMessage {
     return example
       ? this.buildMessage(`không đúng định dạng. Ví dụ: ${example}`, name)
       : this.buildMessage('không đúng định dạng', name);
+  }
+
+  static wasExisted(name: string = '') {
+    return this.buildMessage(`đã tồn tại`, name);
+  }
+
+  static exceptionThrowErrorsField(field: string, message: string) {
+    return [`${field}-${message}`];
   }
 }

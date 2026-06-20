@@ -4,6 +4,11 @@ import { AppModule } from './app.module';
 import { NestFactory } from '@nestjs/core';
 import { setupSwagger } from 'src/config/swagger.config';
 
+// Fix BigInt serialization
+(BigInt.prototype as any).toJSON = function () {
+  return this.toString();
+};
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
@@ -11,7 +16,7 @@ async function bootstrap() {
 
   setupSwagger(app);
 
-  //
+  // Pipes
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,

@@ -1,0 +1,63 @@
+import { BadRequestException } from '@nestjs/common';
+import { ValidateMessage } from '@/common/ultils/validate-message';
+
+export class DatabaseUltil {
+  static async generateSlugFromDB<T>(
+    defaultSlug: string,
+    findUnique: (slug: string) => Promise<T | null>,
+  ): Promise<string | null> {
+    let uniqueSlug = defaultSlug;
+    let currentIndexSlug = 1;
+
+    while (true) {
+      const currRecordBySlug = await findUnique(uniqueSlug);
+
+      if (!currRecordBySlug) {
+        return uniqueSlug;
+      }
+
+      uniqueSlug = `${defaultSlug}-${currentIndexSlug}`;
+      currentIndexSlug++;
+
+      // Safety break to prevent infinite loops
+      if (currentIndexSlug > 10) {
+        return null;
+      }
+    }
+  }
+
+  static async generateSlugFromDBOrthrow<T>(
+    defaultSlug: string,
+    findUnique: (slug: string) => Promise<T | null>,
+    field: string,
+  ): Promise<string> {
+    const slug = await this.generateSlugFromDB(defaultSlug, findUnique);
+
+    if (!slug) {
+      throw new BadRequestException(
+        ValidateMessage.exceptionThrowErrorsField(
+          field,
+          ValidateMessage.wasExisted().rawMsg(),
+        ),
+      );
+    }
+
+    return slug;
+  }
+
+  static async validateUniqueName(
+    findUnique: () => Promise<any>,
+    name: string,
+  ) {
+    const hasRecord = await findUnique();
+
+    if (hasRecord) {
+      throw new BadRequestException(
+        ValidateMessage.exceptionThrowErrorsField(
+          name,
+          ValidateMessage.wasExisted().rawMsg(),
+        ),
+      );
+    }
+  }
+}

@@ -1,10 +1,11 @@
 model File {
-    id         String        @id @default(cuid())
-    fileName   String        @map("file_name") // Tên file duy nhất sau khi đổi tên để tránh trùng (ví dụ: 1718663400-anh-chan-dung.jpg)
-    extension  String // Đuôi file (ví dụ: jpg, pdf, mp4)
-    size       BigInt
-    path       String        @unique
-    providerId StoreProvider @map("provider_id")
+    id               String        @id @default(cuid())
+    fileName         String        @map("file_name") // Tên file duy nhất sau khi đổi tên để tránh trùng (ví dụ: 1718663400-anh-chan-dung.jpg)
+    extension        String // Đuôi file (ví dụ: jpg, pdf, mp4)
+    size             BigInt
+    path             String        @unique
+    providerId       StoreProvider @map("provider_id")
+    providerPublicId String?       @map("provider_public_id")
 
     createdAt DateTime @default(now()) @map("created_at")
     updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
@@ -16,5 +17,6 @@ model File {
     users         User[]     @relation("userThumbnail")
     categories    Category[] @relation("categoryThumbnail")
 
+    @@unique([providerId, providerPublicId], where: raw("provider_public_id is not null") )
     @@index([fileName])
 }

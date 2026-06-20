@@ -4,10 +4,14 @@ import { APP_FILTER } from '@nestjs/core';
 import { AllExceptionsFilter } from '@/common/exception/all-exception-filter';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { CategoryModule } from './modules/category/category.module';
 import { ConfigModule } from '@nestjs/config';
+import { FileModule } from './modules/file/file.module';
 import { Module } from '@nestjs/common';
 import { PostModule } from '@/modules/post/post.module';
+import { PrismaClientExceptionFilter } from './common/exception/prisma-exception.filter';
 import { PrismaModule } from '@/prisma/prisma.module';
+import { UserModule } from './modules/user/user.module';
 
 @Module({
   imports: [
@@ -18,10 +22,17 @@ import { PrismaModule } from '@/prisma/prisma.module';
     }),
     PrismaModule,
     PostModule,
+    CategoryModule,
+    FileModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [
     AppService,
+    {
+      provide: APP_FILTER,
+      useClass: PrismaClientExceptionFilter,
+    },
     {
       provide: APP_FILTER,
       useClass: AllExceptionsFilter,

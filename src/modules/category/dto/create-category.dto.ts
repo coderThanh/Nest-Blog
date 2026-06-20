@@ -1,27 +1,30 @@
 import {
   IsInt,
   IsNotEmpty,
-  IsNumber,
   IsOptional,
   IsString,
   MaxLength,
-  isNotEmpty,
 } from 'class-validator';
+import {
+  NormalizeString,
+  ToLowerCaseAndTrim,
+} from '@/common/decorator/normalize-string';
 
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { MAX_LENGTH_NAME } from '@/common/constant/ultil';
 import { ToNumber } from '@/common/decorator';
 import { ValidateMessage } from '@/common/ultils';
 
-export class CreatePostDto {
-  /** @example "Tên bài viết" */
+export class CreateCategoryDto {
   @MaxLength(MAX_LENGTH_NAME, {
     message: ValidateMessage.maxLength(MAX_LENGTH_NAME).exceptionMsg(),
   })
+  @NormalizeString()
   @IsString({ message: ValidateMessage.isString().exceptionMsg() })
   @IsNotEmpty({ message: ValidateMessage.isRequired().exceptionMsg() })
   name: string;
 
+  @ToLowerCaseAndTrim()
   @IsString({ message: ValidateMessage.isString().exceptionMsg() })
   @IsNotEmpty({ message: ValidateMessage.isRequired().exceptionMsg() })
   slug: string;
@@ -31,21 +34,15 @@ export class CreatePostDto {
   @IsOptional()
   thumbnailId?: string | null;
 
-  /** @example  "Nội dung bài viết"*/
-  @IsString({ message: ValidateMessage.isString().exceptionMsg() })
-  @IsNotEmpty({ message: ValidateMessage.isRequired().exceptionMsg() })
-  content: string;
-
   @IsString({ message: ValidateMessage.isString().exceptionMsg() })
   @IsOptional()
-  shortDescription?: string | null;
+  description?: string | null;
 
   @ApiPropertyOptional({ example: null, nullable: true })
   @IsInt({
     message: ValidateMessage.isArrayNumber().exceptionMsg(),
-    each: true,
   })
-  @ToNumber({ each: true })
+  @ToNumber()
   @IsOptional()
-  categoryIds?: number[] | null;
+  parentId?: number | null;
 }
