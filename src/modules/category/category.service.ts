@@ -2,6 +2,7 @@ import { Category } from '@prisma/client';
 import { CategoryRepository } from '@/modules/category/category.repository';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { DatabaseUltil } from '@/common/ultils';
+import { FindAllCategoryDto } from '@/modules/category/dto/find-all-category.dto';
 import { Injectable } from '@nestjs/common';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 
@@ -26,7 +27,8 @@ export class CategoryService {
     });
   }
 
-  async findAll() {
+  async findAll(query: FindAllCategoryDto = {}) {
+    return query;
     return `This action returns all category`;
   }
 

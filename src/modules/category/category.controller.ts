@@ -6,17 +6,20 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { plainToInstance } from 'class-transformer';
-import { CategoryRelation } from '@/modules/category/entities/category.entity';
+import { Category } from '@/modules/category/entities/category.entity';
 import { ApiCustomResponseOK } from '@/common/decorator/api-response-ok';
 import { ApiExtraModels } from '@nestjs/swagger';
 import { ApiResponseOkDto } from '@/shared/dto';
+import { FindAllCategoryDto } from '@/modules/category/dto/find-all-category.dto';
+import { ParseIntPipeCustom } from '@/common/pipes';
 
-@Controller('category')
+@Controller('categorys')
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
@@ -26,17 +29,17 @@ export class CategoryController {
   }
 
   @Get()
-  async findAll() {
-    return this.categoryService.findAll();
+  async findAll(@Query() query: FindAllCategoryDto) {
+    return this.categoryService.findAll(query);
   }
 
   @Get(':id')
-  @ApiExtraModels(ApiResponseOkDto, CategoryRelation)
-  @ApiCustomResponseOK(CategoryRelation)
-  async findOne(@Param('id') id: string) {
+  @ApiExtraModels(ApiResponseOkDto, Category)
+  @ApiCustomResponseOK(Category)
+  async findOne(@Param('id', ParseIntPipeCustom()) id: string) {
     const record = await this.categoryService.findOne(+id);
 
-    return plainToInstance(CategoryRelation, record, {
+    return plainToInstance(Category, record, {
       excludeExtraneousValues: true,
     });
   }

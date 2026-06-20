@@ -55,21 +55,25 @@ export class ValidateMessage {
 
   static isEnum(enums: string = '', name: string = '') {
     return this.buildMessage(
-      `không hợp lệ${enums ? `, giá trị phải nằm trong ${enums}` : ''}`,
+      `không hợp lệ${enums ? ` giá trị phải nằm trong ${enums}` : ''}`,
       name,
     );
   }
 
   static isArray(name: string = '') {
-    return this.buildMessage('phải là mảng', name);
+    return this.buildMessage('phải là danh sách', name);
   }
 
   static isArrayNumber(name: string = '') {
-    return this.buildMessage('phải là mảng chứa số', name);
+    return this.buildMessage('phải là danh sách chứa số', name);
+  }
+
+  static isArrayInt(name: string = '') {
+    return this.buildMessage('phải là danh sách chứa số nguyên', name);
   }
 
   static isArrayString(name: string = '') {
-    return this.buildMessage('phải là mảng chứa chuỗi', name);
+    return this.buildMessage('phải là danh sách chứa chuỗi', name);
   }
 
   static isDateString(name: string = '') {
