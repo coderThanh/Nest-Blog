@@ -36,16 +36,6 @@ export class AllExceptionsFilter implements ExceptionFilter {
       statusCode = exception.getStatus();
       const resResponse = exception.getResponse();
 
-      // const isDebug = new ConfigUltils(this.configService).getDebugCheck();
-
-      // // Chỉ log lỗi nếu không phải là path bị bỏ qua
-      // if (!isIgnoredPath && isDebug) {
-      //   console.error(
-      //     `-- [${method}] ${url} - AllExceptionsFilter Chi tiết lỗi:`,
-      //     exception.stack,
-      //   );
-      // }
-
       if (
         statusCode === HttpStatus.BAD_REQUEST &&
         typeof resResponse === 'object'
@@ -98,22 +88,34 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
       log.error(
         getLoggerMessage({
-          statusCode,
+          statusCode: statusCode.toString(),
           url,
           message,
           method,
           stack,
           body,
+          errorFields: fieldErrors,
         }),
       );
+
+      const isDebug = new ConfigUltils(this.configService).getDebugCheck();
+
+      // Chỉ log lỗi nếu không phải là path bị bỏ qua
+      if (isDebug) {
+        console.error(
+          `-- [${method}] ${url} - AllExceptionsFilter Chi tiết lỗi:`,
+          stack,
+        );
+      }
     } else {
       log.warn(
         getLoggerMessage({
-          statusCode,
+          statusCode: statusCode.toString(),
           url,
           message,
           method,
           body,
+          errorFields: fieldErrors,
         }),
       );
     }

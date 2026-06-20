@@ -1,5 +1,4 @@
-import { HttpStatus, INestApplication } from '@nestjs/common';
-
+import { INestApplication } from '@nestjs/common';
 import { PAYLOAD_KEY_SECERT } from '@/common/constant/ultil';
 
 export function toBoolean(input: any): boolean | null {
@@ -23,13 +22,15 @@ export function getLoggerMessage({
   message,
   stack,
   body,
+  errorFields,
 }: {
-  statusCode: HttpStatus;
+  statusCode: string;
   url: string;
   method: string;
   message: string;
   stack?: string;
   body?: any;
+  errorFields?: Record<string, any>;
 }): string {
   let bodyMasked: Record<string, any> | undefined;
 
@@ -37,7 +38,17 @@ export function getLoggerMessage({
     bodyMasked = maskFieldObj(body, PAYLOAD_KEY_SECERT);
   }
 
-  return `[${method}] ${statusCode} ${url} ${message}${bodyMasked ? `\nBody: ${JSON.stringify(bodyMasked)}` : ''}${stack ? `\n${stack}` : ''}`;
+  // Gom toàn bộ context động vào meta object
+  const logMeta =
+    bodyMasked || errorFields || stack
+      ? {
+          body: bodyMasked,
+          errorFields,
+          stack,
+        }
+      : undefined;
+
+  return `[${method}] ${statusCode} ${url} ${message} ${logMeta ? `- Meta: ${JSON.stringify(logMeta)}` : ''}`;
 }
 
 export function maskFieldObj(obj: any, secrets: string[]): any {

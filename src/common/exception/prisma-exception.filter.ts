@@ -5,12 +5,12 @@ import {
   HttpStatus,
   Logger,
 } from '@nestjs/common';
+import { ConfigUltils, getLoggerMessage } from '@/common/ultils';
 
 import { ConfigService } from '@nestjs/config';
 import { Prisma } from '@prisma/client';
 import { Response } from 'express';
 import { ResponseBase } from '@/shared/types';
-import { getLoggerMessage } from '@/common/ultils';
 
 @Catch(Prisma.PrismaClientKnownRequestError)
 export class PrismaClientExceptionFilter implements ExceptionFilter {
@@ -29,21 +29,23 @@ export class PrismaClientExceptionFilter implements ExceptionFilter {
     let message = 'Internal server error';
     let errorFields: ResponseBase['errorFields'] = undefined;
 
-    // const isDebug = new ConfigUltils(this.configService).getDebugCheck();
+    const isDebug = new ConfigUltils(this.configService).getDebugCheck();
 
-    // if (isDebug) {
-    //   console.error(
-    //     `-- [${method}] ${url} PrismaClientExceptionFilter Chi tiết lỗi:`,
-    //     exception,
-    //   );
-    // }
+    if (isDebug) {
+      console.error(
+        `-- [${method}] ${url} PrismaClientExceptionFilter Chi tiết lỗi:`,
+        // Object.keys(exception),
+        exception?.code,
+        exception?.meta?.driverAdapterError,
+      );
+    }
 
     switch (exception.code) {
       // P2002: Unique constraint failed
       case 'P2002': {
         statusCode = HttpStatus.CONFLICT;
         const targets = exception.meta?.target as string[];
-        message = 'Dữ liệu đã tồn tại trong hệ thống';
+        message = 'Dữ liệu đã trùng lặp trong hệ thống';
         if (targets && Array.isArray(targets)) {
           errorFields = {};
           targets.forEach((field) => {
@@ -56,14 +58,14 @@ export class PrismaClientExceptionFilter implements ExceptionFilter {
       // P2025: An operation failed because it depends on one or more records that were required but not found
       case 'P2025':
         statusCode = HttpStatus.NOT_FOUND;
-        message =
-          (exception.meta?.cause as string) || 'Không tìm thấy bản ghi yêu cầu';
+        message = (exception.meta?.cause as string) || 'Không tìm thấy bản ghi';
         break;
 
       // P2003: Foreign key constraint failed on the field
       case 'P2003':
         statusCode = HttpStatus.BAD_REQUEST;
-        message = 'Dữ liệu liên quan không tồn tại hoặc đang được sử dụng';
+        message =
+          'Liên kết với Primary Key không tồn tại hoặc đang bị ràng buộc';
         break;
 
       // P2000: The provided value for the column is too long for the column's type
@@ -99,22 +101,24 @@ export class PrismaClientExceptionFilter implements ExceptionFilter {
     if (statusCode === HttpStatus.INTERNAL_SERVER_ERROR) {
       log.error(
         getLoggerMessage({
-          statusCode,
+          statusCode: `${statusCode} ${exception.code}`,
           url,
           message,
           method,
           stack: exception.stack,
           body,
+          errorFields,
         }),
       );
     } else {
       log.warn(
         getLoggerMessage({
-          statusCode,
+          statusCode: `${statusCode} ${exception.code}`,
           url,
           message,
           method,
           body,
+          errorFields,
         }),
       );
     }
