@@ -24,8 +24,6 @@ export class CategoryEventListener {
   async handleCategoryUpdatedEvent(event: CategoryUpdatedEvent) {
     const { categoryId, oldParentId, oldPath, newParentId, tx } = event;
 
-    console.log({ newParentId, oldPath, oldParentId });
-
     if (oldParentId === newParentId) return null;
 
     let newPath = await this.generateCategoryPath({
