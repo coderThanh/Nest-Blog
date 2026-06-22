@@ -103,8 +103,8 @@ export class AllExceptionsFilter implements ExceptionFilter {
       // Chỉ log lỗi nếu không phải là path bị bỏ qua
       if (isDebug) {
         console.error(
-          `-- [${method}] ${url} - AllExceptionsFilter Chi tiết lỗi:`,
-          stack,
+          `\n-- [${method}] ${url} - AllExceptionsFilter Chi tiết lỗi:`,
+          exception,
         );
       }
     } else {

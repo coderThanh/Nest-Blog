@@ -34,7 +34,6 @@ export class PrismaClientExceptionFilter implements ExceptionFilter {
     if (isDebug) {
       console.error(
         `-- [${method}] ${url} PrismaClientExceptionFilter Chi tiết lỗi:`,
-        // Object.keys(exception),
         exception?.code,
         exception?.meta?.driverAdapterError,
       );
