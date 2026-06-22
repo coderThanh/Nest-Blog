@@ -14,14 +14,14 @@ model User {
     deletedby    String?   @map("deleted_by")
 
     // 
-    posts         Post[] @relation("postAuth")
-    thumbnal      File?  @relation("userThumbnail", fields: [thumbnailId], references: [id])
-    files         File[] @relation("fileAuth")
-    deletedByUser User?  @relation("userDelete", fields: [deletedby], references: [id])
-    usersDeleted  User[] @relation("userDelete")
-    categories Category[] @relation("categoryAuthor")
+    posts         Post[]     @relation("postAuth")
+    thumbnal      File?      @relation("userThumbnail", fields: [thumbnailId], references: [id])
+    files         File[]     @relation("fileAuth")
+    deletedByUser User?      @relation("userDelete", fields: [deletedby], references: [id])
+    usersDeleted  User[]     @relation("userDelete")
+    categories    Category[] @relation("categoryAuthor")
 
     @@unique([email, deletedAt])
     @@unique([username, deletedAt])
-    @@index([search])
+    @@index([search(ops: raw("gin_trgm_ops"))], type: Gin)
 }

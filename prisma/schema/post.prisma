@@ -1,5 +1,5 @@
 model Post {
-    id               Int       @id @default(autoincrement())
+    id               Int          @id @default(autoincrement())
     status           RecordStatus @default(DRAFT)
     name             String
     slug             String       @unique @default(dbgenerated())
@@ -16,5 +16,5 @@ model Post {
     thumbnail     File?      @relation("postThumbnail", fields: [thumbnailId], references: [id], onDelete: SetNull)
     categories    Category[] @relation("PostToCategory")
 
-    @@index([search])
+    @@index([search(ops: raw("gin_trgm_ops"))], type: Gin)
 }

@@ -1,14 +1,15 @@
 model Category {
-    id          Int  @id @default(autoincrement())
+    id          Int     @id @default(autoincrement())
     name        String
     slug        String  @unique @default(dbgenerated())
     search      String? @default(dbgenerated())
+    path        String @default("")
     description String?
 
     thumbnailId String? @map("thumbnail_id")
     thumbnail   File?   @relation("categoryThumbnail", fields: [thumbnailId], references: [id], onDelete: SetNull)
 
-    parentId Int?    @map("parent_id")
+    parentId Int?       @map("parent_id")
     parent   Category?  @relation("parent", fields: [parentId], references: [id], onDelete: SetNull)
     children Category[] @relation("parent")
 
@@ -21,5 +22,5 @@ model Category {
     posts Post[] @relation("PostToCategory")
 
     @@unique([name, parentId])
-    @@index([search])
+    @@index([search(ops: raw("gin_trgm_ops"))], type: Gin)
 }
