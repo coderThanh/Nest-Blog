@@ -57,7 +57,7 @@ export class CategoryService {
       throw new BadRequestException(
         ValidateMessage.exceptionThrowErrorsField(
           Prisma.CategoryScalarFieldEnum.parentId,
-          ValidateMessage.isNotSeft().rawMsg(),
+          ValidateMessage.isNotSefl().rawMsg(),
         ),
       );
     }

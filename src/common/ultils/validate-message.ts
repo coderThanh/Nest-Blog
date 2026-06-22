@@ -84,7 +84,7 @@ export class ValidateMessage {
     return this.buildMessage('không đúng định dạng URL', name);
   }
 
-  static isNotSeft(name: string = '') {
+  static isNotSefl(name: string = '') {
     return this.buildMessage('không được phép trùng với chính bảng ghi', name);
   }
 
