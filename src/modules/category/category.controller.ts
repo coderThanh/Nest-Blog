@@ -33,11 +33,11 @@ export class CategoryController {
     return this.categoryService.findAll(query);
   }
 
-  @Get(':id')
+  @Get(':slug')
   @ApiExtraModels(ApiResponseOkDto, Category)
   @ApiCustomResponseOK(Category)
-  async findOne(@Param('id', ParseIntPipeCustom()) id: string) {
-    const record = await this.categoryService.findOne(+id);
+  async findOne(@Param('slug') slug: string) {
+    const record = await this.categoryService.findOne(slug);
 
     return plainToInstance(Category, record, {
       excludeExtraneousValues: true,

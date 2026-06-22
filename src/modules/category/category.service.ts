@@ -32,8 +32,20 @@ export class CategoryService {
     return `This action returns all category`;
   }
 
-  async findOne(id: number) {
-    return this.categoryRepo.findUniqueOrThrow({ where: { id } });
+  async findOne(slug: string) {
+    return this.categoryRepo.findUniqueOrThrow({
+      where: { slug },
+      include: {
+        parent: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            parentId: true,
+          },
+        },
+      },
+    });
   }
 
   async update(id: number, updateCategoryDto: UpdateCategoryDto) {

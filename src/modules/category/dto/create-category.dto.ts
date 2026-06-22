@@ -16,6 +16,7 @@ import { ToNumber } from '@/common/decorator';
 import { ValidateMessage } from '@/common/ultils';
 
 export class CreateCategoryDto {
+  /** @example 'Danh mục bài viết'*/
   @MaxLength(MAX_LENGTH_NAME, {
     message: ValidateMessage.maxLength(MAX_LENGTH_NAME).exceptionMsg(),
   })

@@ -29,6 +29,9 @@ export class Category {
   parent: Category | null;
 
   @Expose()
+  path: string | null;
+
+  @Expose()
   children: Category[] | null;
 
   @Expose()
@@ -52,6 +55,7 @@ export class CategoryFindAll extends PickType(Category, [
   'thumbnail',
   'parentId',
   'parent',
+  'path',
   'createdAt',
   'updatedAt',
   'createdBy',

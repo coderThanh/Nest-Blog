@@ -6,6 +6,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CategoryModule } from './modules/category/category.module';
 import { ConfigModule } from '@nestjs/config';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import { FileModule } from './modules/file/file.module';
 import { Module } from '@nestjs/common';
 import { PostModule } from '@/modules/post/post.module';
@@ -19,6 +20,12 @@ import { UserModule } from './modules/user/user.module';
       load: [appConfiguration],
       validationSchema: configValidationSchema,
       isGlobal: true,
+    }),
+    EventEmitterModule.forRoot({
+      // Đặt true nếu bạn muốn dùng wildcard (*) trong tên event (ví dụ: 'user.*')
+      wildcard: false,
+      // Phục vụ cho việc debug, hiển thị thông tin chi tiết của event nếu có lỗi
+      verboseMemoryLeak: true,
     }),
     PrismaModule,
     PostModule,
