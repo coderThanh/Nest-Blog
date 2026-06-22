@@ -61,10 +61,3 @@ export class CategoryFindAll extends PickType(Category, [
   'createdBy',
   'createdByUser',
 ]) {}
-
-export class CategoryRelation extends PickType(Category, [
-  'id',
-  'name',
-  'slug',
-  'parentId',
-]) {}

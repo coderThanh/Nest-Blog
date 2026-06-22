@@ -1,9 +1,10 @@
-import { Category } from '@prisma/client';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { Category, Prisma } from '@prisma/client';
+import { DatabaseUltil, ValidateMessage } from '@/common/ultils';
+
 import { CategoryRepository } from '@/modules/category/category.repository';
 import { CreateCategoryDto } from './dto/create-category.dto';
-import { DatabaseUltil } from '@/common/ultils';
 import { FindAllCategoryDto } from '@/modules/category/dto/find-all-category.dto';
-import { Injectable } from '@nestjs/common';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 
 @Injectable()
@@ -41,7 +42,6 @@ export class CategoryService {
             id: true,
             name: true,
             slug: true,
-            parentId: true,
           },
         },
       },
@@ -52,6 +52,15 @@ export class CategoryService {
     const current = await this.categoryRepo.findUniqueOrThrow({
       where: { id },
     });
+
+    if (id === updateCategoryDto.parentId) {
+      throw new BadRequestException(
+        ValidateMessage.exceptionThrowErrorsField(
+          Prisma.CategoryScalarFieldEnum.parentId,
+          ValidateMessage.isNotSeft().rawMsg(),
+        ),
+      );
+    }
 
     if (updateCategoryDto.name) {
       // Cần lấy parentId hiện tại hoặc từ DTO để validate

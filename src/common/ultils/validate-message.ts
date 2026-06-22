@@ -84,6 +84,10 @@ export class ValidateMessage {
     return this.buildMessage('không đúng định dạng URL', name);
   }
 
+  static isNotSeft(name: string = '') {
+    return this.buildMessage('không được phép trùng với chính bảng ghi', name);
+  }
+
   static min(min: number, name: string = '') {
     return this.buildMessage(`phải lớn hơn hoặc bằng ${min}`, name);
   }
