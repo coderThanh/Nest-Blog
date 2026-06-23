@@ -21,7 +21,7 @@ model User {
     usersDeleted  User[]     @relation("userDelete")
     categories    Category[] @relation("categoryAuthor")
 
-    @@unique([email, deletedAt])
-    @@unique([username, deletedAt])
+    @@unique([email, deletedAt], where: raw("deleted_at is null"))
+    @@unique([username, deletedAt], where: raw("deleted_at is null"))
     @@index([search(ops: raw("gin_trgm_ops"))], type: Gin)
 }
