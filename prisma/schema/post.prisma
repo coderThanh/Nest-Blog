@@ -1,5 +1,5 @@
 model Post {
-    id               Int          @id @default(autoincrement())
+    id               String       @id @default(cuid())
     status           RecordStatus @default(DRAFT)
     name             String
     slug             String       @unique @default(dbgenerated())
@@ -9,7 +9,7 @@ model Post {
     thumbnailId      String?      @map("thumbnail_id")
     createdAt        DateTime     @default(now()) @map("created_at")
     updatedAt        DateTime     @default(now()) @updatedAt @map("updated_at")
-    createdBy        String?
+    createdBy        String?      @map("created_by")
 
     // 
     createdByUser User?      @relation("postAuth", fields: [createdBy], references: [id], onDelete: SetNull)

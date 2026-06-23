@@ -7,3 +7,9 @@ enum RecordStatus {
 enum StoreProvider {
     LOCAL
 }
+
+enum GenderEnum {
+    MALE
+    FEMALE
+    OTHER
+}
