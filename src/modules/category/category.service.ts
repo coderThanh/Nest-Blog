@@ -1,10 +1,17 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { Category, Prisma } from '@prisma/client';
-import { DatabaseUltil, ValidateMessage } from '@/common/ultils';
+import {
+  DatabaseUltil,
+  ValidateMessage,
+  removeVietnameseAccents,
+} from '@/common/ultils';
 
+import { Category } from '@/modules/category/entities/category.entity';
+import { CategoryOrderBy } from '@/modules/category/category.enum';
 import { CategoryRepository } from '@/modules/category/category.repository';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { FindAllCategoryDto } from '@/modules/category/dto/find-all-category.dto';
+import { OrderDir } from '@/common/enum';
+import { Prisma } from '@prisma/client';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 
 @Injectable()
@@ -28,9 +35,14 @@ export class CategoryService {
     });
   }
 
-  async findAll(query: FindAllCategoryDto = {}) {
-    return query;
-    return `This action returns all category`;
+  async findAllAndCount(query: FindAllCategoryDto) {
+    return this.categoryRepo.findManyAndCount(
+      this.getCommonFindAllOptions(query),
+    );
+  }
+
+  async findAll(query: FindAllCategoryDto) {
+    return this.categoryRepo.findMany(this.getCommonFindAllOptions(query));
   }
 
   async findOne(slug: string) {
@@ -38,11 +50,7 @@ export class CategoryService {
       where: { slug },
       include: {
         parent: {
-          select: {
-            id: true,
-            name: true,
-            slug: true,
-          },
+          select: Category.selectCategoryRelation,
         },
       },
     });
@@ -133,5 +141,54 @@ export class CategoryService {
       findRecordBySlug,
       'slug',
     );
+  }
+
+  public static getFindManyWhere(
+    query: FindAllCategoryDto,
+  ): Prisma.CategoryWhereInput | undefined {
+    const { ids, excludeIds, search, parentId } = query;
+
+    const andCondition: Prisma.CategoryWhereInput[] = [];
+
+    if (parentId !== undefined) andCondition.push({ parentId: parentId });
+
+    if (ids?.length) andCondition.push({ id: { in: ids } });
+
+    if (excludeIds?.length) andCondition.push({ id: { notIn: excludeIds } });
+
+    if (search)
+      andCondition.push({
+        search: { contains: removeVietnameseAccents(search).toLowerCase() },
+      });
+
+    const where: Prisma.CategoryWhereInput = { AND: andCondition };
+
+    return where;
+  }
+
+  public static getOrderBy(
+    orderBy: CategoryOrderBy,
+    orderDir: OrderDir,
+  ): Prisma.CategoryOrderByWithRelationInput {
+    return {
+      [orderBy]: orderDir,
+    };
+  }
+
+  private getCommonFindAllOptions(
+    query: FindAllCategoryDto,
+  ): Prisma.CategoryFindManyArgs {
+    const { orderBy, orderDir, page, limit } = query;
+
+    return {
+      where: CategoryService.getFindManyWhere(query),
+      include: {
+        thumbnail: true,
+        parent: { select: Category.selectCategoryRelation },
+      },
+      orderBy: CategoryService.getOrderBy(orderBy, orderDir),
+      take: limit,
+      skip: DatabaseUltil.getSkip(page, limit),
+    };
   }
 }

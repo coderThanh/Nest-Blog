@@ -7,6 +7,7 @@ import { IsEnum, IsInt, IsOptional, IsString } from 'class-validator';
 
 import { CategoryOrderBy } from '@/modules/category/category.enum';
 import { IntersectionType } from '@nestjs/swagger';
+import { NormalizeString } from '@/common/decorator/normalize-string';
 import { OrderDir } from '@/common/enum';
 import { Type } from 'class-transformer';
 import { ValidateMessage } from '@/common/ultils';
@@ -17,6 +18,7 @@ export class FindAllCategoryDto extends IntersectionType(
   FilterOrderDirDto(OrderDir.desc),
 ) {
   @IsString({ message: ValidateMessage.isString().exceptionMsg() })
+  @NormalizeString()
   @IsOptional()
   search?: string;
 
@@ -29,5 +31,5 @@ export class FindAllCategoryDto extends IntersectionType(
     message: ValidateMessage.isEnum().exceptionMsg(),
   })
   @IsOptional()
-  orderBy?: CategoryOrderBy = CategoryOrderBy.createdAt;
+  orderBy: CategoryOrderBy = CategoryOrderBy.createdAt;
 }

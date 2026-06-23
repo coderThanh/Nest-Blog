@@ -18,7 +18,7 @@ export class CategoryRepository {
   ) {}
 
   async create(body: AuditCreate<CreateCategoryDto>) {
-    return await this.prisma.$transaction(async (ctx) => {
+    return this.prisma.$transaction(async (ctx) => {
       const record = await ctx.category.create({
         data: body,
         select: { id: true },
@@ -40,7 +40,7 @@ export class CategoryRepository {
   }
 
   async patch(id: number, data: AuditUpdate<UpdateCategoryDto>) {
-    return await this.prisma.$transaction(async (ctx) => {
+    return this.prisma.$transaction(async (ctx) => {
       const oldRecord = await ctx.category.findUniqueOrThrow({
         where: { id },
         select: { path: true, parentId: true },
@@ -76,27 +76,38 @@ export class CategoryRepository {
   }
 
   async findMany(args: Prisma.CategoryFindManyArgs) {
-    return await this.prisma.category.findMany(args);
+    return this.prisma.category.findMany(args);
+  }
+
+  async findManyAndCount(args: Prisma.CategoryFindManyArgs) {
+    const { where } = args;
+
+    const [items, total] = await this.prisma.$transaction([
+      this.prisma.category.findMany(args),
+      this.prisma.category.count({ where }),
+    ]);
+
+    return { items, total };
   }
 
   async findFirst(args: Prisma.CategoryFindFirstArgs) {
-    return await this.prisma.category.findFirst(args);
+    return this.prisma.category.findFirst(args);
   }
 
   async findFirstOrThrow(args: Prisma.CategoryFindFirstArgs) {
-    return await this.prisma.category.findFirstOrThrow(args);
+    return this.prisma.category.findFirstOrThrow(args);
   }
 
   async findUnique(args: Prisma.CategoryFindUniqueArgs) {
-    return await this.prisma.category.findUnique(args);
+    return this.prisma.category.findUnique(args);
   }
 
   async findUniqueOrThrow(args: Prisma.CategoryFindUniqueArgs) {
-    return await this.prisma.category.findUniqueOrThrow(args);
+    return this.prisma.category.findUniqueOrThrow(args);
   }
 
   async deleted(id: number) {
-    return await this.prisma.category.delete({
+    return this.prisma.category.delete({
       where: {
         id,
       },

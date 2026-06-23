@@ -12,12 +12,17 @@ import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { plainToInstance } from 'class-transformer';
-import { Category } from '@/modules/category/entities/category.entity';
+import {
+  Category,
+  CategoryFindAll,
+} from '@/modules/category/entities/category.entity';
 import { ApiCustomResponseOK } from '@/common/decorator/api-response-ok';
 import { ApiExtraModels } from '@nestjs/swagger';
 import { ApiResponseOkDto } from '@/shared/dto';
 import { FindAllCategoryDto } from '@/modules/category/dto/find-all-category.dto';
 import { ParseIntPipeCustom } from '@/common/pipes';
+import { BaseFindAllData, FindAllDataMeta } from '@/shared/types';
+import { DatabaseUltil } from '@/common/ultils';
 
 @Controller('categorys')
 export class CategoryController {
@@ -30,7 +35,22 @@ export class CategoryController {
 
   @Get()
   async findAll(@Query() query: FindAllCategoryDto) {
-    return this.categoryService.findAll(query);
+    const { items, total } = await this.categoryService.findAllAndCount(query);
+
+    const meta: FindAllDataMeta = DatabaseUltil.getPaginationMeta({
+      currentPage: query.page,
+      limit: query.limit,
+      totalItems: total,
+    });
+
+    const data: BaseFindAllData = {
+      items: plainToInstance(CategoryFindAll, items, {
+        excludeExtraneousValues: true,
+      }),
+      meta,
+    };
+
+    return data;
   }
 
   @Get(':slug')

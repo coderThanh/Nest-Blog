@@ -1,6 +1,8 @@
-import { Expose } from 'class-transformer';
+import { Expose, Type } from 'class-transformer';
+
 import { File } from '@/modules/file/entities/file.entity';
 import { PickType } from '@nestjs/swagger';
+import { Prisma } from '@prisma/client';
 import { User } from '@/modules/user/entities/user.entity';
 
 export class Category {
@@ -26,13 +28,15 @@ export class Category {
   parentId: number | null;
 
   @Expose()
-  parent: Category | null;
+  @Type(() => CategoryRelation) // nếu có type thì sẽ tiếp tục instance to object vào trong
+  parent: CategoryRelation | null;
 
   @Expose()
   path: string | null;
 
   @Expose()
-  children: Category[] | null;
+  @Type(() => CategoryRelation)
+  children: CategoryRelation[] | null;
 
   @Expose()
   createdAt: string | null;
@@ -45,6 +49,13 @@ export class Category {
 
   @Expose()
   createdByUser: User | null;
+
+  public static selectCategoryRelation: Prisma.CategorySelect = {
+    id: true,
+    name: true,
+    slug: true,
+    path: true,
+  };
 }
 
 export class CategoryFindAll extends PickType(Category, [
@@ -60,4 +71,11 @@ export class CategoryFindAll extends PickType(Category, [
   'updatedAt',
   'createdBy',
   'createdByUser',
+]) {}
+
+export class CategoryRelation extends PickType(Category, [
+  'id',
+  'name',
+  'slug',
+  'path',
 ]) {}

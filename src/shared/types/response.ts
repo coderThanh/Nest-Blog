@@ -7,16 +7,19 @@ export type ResponseBase<T = unknown> = {
   timstamp: string;
 };
 
-export type ResponseRead<T> = ResponseBase<T>;
+export type ResponseRead<T = unknown> = ResponseBase<T>;
 
-export type ResponseWrite<T> = ResponseBase<T>;
+export type ResponseWrite<T = unknown> = ResponseBase<T>;
 
-export type BaseFindAllData<T> = {
+export type BaseFindAllData<T = unknown> = {
   items: T[];
-  meta: {
-    currentPage: number;
-    nextPage: number | null;
-    totalPage: number;
-    totalItems: number;
-  };
+  meta: FindAllDataMeta;
+};
+
+export type FindAllDataMeta = {
+  currentPage: number;
+  nextPage: number | null;
+  totalPage: number;
+  totalItems: number;
+  limit: number;
 };
