@@ -29,3 +29,20 @@ export class ApiResponseOkDto<T> {
     this.data = data;
   }
 }
+
+export class ApiResponseDataFindAllMeta {
+  @ApiProperty()
+  currentPage: number;
+
+  @ApiProperty()
+  nextPage: number | null;
+
+  @ApiProperty()
+  totalPage: number;
+
+  @ApiProperty()
+  totalItems: number;
+
+  @ApiProperty()
+  limit: number;
+}

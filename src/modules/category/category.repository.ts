@@ -21,7 +21,7 @@ export class CategoryRepository {
     return this.prisma.$transaction(async (ctx) => {
       const record = await ctx.category.create({
         data: body,
-        select: { id: true },
+        select: { id: true, slug: true, name: true },
       });
 
       // event

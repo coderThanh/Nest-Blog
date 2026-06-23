@@ -15,12 +15,15 @@ import { plainToInstance } from 'class-transformer';
 import {
   Category,
   CategoryFindAll,
+  CategoryRelation,
 } from '@/modules/category/entities/category.entity';
-import { ApiCustomResponseOK } from '@/common/decorator/api-response-ok';
+import {
+  ApiCustomResponseOK,
+  ApiCustomResponseOKFindAll,
+} from '@/common/decorator/api-response-ok';
 import { ApiExtraModels } from '@nestjs/swagger';
-import { ApiResponseOkDto } from '@/shared/dto';
+import { ApiResponseDataFindAllMeta, ApiResponseOkDto } from '@/shared/dto';
 import { FindAllCategoryDto } from '@/modules/category/dto/find-all-category.dto';
-import { ParseIntPipeCustom } from '@/common/pipes';
 import { BaseFindAllData, FindAllDataMeta } from '@/shared/types';
 import { DatabaseUltil } from '@/common/ultils';
 
@@ -29,11 +32,15 @@ export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
   @Post()
+  @ApiExtraModels(ApiResponseOkDto, CategoryRelation)
+  @ApiCustomResponseOK(CategoryRelation)
   async create(@Body() createCategoryDto: CreateCategoryDto) {
     return await this.categoryService.create(createCategoryDto);
   }
 
   @Get()
+  @ApiExtraModels(ApiResponseOkDto, CategoryFindAll, ApiResponseDataFindAllMeta)
+  @ApiCustomResponseOKFindAll(CategoryFindAll)
   async findAll(@Query() query: FindAllCategoryDto) {
     const { items, total } = await this.categoryService.findAllAndCount(query);
 

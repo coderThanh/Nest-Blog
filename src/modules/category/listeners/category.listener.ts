@@ -16,7 +16,11 @@ export class CategoryEventListener {
       tx,
     });
 
-    await tx.category.update({ data: { path }, where: { id: categoryId } });
+    await tx.category.update({
+      data: { path },
+      where: { id: categoryId },
+      select: { id: true },
+    });
   }
 
   //

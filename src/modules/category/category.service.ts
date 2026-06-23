@@ -9,10 +9,12 @@ import { Category } from '@/modules/category/entities/category.entity';
 import { CategoryOrderBy } from '@/modules/category/category.enum';
 import { CategoryRepository } from '@/modules/category/category.repository';
 import { CreateCategoryDto } from './dto/create-category.dto';
+import { FileEntity } from '@/modules/file/entities/file.entity';
 import { FindAllCategoryDto } from '@/modules/category/dto/find-all-category.dto';
 import { OrderDir } from '@/common/enum';
 import { Prisma } from '@prisma/client';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import { User } from '@/modules/user/entities/user.entity';
 
 @Injectable()
 export class CategoryService {
@@ -52,6 +54,8 @@ export class CategoryService {
         parent: {
           select: Category.selectCategoryRelation,
         },
+        thumbnail: { select: FileEntity.selectRelation },
+        createdByUser: { select: User.selectRelation },
       },
     });
   }
@@ -59,6 +63,7 @@ export class CategoryService {
   async update(id: number, updateCategoryDto: UpdateCategoryDto) {
     const current = await this.categoryRepo.findUniqueOrThrow({
       where: { id },
+      select: { parentId: true, id: true, slug: true },
     });
 
     if (id === updateCategoryDto.parentId) {
@@ -139,7 +144,7 @@ export class CategoryService {
     return await DatabaseUltil.generateSlugFromDBOrthrow(
       defaultSlug,
       findRecordBySlug,
-      'slug',
+      Prisma.CategoryScalarFieldEnum.slug,
     );
   }
 
@@ -183,8 +188,9 @@ export class CategoryService {
     return {
       where: CategoryService.getFindManyWhere(query),
       include: {
-        thumbnail: true,
         parent: { select: Category.selectCategoryRelation },
+        thumbnail: { select: FileEntity.selectRelation },
+        createdByUser: { select: User.selectRelation },
       },
       orderBy: CategoryService.getOrderBy(orderBy, orderDir),
       take: limit,

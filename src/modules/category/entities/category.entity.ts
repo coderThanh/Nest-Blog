@@ -1,6 +1,6 @@
 import { Expose, Type } from 'class-transformer';
 
-import { File } from '@/modules/file/entities/file.entity';
+import { FileEntity } from '@/modules/file/entities/file.entity';
 import { PickType } from '@nestjs/swagger';
 import { Prisma } from '@prisma/client';
 import { User } from '@/modules/user/entities/user.entity';
@@ -22,7 +22,7 @@ export class Category {
   thumbnailId: string | null;
 
   @Expose()
-  thumbnail: File | null;
+  thumbnail: FileEntity | null;
 
   @Expose()
   parentId: number | null;
@@ -50,6 +50,7 @@ export class Category {
   @Expose()
   createdByUser: User | null;
 
+  //
   public static selectCategoryRelation: Prisma.CategorySelect = {
     id: true,
     name: true,
