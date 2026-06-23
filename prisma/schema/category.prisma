@@ -2,7 +2,7 @@ model Category {
     id          Int     @id @default(autoincrement())
     name        String
     slug        String  @unique @default(dbgenerated())
-    search      String? @default(dbgenerated())
+    search      String? @default(dbgenerated("lower(immute_unaccent(name))"))
     path        String @default("")
     description String?
 
