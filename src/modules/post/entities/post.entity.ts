@@ -1,13 +1,13 @@
-import { Expose, Type } from 'class-transformer';
+import { ApiProperty, PickType } from '@nestjs/swagger';
+import { Expose, Transform, Type } from 'class-transformer';
 import { Prisma, RecordStatus } from '@prisma/client';
 
 import { Category } from '@/modules/category/entities/category.entity';
-import { PickType } from '@nestjs/swagger';
 import { User } from '@/modules/user/entities/user.entity';
 
 export class PostEntity {
   @Expose()
-  id: number;
+  id: string;
 
   @Expose()
   name: string;
@@ -33,6 +33,13 @@ export class PostEntity {
   thumbnail: File | null;
 
   @Expose()
+  @Transform(({ obj }: { obj: PostEntity }) => {
+    if (obj.categories === undefined) return undefined;
+    return obj.categories?.map((cat) => cat.id) || [];
+  })
+  categoryIds?: number[];
+
+  @Expose()
   @Type(() => Category)
   categories: Category[] | null;
 
@@ -54,6 +61,17 @@ export class PostEntity {
     name: true,
     slug: true,
   };
+
+  public static selectFindAll: Prisma.PostSelect = {
+    id: true,
+    name: true,
+    slug: true,
+    status: true,
+    thumbnailId: true,
+    createdAt: true,
+    updatedAt: true,
+    createdBy: true,
+  };
 }
 
 export class PostFindAll extends PickType(PostEntity, [
@@ -61,7 +79,6 @@ export class PostFindAll extends PickType(PostEntity, [
   'name',
   'slug',
   'status',
-  'shortDescription',
   'categories',
   'thumbnailId',
   'thumbnail',

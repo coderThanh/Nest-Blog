@@ -23,6 +23,9 @@ import {
 } from '@/modules/post/entities/post.entity';
 import { ApiExtraModels, ApiOkResponse } from '@nestjs/swagger';
 import { ApiResponseDataFindAllMeta, ApiResponseOkDto } from '@/shared/dto';
+import { plainToInstance } from 'class-transformer';
+import { BaseFindAllData } from '@/shared/types';
+import { DatabaseUltil } from '@/common/ultils';
 
 @Controller('posts')
 export class PostController {
@@ -31,31 +34,60 @@ export class PostController {
   @Post()
   @ApiExtraModels(ApiResponseOkDto, PostRelation)
   @ApiCustomResponseOK(PostRelation)
-  create(@Body() createPostDto: CreatePostDto) {
-    return this.postService.create(createPostDto);
+  async create(@Body() createPostDto: CreatePostDto) {
+    const record = await this.postService.create(createPostDto);
+    return plainToInstance(PostEntity, record, {
+      excludeExtraneousValues: true,
+    });
   }
 
   @Get()
   @ApiExtraModels(ApiResponseOkDto, PostFindAll, ApiResponseDataFindAllMeta)
   @ApiCustomResponseOKFindAll(PostFindAll)
-  findAll(@Query() query: FindAllPostDto) {
-    return this.postService.findAll();
+  async findAll(@Query() query: FindAllPostDto) {
+    const { items, total } = await this.postService.findAllAndCount(query);
+
+    const result: BaseFindAllData = {
+      items: items?.map((item) =>
+        plainToInstance(PostEntity, item, {
+          excludeExtraneousValues: true,
+        }),
+      ),
+      meta: DatabaseUltil.getPaginationMeta({
+        currentPage: query.page,
+        limit: query.limit,
+        totalItems: total,
+      }),
+    };
+    return result;
   }
 
   @Get(':slug')
   @ApiExtraModels(ApiResponseOkDto, PostEntity)
   @ApiCustomResponseOK(PostEntity)
-  findOne(@Param('slug') slug: string) {
-    return this.postService.findOne(slug);
+  async findOne(@Param('slug') slug: string) {
+    const record = await this.postService.findOne(slug);
+    return plainToInstance(PostEntity, record, {
+      excludeExtraneousValues: true,
+    });
   }
 
   @Patch(':slug')
-  update(@Param('slug') slug: string, @Body() updatePostDto: UpdatePostDto) {
-    return this.postService.update(slug, updatePostDto);
+  async update(
+    @Param('slug') slug: string,
+    @Body() updatePostDto: UpdatePostDto,
+  ) {
+    const record = await this.postService.update(slug, updatePostDto);
+    return plainToInstance(PostEntity, record, {
+      excludeExtraneousValues: true,
+    });
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.postService.remove(id);
+  async remove(@Param('id') id: string) {
+    const record = await this.postService.remove(id);
+    return plainToInstance(PostEntity, record, {
+      excludeExtraneousValues: true,
+    });
   }
 }

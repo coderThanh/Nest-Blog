@@ -64,14 +64,11 @@ export class Category {
     name: true,
     slug: true,
     thumbnailId: true,
-    thumbnail: true,
     parentId: true,
-    parent: true,
     path: true,
     createdAt: true,
     updatedAt: true,
     createdBy: true,
-    createdByUser: true,
   };
 }
 

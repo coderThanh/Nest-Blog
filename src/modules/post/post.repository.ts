@@ -48,7 +48,7 @@ export class PostRepository {
   async findManyAndCount(args: Prisma.PostFindManyArgs) {
     const { where } = args;
 
-    const [items, total] = await this.prisma.$transaction([
+    const [items, total] = await Promise.all([
       this.prisma.post.findMany(args),
       this.prisma.post.count({ where }),
     ]);

@@ -1,15 +1,15 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { DatabaseUltil, ValidateMessage } from '@/common/ultils';
+import { DatabaseUltil, removeVietnameseAccents } from '@/common/ultils';
 
 import { Category } from '@/modules/category/entities/category.entity';
-import { CategoryRepository } from '@/modules/category/category.repository';
 import { CreatePostDto } from './dto/create-post.dto';
 import { FileEntity } from '@/modules/file/entities/file.entity';
+import { FindAllPostDto } from '@/modules/post/dto/find-all-post.dto';
+import { Injectable } from '@nestjs/common';
+import { PostEntity } from '@/modules/post/entities/post.entity';
 import { PostRepository } from '@/modules/post/post.repository';
 import { Prisma } from '@prisma/client';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { User } from '@/modules/user/entities/user.entity';
-import { notEqual } from 'node:assert';
 
 @Injectable()
 export class PostService {
@@ -25,22 +25,20 @@ export class PostService {
     });
   }
 
-  findAll() {
-    return `This action returns all post`;
+  async findAll(query: FindAllPostDto) {
+    return this.postRepo.findMany(PostService.getCommonFindAllOptions(query));
   }
 
-  findAllAndCount() {
-    return `This action returns all post`;
+  async findAllAndCount(query: FindAllPostDto) {
+    return this.postRepo.findManyAndCount(
+      PostService.getCommonFindAllOptions(query),
+    );
   }
 
   findOne(slug: string) {
     return this.postRepo.findUnique({
       where: { slug },
-      include: {
-        categories: { select: Category.selectCategoryRelation },
-        thumbnail: { select: FileEntity.selectRelation },
-        createdByUser: { select: User.selectRelation },
-      },
+      include: PostService.getCommonIncludeArg,
     });
   }
 
@@ -79,5 +77,57 @@ export class PostService {
       findRecordBySlug,
       Prisma.PostScalarFieldEnum.slug,
     );
+  }
+
+  static getCommonIncludeArg: Prisma.PostInclude = {
+    thumbnail: { select: FileEntity.selectRelation },
+    categories: { select: Category.selectCategoryRelation },
+    createdByUser: { select: User.selectRelation },
+  };
+
+  static getCommonFindAllWhere(query: FindAllPostDto): Prisma.PostWhereInput[] {
+    const { ids, excludeIds, categoryIds, categoryPath, search } = query;
+
+    const andCondition: Prisma.PostWhereInput[] = [];
+
+    if (ids?.length) andCondition.push({ id: { in: ids } });
+
+    if (excludeIds?.length) andCondition.push({ id: { notIn: excludeIds } });
+
+    if (categoryIds?.length)
+      andCondition.push({ categories: { some: { id: { in: categoryIds } } } });
+
+    if (categoryPath)
+      andCondition.push({
+        categories: { some: { path: { startsWith: categoryPath } } },
+      });
+
+    if (search)
+      andCondition.push({
+        search: { contains: removeVietnameseAccents(search).toLowerCase() },
+      });
+
+    return andCondition;
+  }
+
+  static getCommonFindAllOptions(
+    query: FindAllPostDto,
+  ): Prisma.PostFindManyArgs {
+    const { page, limit, orderDir, orderBy } = query;
+
+    const order: Prisma.PostOrderByWithRelationInput = {
+      [orderBy as Prisma.PostScalarFieldEnum]: orderDir,
+    };
+
+    return {
+      where: { AND: this.getCommonFindAllWhere(query) },
+      select: {
+        ...PostEntity.selectFindAll,
+        ...PostService.getCommonIncludeArg,
+      },
+      orderBy: order,
+      take: limit,
+      skip: DatabaseUltil.getSkip(page, limit),
+    };
   }
 }
