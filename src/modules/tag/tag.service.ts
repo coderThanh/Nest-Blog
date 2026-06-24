@@ -22,15 +22,23 @@ export class TagService {
   ) {}
 
   async create(createTagDto: CreateTagDto) {
-    const slug = await this.generateSlugOrThrow(createTagDto.slug);
+    const [slug] = await Promise.all([
+      this.dbValidate.generateUniqueSlugOrThrow({
+        modelName: Prisma.ModelName.Tag,
+        fieldName: 'slug',
+        slug: createTagDto.slug,
+        columnName: Prisma.TagScalarFieldEnum.slug,
+      }),
 
-    await this.dbValidate.validateUniqueOrThrow(
-      Prisma.ModelName.Tag,
-      {
-        name: createTagDto.name,
-      },
-      'name',
-    );
+      //
+      this.dbValidate.validateUniqueOrThrow(
+        Prisma.ModelName.Tag,
+        {
+          name: createTagDto.name,
+        },
+        'name',
+      ),
+    ]);
 
     return this.tagRepo.create({
       ...createTagDto,
@@ -72,7 +80,15 @@ export class TagService {
     let newSlug: string | undefined;
 
     if (updateTagDto.slug && record.slug !== updateTagDto.slug) {
-      newSlug = await this.generateSlugOrThrow(updateTagDto.slug, id);
+      newSlug = await this.dbValidate.generateUniqueSlugOrThrow({
+        modelName: Prisma.ModelName.Tag,
+        fieldName: 'slug',
+        slug: updateTagDto.slug,
+        columnName: Prisma.TagScalarFieldEnum.slug,
+        valueWhereMore: {
+          id: { not: id },
+        },
+      });
     }
 
     if (updateTagDto.name && updateTagDto.name !== record.name) {
@@ -97,23 +113,6 @@ export class TagService {
 
   static getInclueArg(): Prisma.TagInclude {
     return { createdByUser: { select: User.selectRelation } };
-  }
-
-  //
-  private async generateSlugOrThrow(
-    defaultSlug: string,
-    id?: string,
-  ): Promise<string> {
-    const fnFind = async (slug: string) =>
-      await this.tagRepo.findFirst({
-        where: { slug, id: id ? { not: id } : undefined },
-      });
-
-    return await DatabaseValidate.generateSlugFromDBOrthrow(
-      defaultSlug,
-      fnFind,
-      Prisma.TagScalarFieldEnum.slug,
-    );
   }
 
   //

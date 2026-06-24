@@ -1,7 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import {
   DatabaseUltil,
-  DatabaseValidate,
   ValidateMessage,
   removeVietnameseAccents,
 } from '@/common/ultils';
@@ -26,10 +25,14 @@ export class CategoryService {
   ) {}
 
   async create(createCategoryDto: CreateCategoryDto) {
-    // check slug
-    const slug = await this.getSlugUnqiueOrThrow(createCategoryDto.slug);
-
-    await Promise.all([
+    const [slug] = await Promise.all([
+      // check slug
+      this.dbValidate.generateUniqueSlugOrThrow({
+        modelName: Prisma.ModelName.Category,
+        fieldName: 'slug',
+        slug: createCategoryDto.slug,
+        columnName: Prisma.TagScalarFieldEnum.slug,
+      }),
       // check unique parentId + name
       this.dbValidate.validateUniqueOrThrow(
         Prisma.ModelName.Category,
@@ -85,11 +88,6 @@ export class CategoryService {
   }
 
   async update(id: number, updateCategoryDto: UpdateCategoryDto) {
-    const current = await this.categoryRepo.findUniqueOrThrow({
-      where: { id },
-      select: { parentId: true, id: true, slug: true },
-    });
-
     //
     if (id === updateCategoryDto.parentId) {
       throw new BadRequestException(
@@ -100,7 +98,23 @@ export class CategoryService {
       );
     }
 
-    await Promise.all([
+    const current = await this.categoryRepo.findUniqueOrThrow({
+      where: { id },
+      select: { parentId: true, id: true, slug: true },
+    });
+
+    const [slug] = await Promise.all([
+      // check slug
+      updateCategoryDto.slug && current.slug !== updateCategoryDto.slug
+        ? this.dbValidate.generateUniqueSlugOrThrow({
+            modelName: Prisma.ModelName.Category,
+            fieldName: 'slug',
+            slug: updateCategoryDto.slug,
+            columnName: Prisma.TagScalarFieldEnum.slug,
+            valueWhereMore: { id: { not: id } },
+          })
+        : undefined,
+
       // Cần lấy parentId hiện tại hoặc từ DTO để validate
       updateCategoryDto.name &&
         this.dbValidate.validateUniqueOrThrow(
@@ -125,19 +139,9 @@ export class CategoryService {
         ),
     ]);
 
-    // check slug if new slug in body
-    let uniqueSlugNew: string | undefined;
-
-    if (updateCategoryDto.slug && current.slug !== updateCategoryDto.slug) {
-      uniqueSlugNew = await this.getSlugUnqiueOrThrow(
-        updateCategoryDto.slug,
-        current.id,
-      );
-    }
-
     return await this.categoryRepo.patch(id, {
       ...updateCategoryDto,
-      slug: uniqueSlugNew,
+      slug: slug,
       createdBy: null,
     });
   }
@@ -146,24 +150,7 @@ export class CategoryService {
     return await this.categoryRepo.deleted(id);
   }
 
-  private async getSlugUnqiueOrThrow(
-    defaultSlug: string,
-    id?: number,
-  ): Promise<string> {
-    const findRecordBySlug = async (slug: string) => {
-      return await this.categoryRepo.findFirst({
-        where: { slug, id: id ? { not: id } : undefined },
-        select: { id: true },
-      });
-    };
-
-    return await DatabaseValidate.generateSlugFromDBOrthrow(
-      defaultSlug,
-      findRecordBySlug,
-      Prisma.CategoryScalarFieldEnum.slug,
-    );
-  }
-
+  //
   public static getFindManyWhere(
     query: FindAllCategoryDto,
   ): Prisma.CategoryWhereInput | undefined {

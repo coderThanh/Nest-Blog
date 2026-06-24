@@ -1,8 +1,4 @@
-import {
-  DatabaseUltil,
-  DatabaseValidate,
-  removeVietnameseAccents,
-} from '@/common/ultils';
+import { DatabaseUltil, removeVietnameseAccents } from '@/common/ultils';
 
 import { Category } from '@/modules/category/entities/category.entity';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -25,9 +21,15 @@ export class PostService {
   ) {}
 
   async create(createPostDto: CreatePostDto) {
-    const slug = await this.generateSlugOrThrow(createPostDto.slug);
-
-    await Promise.all([
+    const [slug] = await Promise.all([
+      // check slug
+      this.dbValidate.generateUniqueSlugOrThrow({
+        modelName: Prisma.ModelName.Post,
+        fieldName: 'slug',
+        slug: createPostDto.slug,
+        columnName: Prisma.TagScalarFieldEnum.slug,
+      }),
+      //
       createPostDto.categoryIds &&
         this.dbValidate.validateExistOrThrow(
           Prisma.ModelName.Category,
@@ -86,15 +88,19 @@ export class PostService {
       select: { slug: true, id: true },
     });
 
-    //
-    let newSlug: string | undefined;
-
-    if (updatePostDto.slug && curr.slug !== updatePostDto.slug) {
-      newSlug = await this.generateSlugOrThrow(updatePostDto.slug, curr.id);
-    }
-
     // validate
-    await Promise.all([
+    const [slug] = await Promise.all([
+      // check slug
+      updatePostDto.slug && curr.slug !== updatePostDto.slug
+        ? this.dbValidate.generateUniqueSlugOrThrow({
+            modelName: Prisma.ModelName.Post,
+            fieldName: 'slug',
+            slug: updatePostDto.slug,
+            columnName: Prisma.TagScalarFieldEnum.slug,
+            valueWhereMore: { id: { not: id } },
+          })
+        : undefined,
+      //
       updatePostDto.categoryIds &&
         this.dbValidate.validateExistOrThrow(
           Prisma.ModelName.Category,
@@ -112,27 +118,12 @@ export class PostService {
 
     return await this.postRepo.patch(curr.id, {
       ...updatePostDto,
-      slug: newSlug,
+      slug,
     });
   }
 
   async remove(id: string) {
     return await this.postRepo.delete(id);
-  }
-
-  private async generateSlugOrThrow(defaultSlug: string, id?: string) {
-    const findRecordBySlug = async (slug: string) => {
-      return await this.postRepo.findFirst({
-        where: { slug, id: id ? { not: id } : undefined },
-        select: { id: true },
-      });
-    };
-
-    return DatabaseValidate.generateSlugFromDBOrthrow(
-      defaultSlug,
-      findRecordBySlug,
-      Prisma.PostScalarFieldEnum.slug,
-    );
   }
 
   static getCommonIncludeArg: Prisma.PostInclude = {
