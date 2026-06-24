@@ -13,51 +13,71 @@ export class PostRepository {
   async create(body: AuditCreate<CreatePostDto>) {
     const { categoryIds, ...rest } = body;
 
-    return await this.prisma.post.create({
+    return this.prisma.post.create({
       data: {
         ...rest,
         categories: categoryIds
-          ? { set: categoryIds.map((id) => ({ id })) }
+          ? { connect: categoryIds.map((id) => ({ id })) }
           : undefined,
-      } as Prisma.PostUncheckedCreateInput,
-      select: { id: true },
+      },
+      select: { id: true, slug: true, name: true },
     });
   }
 
   async patch(id: Post['id'], body: AuditUpdate<UpdatePostDto>) {
     const { categoryIds, ...rest } = body;
 
-    return await this.prisma.post.update({
+    return this.prisma.post.update({
       data: {
         ...rest,
         categories:
           categoryIds !== undefined
             ? categoryIds === null
-              ? { set: null }
+              ? { set: [] }
               : { set: categoryIds.map((id) => ({ id })) }
             : undefined,
-      } as Prisma.PostUncheckedUpdateInput,
+      },
       where: { id },
     });
   }
 
   async findMany(args: Prisma.PostFindManyArgs) {
-    return await this.prisma.post.findMany(args);
+    return this.prisma.post.findMany(args);
+  }
+
+  async findManyAndCount(args: Prisma.PostFindManyArgs) {
+    const { where } = args;
+
+    const [items, total] = await this.prisma.$transaction([
+      this.prisma.post.findMany(args),
+      this.prisma.post.count({ where }),
+    ]);
+
+    return { items, total };
   }
 
   async findUnique(args: Prisma.PostFindUniqueArgs) {
-    return await this.prisma.post.findUnique(args);
+    return this.prisma.post.findUnique(args);
   }
 
   async findUniqueOrThrow(args: Prisma.PostFindUniqueArgs) {
-    return await this.prisma.post.findUniqueOrThrow(args);
+    return this.prisma.post.findUniqueOrThrow(args);
   }
 
-  async deleted(id: Post['id']) {
-    return await this.prisma.post.delete({
+  async findFirst(args: Prisma.PostFindFirstArgs) {
+    return this.prisma.post.findFirst(args);
+  }
+
+  async findFirstOrThrow(args: Prisma.PostFindFirstArgs) {
+    return this.prisma.post.findFirstOrThrow(args);
+  }
+
+  async delete(id: Post['id']) {
+    return this.prisma.post.delete({
       where: {
         id,
       },
+      select: { id: true },
     });
   }
 }

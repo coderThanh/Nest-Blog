@@ -57,7 +57,9 @@ export class PrismaClientExceptionFilter implements ExceptionFilter {
       // P2025: An operation failed because it depends on one or more records that were required but not found
       case 'P2025':
         statusCode = HttpStatus.NOT_FOUND;
-        message = (exception.meta?.cause as string) || 'Không tìm thấy bản ghi';
+        message =
+          (exception.meta?.cause as string) ||
+          'Không tìm thấy bản ghi hoặc bản ghi quan hệ';
         break;
 
       // P2003: Foreign key constraint failed on the field
