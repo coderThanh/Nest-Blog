@@ -1,0 +1,46 @@
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
+
+import { Prisma } from '@prisma/client';
+import { PrismaService } from '@/prisma/prisma.service';
+import { ValidateMessage } from '@/common/ultils';
+
+@Injectable()
+export class DbValidateService {
+  constructor(private readonly prisma: PrismaService) {}
+
+  async validateExistOrThrow<T>(
+    modelName: Prisma.ModelName,
+    id: Array<T> | T,
+    fieldName: string,
+  ) {
+    const modelService: any = this.prisma[modelName];
+
+    if (!modelService)
+      throw new InternalServerErrorException(
+        `Model ${modelName} không tồn tại.`,
+      );
+
+    const idArray = Array.isArray(id) ? id : [id];
+
+    if (idArray.length === 0) return;
+
+    const count: number = await modelService.count({
+      where: { id: { in: idArray } },
+    });
+
+    if (idArray.length !== count) {
+      throw new BadRequestException(
+        ValidateMessage.exceptionThrowErrorsField(
+          fieldName,
+          Array.isArray(id)
+            ? ValidateMessage.someNotExist().rawMsg()
+            : ValidateMessage.notExist().rawMsg(),
+        ),
+      );
+    }
+  }
+}

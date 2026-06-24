@@ -6,6 +6,7 @@ import {
 
 import { Category } from '@/modules/category/entities/category.entity';
 import { CreatePostDto } from './dto/create-post.dto';
+import { DbValidateService } from '@/prisma/db-validate.service';
 import { FileEntity } from '@/modules/file/entities/file.entity';
 import { FindAllPostDto } from '@/modules/post/dto/find-all-post.dto';
 import { Injectable } from '@nestjs/common';
@@ -18,10 +19,29 @@ import { User } from '@/modules/user/entities/user.entity';
 
 @Injectable()
 export class PostService {
-  constructor(private readonly postRepo: PostRepository) {}
+  constructor(
+    private readonly postRepo: PostRepository,
+    private readonly dbValidate: DbValidateService,
+  ) {}
 
   async create(createPostDto: CreatePostDto) {
     const slug = await this.generateSlugOrThrow(createPostDto.slug);
+
+    await Promise.all([
+      createPostDto.categoryIds &&
+        this.dbValidate.validateExistOrThrow(
+          Prisma.ModelName.Category,
+          createPostDto.categoryIds,
+          'categoryIds',
+        ),
+      //
+      createPostDto.tagIds &&
+        this.dbValidate.validateExistOrThrow(
+          Prisma.ModelName.Tag,
+          createPostDto.tagIds,
+          'tagIds',
+        ),
+    ]);
 
     return await this.postRepo.create({
       ...createPostDto,
@@ -66,11 +86,29 @@ export class PostService {
       select: { slug: true, id: true },
     });
 
+    //
     let newSlug: string | undefined;
 
     if (updatePostDto.slug && curr.slug !== updatePostDto.slug) {
       newSlug = await this.generateSlugOrThrow(updatePostDto.slug, curr.id);
     }
+
+    // validate
+    await Promise.all([
+      updatePostDto.categoryIds &&
+        this.dbValidate.validateExistOrThrow(
+          Prisma.ModelName.Category,
+          updatePostDto.categoryIds,
+          'categoryIds',
+        ),
+      //
+      updatePostDto.tagIds &&
+        this.dbValidate.validateExistOrThrow(
+          Prisma.ModelName.Tag,
+          updatePostDto.tagIds,
+          'tagIds',
+        ),
+    ]);
 
     return await this.postRepo.patch(curr.id, {
       ...updatePostDto,

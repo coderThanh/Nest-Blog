@@ -10,6 +10,7 @@ import { Category } from '@/modules/category/entities/category.entity';
 import { CategoryOrderBy } from '@/modules/category/category.enum';
 import { CategoryRepository } from '@/modules/category/category.repository';
 import { CreateCategoryDto } from './dto/create-category.dto';
+import { DbValidateService } from '@/prisma/db-validate.service';
 import { FileEntity } from '@/modules/file/entities/file.entity';
 import { FindAllCategoryDto } from '@/modules/category/dto/find-all-category.dto';
 import { OrderDir } from '@/common/enum';
@@ -19,24 +20,29 @@ import { User } from '@/modules/user/entities/user.entity';
 
 @Injectable()
 export class CategoryService {
-  constructor(private readonly categoryRepo: CategoryRepository) {}
+  constructor(
+    private readonly categoryRepo: CategoryRepository,
+    private readonly dbValidate: DbValidateService,
+  ) {}
 
   async create(createCategoryDto: CreateCategoryDto) {
     // check slug
     const slug = await this.getSlugUnqiueOrThrow(createCategoryDto.slug);
 
-    // check unique parentId + name
-    await this.validateUniqueName(
-      createCategoryDto.name,
-      createCategoryDto.parentId ?? null,
-    );
-
-    if (createCategoryDto.parentId) {
-      await this.validateCategoryExit(
-        createCategoryDto.parentId,
-        Prisma.CategoryScalarFieldEnum.parentId,
-      );
-    }
+    await Promise.all([
+      // check unique parentId + name
+      this.validateUniqueName(
+        createCategoryDto.name,
+        createCategoryDto.parentId ?? null,
+      ),
+      //
+      createCategoryDto.parentId &&
+        this.dbValidate.validateExistOrThrow(
+          Prisma.ModelName.Category,
+          createCategoryDto.parentId,
+          'parentId',
+        ),
+    ]);
 
     return await this.categoryRepo.create({
       ...createCategoryDto,
@@ -90,26 +96,25 @@ export class CategoryService {
       );
     }
 
-    if (updateCategoryDto.name) {
+    await Promise.all([
       // Cần lấy parentId hiện tại hoặc từ DTO để validate
-      await this.validateUniqueName(
-        updateCategoryDto.name,
-        updateCategoryDto.parentId !== undefined
-          ? updateCategoryDto.parentId
-          : (current.parentId ?? null),
-        id,
-      );
-    }
-
-    if (
+      updateCategoryDto.name &&
+        this.validateUniqueName(
+          updateCategoryDto.name,
+          updateCategoryDto.parentId !== undefined
+            ? updateCategoryDto.parentId
+            : (current.parentId ?? null),
+          id,
+        ),
+      //
       updateCategoryDto.parentId &&
-      updateCategoryDto.parentId !== current.parentId
-    ) {
-      await this.validateCategoryExit(
-        updateCategoryDto.parentId,
-        Prisma.CategoryScalarFieldEnum.parentId,
-      );
-    }
+        updateCategoryDto.parentId !== current.parentId &&
+        this.dbValidate.validateExistOrThrow(
+          Prisma.ModelName.Category,
+          updateCategoryDto.parentId,
+          'parentId',
+        ),
+    ]);
 
     // check slug if new slug in body
     let uniqueSlugNew: string | undefined;
@@ -130,32 +135,6 @@ export class CategoryService {
 
   async remove(id: number) {
     return await this.categoryRepo.deleted(id);
-  }
-
-  // Validate
-  async validateCategoryExit(id: number, fieldName: string) {
-    const fn = async (id: number) =>
-      this.categoryRepo.findUnique({ where: { id }, select: { id: true } });
-
-    await DatabaseValidate.validateRecordExistOrThrow<number>(
-      id,
-      fn,
-      fieldName,
-    );
-  }
-
-  async validateCategoryEveryExit(ids: number[], fieldName: string) {
-    const fn = async (ids: number[]) =>
-      this.categoryRepo.findMany({
-        where: { id: { in: ids } },
-        select: { id: true },
-      });
-
-    await DatabaseValidate.validateRecordEveryExistOrThrow<number>(
-      ids,
-      fn,
-      fieldName,
-    );
   }
 
   //
