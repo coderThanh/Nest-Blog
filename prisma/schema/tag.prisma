@@ -1,6 +1,6 @@
 model Tag {
     id        String   @id @default(cuid())
-    name      String
+    name      String   @unique
     slug      String   @unique @default(dbgenerated())
     search    String   @default(dbgenerated())
     createdAt DateTime @default(now()) @map("created_at")
