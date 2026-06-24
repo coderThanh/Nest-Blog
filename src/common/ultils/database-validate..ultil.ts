@@ -45,20 +45,4 @@ export class DatabaseValidate {
 
     return slug;
   }
-
-  static async validateUniqueName(
-    findUnique: () => Promise<any>,
-    name: string,
-  ) {
-    const hasRecord = await findUnique();
-
-    if (hasRecord) {
-      throw new BadRequestException(
-        ValidateMessage.exceptionThrowErrorsField(
-          name,
-          ValidateMessage.wasExisted().rawMsg(),
-        ),
-      );
-    }
-  }
 }

@@ -31,9 +31,13 @@ export class CategoryService {
 
     await Promise.all([
       // check unique parentId + name
-      this.validateUniqueName(
-        createCategoryDto.name,
-        createCategoryDto.parentId ?? null,
+      this.dbValidate.validateUniqueOrThrow(
+        Prisma.ModelName.Category,
+        {
+          name: createCategoryDto.name,
+          parentId: createCategoryDto.parentId ?? null,
+        },
+        'name',
       ),
       //
       createCategoryDto.parentId &&
@@ -99,12 +103,17 @@ export class CategoryService {
     await Promise.all([
       // Cần lấy parentId hiện tại hoặc từ DTO để validate
       updateCategoryDto.name &&
-        this.validateUniqueName(
-          updateCategoryDto.name,
-          updateCategoryDto.parentId !== undefined
-            ? updateCategoryDto.parentId
-            : (current.parentId ?? null),
-          id,
+        this.dbValidate.validateUniqueOrThrow(
+          Prisma.ModelName.Category,
+          {
+            name: updateCategoryDto.name,
+            parentId:
+              updateCategoryDto.parentId !== undefined
+                ? updateCategoryDto.parentId
+                : (current.parentId ?? null),
+            id: { not: id },
+          },
+          'name',
         ),
       //
       updateCategoryDto.parentId &&
@@ -135,29 +144,6 @@ export class CategoryService {
 
   async remove(id: number) {
     return await this.categoryRepo.deleted(id);
-  }
-
-  //
-  private async validateUniqueName(
-    name: string,
-    parentId: number | null,
-    id?: Category['id'],
-  ) {
-    const fnCheck = async () =>
-      await this.categoryRepo.findFirst({
-        where: {
-          parentId: parentId ?? null,
-          name: name,
-          id: id
-            ? {
-                not: id,
-              }
-            : undefined,
-        },
-        select: { id: true },
-      });
-
-    await DatabaseValidate.validateUniqueName(fnCheck, 'name');
   }
 
   private async getSlugUnqiueOrThrow(

@@ -1,14 +1,14 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
 import {
   DatabaseUltil,
   DatabaseValidate,
-  ValidateMessage,
   removeVietnameseAccents,
 } from '@/common/ultils';
-import { Prisma, PrismaClient } from '@prisma/client';
 
 import { CreateTagDto } from './dto/create-tag.dto';
+import { DbValidateService } from '@/prisma/db-validate.service';
 import { FindAllTagDto } from '@/modules/tag/dto/find-all-tag.dto';
+import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { Tag } from '@/modules/tag/entities/tag.entity';
 import { TagRepository } from '@/modules/tag/tag.repository';
 import { UpdateTagDto } from './dto/update-tag.dto';
@@ -16,15 +16,21 @@ import { User } from '@/modules/user/entities/user.entity';
 
 @Injectable()
 export class TagService {
-  constructor(private readonly tagRepo: TagRepository) {}
+  constructor(
+    private readonly tagRepo: TagRepository,
+    private readonly dbValidate: DbValidateService,
+  ) {}
 
   async create(createTagDto: CreateTagDto) {
     const slug = await this.generateSlugOrThrow(createTagDto.slug);
 
-    await this.validateUniqueOrThrow({
-      value: createTagDto.name,
-      column: Prisma.TagScalarFieldEnum.name,
-    });
+    await this.dbValidate.validateUniqueOrThrow(
+      Prisma.ModelName.Tag,
+      {
+        name: createTagDto.name,
+      },
+      'name',
+    );
 
     return this.tagRepo.create({
       ...createTagDto,
@@ -70,10 +76,13 @@ export class TagService {
     }
 
     if (updateTagDto.name && updateTagDto.name !== record.name) {
-      await this.validateUniqueOrThrow({
-        value: updateTagDto.name,
-        column: Prisma.TagScalarFieldEnum.name,
-      });
+      await this.dbValidate.validateUniqueOrThrow(
+        Prisma.ModelName.Tag,
+        {
+          name: updateTagDto.name,
+        },
+        'name',
+      );
     }
 
     return this.tagRepo.patch(id, {
@@ -105,30 +114,6 @@ export class TagService {
       fnFind,
       Prisma.TagScalarFieldEnum.slug,
     );
-  }
-
-  private async validateUniqueOrThrow(params: {
-    value: any;
-    column: Prisma.TagScalarFieldEnum;
-    id?: string;
-  }) {
-    const { value, column, id } = params;
-
-    const record = await this.tagRepo.findFirst({
-      where: {
-        [column]: value,
-        id: id ? { not: id } : undefined,
-      },
-      select: { id: true },
-    });
-
-    if (record)
-      throw new BadRequestException(
-        ValidateMessage.exceptionThrowErrorsField(
-          column,
-          ValidateMessage.isUnique().rawMsg(),
-        ),
-      );
   }
 
   //

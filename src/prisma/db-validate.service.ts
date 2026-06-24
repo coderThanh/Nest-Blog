@@ -43,4 +43,32 @@ export class DbValidateService {
       );
     }
   }
+
+  async validateUniqueOrThrow(
+    modelName: Prisma.ModelName,
+    valueWhere: Record<string, any>,
+    fieldName: string,
+  ) {
+    const modelService: any = this.prisma[modelName];
+
+    if (!modelService) {
+      throw new InternalServerErrorException(
+        `Model ${modelName} không tồn tại.`,
+      );
+    }
+
+    const record = await modelService.findFirst({
+      where: valueWhere,
+      select: { id: true },
+    });
+
+    if (record) {
+      throw new BadRequestException(
+        ValidateMessage.exceptionThrowErrorsField(
+          fieldName,
+          ValidateMessage.isUnique().rawMsg(),
+        ),
+      );
+    }
+  }
 }
