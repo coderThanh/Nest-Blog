@@ -44,27 +44,23 @@ export class CategoryController {
   async findAll(@Query() query: FindAllCategoryDto) {
     const { items, total } = await this.categoryService.findAllAndCount(query);
 
-    const meta: FindAllDataMeta = DatabaseUltil.getPaginationMeta({
-      currentPage: query.page,
-      limit: query.limit,
-      totalItems: total,
-    });
-
-    const data: BaseFindAllData = {
+    return {
       items: plainToInstance(CategoryFindAll, items, {
         excludeExtraneousValues: true,
       }),
-      meta,
-    };
-
-    return data;
+      meta: DatabaseUltil.getPaginationMeta({
+        currentPage: query.page,
+        limit: query.limit,
+        totalItems: total,
+      }),
+    } as BaseFindAllData;
   }
 
   @Get(':slug')
   @ApiExtraModels(ApiResponseOkDto, Category)
   @ApiCustomResponseOK(Category)
   async findOne(@Param('slug') slug: string) {
-    const record = await this.categoryService.findOne(slug);
+    const record = await this.categoryService.findOneOrThrow(slug);
     return plainToInstance(Category, record, {
       excludeExtraneousValues: true,
     });

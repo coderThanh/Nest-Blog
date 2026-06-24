@@ -3,7 +3,7 @@ model Category {
     name        String
     slug        String  @unique @default(dbgenerated())
     search      String? @default(dbgenerated("lower(immute_unaccent(name))"))
-    path        String @default("")
+    path        String  @default("")
     description String?
 
     thumbnailId String? @map("thumbnail_id")

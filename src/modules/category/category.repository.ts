@@ -1,13 +1,14 @@
 import { AuditCreate, AuditUpdate } from '@/shared/types';
+import { Injectable, NotFoundException } from '@nestjs/common';
 
 import { CategoryCreatedEvent } from '@/modules/category/events/category-created.event';
 import { CategoryUpdatedEvent } from '@/modules/category/events/category-updated.event';
 import { CreateCategoryDto } from '@/modules/category/dto/create-category.dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '@/prisma/prisma.service';
 import { UpdateCategoryDto } from '@/modules/category/dto/update-category.dto';
+import { ValidateMessage } from '@/common/ultils';
 import { validateOrReject } from 'class-validator';
 
 @Injectable()
@@ -95,7 +96,12 @@ export class CategoryRepository {
   }
 
   async findFirstOrThrow(args: Prisma.CategoryFindFirstArgs) {
-    return this.prisma.category.findFirstOrThrow(args);
+    const record = await this.prisma.category.findFirst(args);
+
+    if (!record)
+      throw new NotFoundException(ValidateMessage.notFound().rawMsg());
+
+    return record;
   }
 
   async findUnique(args: Prisma.CategoryFindUniqueArgs) {
@@ -103,7 +109,12 @@ export class CategoryRepository {
   }
 
   async findUniqueOrThrow(args: Prisma.CategoryFindUniqueArgs) {
-    return this.prisma.category.findUniqueOrThrow(args);
+    const record = await this.prisma.category.findUnique(args);
+
+    if (!record)
+      throw new NotFoundException(ValidateMessage.notFound().rawMsg());
+
+    return record;
   }
 
   async deleted(id: number) {

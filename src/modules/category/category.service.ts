@@ -53,6 +53,13 @@ export class CategoryService {
   }
 
   async findOne(slug: string) {
+    return this.categoryRepo.findUnique({
+      where: { slug },
+      include: CategoryService.getCommonIncludeArg(),
+    });
+  }
+
+  async findOneOrThrow(slug: string) {
     return this.categoryRepo.findUniqueOrThrow({
       where: { slug },
       include: CategoryService.getCommonIncludeArg(),
