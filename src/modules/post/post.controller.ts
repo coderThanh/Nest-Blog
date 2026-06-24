@@ -21,7 +21,7 @@ import {
   PostFindAll,
   PostRelation,
 } from '@/modules/post/entities/post.entity';
-import { ApiExtraModels, ApiOkResponse } from '@nestjs/swagger';
+import { ApiExtraModels } from '@nestjs/swagger';
 import { ApiResponseDataFindAllMeta, ApiResponseOkDto } from '@/shared/dto';
 import { plainToInstance } from 'class-transformer';
 import { BaseFindAllData } from '@/shared/types';
@@ -47,7 +47,7 @@ export class PostController {
   async findAll(@Query() query: FindAllPostDto) {
     const { items, total } = await this.postService.findAllAndCount(query);
 
-    const result: BaseFindAllData = {
+    return {
       items: items?.map((item) =>
         plainToInstance(PostEntity, item, {
           excludeExtraneousValues: true,
@@ -58,26 +58,22 @@ export class PostController {
         limit: query.limit,
         totalItems: total,
       }),
-    };
-    return result;
+    } as BaseFindAllData;
   }
 
   @Get(':slug')
   @ApiExtraModels(ApiResponseOkDto, PostEntity)
   @ApiCustomResponseOK(PostEntity)
   async findOne(@Param('slug') slug: string) {
-    const record = await this.postService.findOne(slug);
+    const record = await this.postService.findOneOrThrow(slug);
     return plainToInstance(PostEntity, record, {
       excludeExtraneousValues: true,
     });
   }
 
-  @Patch(':slug')
-  async update(
-    @Param('slug') slug: string,
-    @Body() updatePostDto: UpdatePostDto,
-  ) {
-    const record = await this.postService.update(slug, updatePostDto);
+  @Patch(':id')
+  async update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
+    const record = await this.postService.update(id, updatePostDto);
     return plainToInstance(PostEntity, record, {
       excludeExtraneousValues: true,
     });

@@ -1,9 +1,9 @@
 import { ApiProperty, PickType } from '@nestjs/swagger';
 import { Expose, Transform, Type } from 'class-transformer';
-import { Prisma, RecordStatus } from '@prisma/client';
+import { Prisma, RecordStatus, Tag } from '@prisma/client';
+import { User, UserRelation } from '@/modules/user/entities/user.entity';
 
 import { Category } from '@/modules/category/entities/category.entity';
-import { User } from '@/modules/user/entities/user.entity';
 
 export class PostEntity {
   @Expose()
@@ -40,8 +40,18 @@ export class PostEntity {
   categoryIds?: number[];
 
   @Expose()
-  @Type(() => Category)
   categories: Category[] | null;
+
+  @Expose()
+  @Transform(({ obj }: { obj: PostEntity }) => {
+    if (obj.tags === undefined) return undefined;
+
+    return obj.tags?.map((tag) => tag.id);
+  })
+  tagIds: Tag['id'][] | null;
+
+  @Expose()
+  tags: Tag[] | null;
 
   @Expose()
   createdAt: string | null;
@@ -53,8 +63,7 @@ export class PostEntity {
   createdBy: string | null;
 
   @Expose()
-  @Type(() => User)
-  createdByUser: User | null;
+  createdByUser: UserRelation | null;
 
   public static selectRelation: Prisma.PostSelect = {
     id: true,

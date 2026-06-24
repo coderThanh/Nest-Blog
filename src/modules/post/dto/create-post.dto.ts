@@ -48,4 +48,12 @@ export class CreatePostDto {
   @ToNumber({ each: true })
   @IsOptional()
   categoryIds?: number[] | null;
+
+  @ApiPropertyOptional({ example: null, nullable: true })
+  @IsString({
+    message: ValidateMessage.isArrayString().exceptionMsg(),
+    each: true,
+  })
+  @IsOptional()
+  tagIds?: string[] | null;
 }

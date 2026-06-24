@@ -8,6 +8,7 @@ import { Injectable } from '@nestjs/common';
 import { PostEntity } from '@/modules/post/entities/post.entity';
 import { PostRepository } from '@/modules/post/post.repository';
 import { Prisma } from '@prisma/client';
+import { Tag } from '@/modules/tag/entities/tag.entity';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { User } from '@/modules/user/entities/user.entity';
 
@@ -38,13 +39,26 @@ export class PostService {
   findOne(slug: string) {
     return this.postRepo.findUnique({
       where: { slug },
-      include: PostService.getCommonIncludeArg,
+      include: {
+        ...PostService.getCommonIncludeArg,
+        tags: { select: Tag.selectRelation },
+      },
     });
   }
 
-  async update(slug: string, updatePostDto: UpdatePostDto) {
-    const curr = await this.postRepo.findUniqueOrThrow({
+  findOneOrThrow(slug: string) {
+    return this.postRepo.findUniqueOrThrow({
       where: { slug },
+      include: {
+        ...PostService.getCommonIncludeArg,
+        tags: { select: Tag.selectRelation },
+      },
+    });
+  }
+
+  async update(id: string, updatePostDto: UpdatePostDto) {
+    const curr = await this.postRepo.findUniqueOrThrow({
+      where: { id },
       select: { slug: true, id: true },
     });
 
