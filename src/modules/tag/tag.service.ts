@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import {
   DatabaseUltil,
+  DatabaseValidate,
   ValidateMessage,
   removeVietnameseAccents,
 } from '@/common/ultils';
@@ -99,7 +100,7 @@ export class TagService {
         where: { slug, id: id ? { not: id } : undefined },
       });
 
-    return await DatabaseUltil.generateSlugFromDBOrthrow(
+    return await DatabaseValidate.generateSlugFromDBOrthrow(
       defaultSlug,
       fnFind,
       Prisma.TagScalarFieldEnum.slug,

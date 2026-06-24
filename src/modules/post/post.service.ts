@@ -1,4 +1,8 @@
-import { DatabaseUltil, removeVietnameseAccents } from '@/common/ultils';
+import {
+  DatabaseUltil,
+  DatabaseValidate,
+  removeVietnameseAccents,
+} from '@/common/ultils';
 
 import { Category } from '@/modules/category/entities/category.entity';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -86,7 +90,7 @@ export class PostService {
       });
     };
 
-    return DatabaseUltil.generateSlugFromDBOrthrow(
+    return DatabaseValidate.generateSlugFromDBOrthrow(
       defaultSlug,
       findRecordBySlug,
       Prisma.PostScalarFieldEnum.slug,

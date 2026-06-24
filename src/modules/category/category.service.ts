@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import {
   DatabaseUltil,
+  DatabaseValidate,
   ValidateMessage,
   removeVietnameseAccents,
 } from '@/common/ultils';
@@ -133,7 +134,7 @@ export class CategoryService {
         select: { id: true },
       });
 
-    await DatabaseUltil.validateUniqueName(fnCheck, 'name');
+    await DatabaseValidate.validateUniqueName(fnCheck, 'name');
   }
 
   private async getSlugUnqiueOrThrow(
@@ -147,7 +148,7 @@ export class CategoryService {
       });
     };
 
-    return await DatabaseUltil.generateSlugFromDBOrthrow(
+    return await DatabaseValidate.generateSlugFromDBOrthrow(
       defaultSlug,
       findRecordBySlug,
       Prisma.CategoryScalarFieldEnum.slug,
