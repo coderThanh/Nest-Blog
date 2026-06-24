@@ -3,6 +3,7 @@ import { GenderEnum, Prisma } from '@prisma/client';
 
 import { Category } from '@/modules/category/entities/category.entity';
 import { FileEntity } from '@/modules/file/entities/file.entity';
+import { PickType } from '@nestjs/swagger';
 import { PostEntity } from '@/modules/post/entities/post.entity';
 
 export class User {
@@ -50,30 +51,33 @@ export class User {
   createdBy: string | null;
 
   @Expose()
-  @Type(() => User)
-  createdByUser: User | null;
+  createdByUser: UserRelation | null;
 
   @Expose()
   deletedBy: string | null;
 
   @Expose()
-  @Type(() => User)
-  deletedByUser: User | null;
+  deletedByUser: UserRelation | null;
 
   @Expose()
-  @Type(() => PostEntity)
   posts: PostEntity[] | null;
 
   @Expose()
-  @Type(() => FileEntity)
   files: FileEntity[] | null;
 
   @Expose()
-  @Type(() => Category)
   categories: Category[] | null;
 
   static selectRelation: Prisma.UserSelect = {
     id: true,
     name: true,
+    thumbnal: {
+      select: {
+        id: true,
+        path: true,
+      },
+    },
   };
 }
+
+export class UserRelation extends PickType(User, ['id', 'name', 'thumbnail']) {}

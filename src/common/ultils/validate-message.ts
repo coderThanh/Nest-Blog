@@ -112,6 +112,10 @@ export class ValidateMessage {
     return this.buildMessage(`không được vượt quá ${maxSize} phần tử`, name);
   }
 
+  static notFound(name: string = '') {
+    return this.buildMessage(`không tìm thấy bản ghi`, name);
+  }
+
   static matches(example: string = '', name: string = '') {
     return example
       ? this.buildMessage(`không đúng định dạng. Ví dụ: ${example}`, name)
@@ -120,6 +124,10 @@ export class ValidateMessage {
 
   static wasExisted(name: string = '') {
     return this.buildMessage(`đã tồn tại`, name);
+  }
+
+  static isUnique(name: string = '') {
+    return this.buildMessage('đã tồn tại', name);
   }
 
   static exceptionThrowErrorsField(field: string, message: string) {

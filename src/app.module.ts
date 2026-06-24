@@ -13,6 +13,7 @@ import { PostModule } from '@/modules/post/post.module';
 import { PrismaClientExceptionFilter } from './common/exception/prisma-exception.filter';
 import { PrismaModule } from '@/prisma/prisma.module';
 import { UserModule } from './modules/user/user.module';
+import { TagModule } from './modules/tag/tag.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { UserModule } from './modules/user/user.module';
     CategoryModule,
     FileModule,
     UserModule,
+    TagModule,
   ],
   controllers: [AppController],
   providers: [
