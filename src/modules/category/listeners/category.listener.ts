@@ -1,3 +1,4 @@
+import { Category } from '@/modules/category/entities/category.entity';
 import { CategoryCreatedEvent } from '@/modules/category/events/category-created.event';
 import { CategoryUpdatedEvent } from '@/modules/category/events/category-updated.event';
 import { Injectable } from '@nestjs/common';
@@ -19,7 +20,7 @@ export class CategoryEventListener {
     await tx.category.update({
       data: { path },
       where: { id: categoryId },
-      select: { id: true },
+      select: { id: true, slug: true },
     });
   }
 
@@ -37,7 +38,6 @@ export class CategoryEventListener {
     });
 
     // replace olpath form children
-
     await tx.$executeRaw`
       UPDATE "Category" 
       SET "path" = ${newPath} || SUBSTRING("path", LENGTH(${oldPath}) + 1) 
