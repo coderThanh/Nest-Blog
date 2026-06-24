@@ -15,6 +15,7 @@ model Post {
     createdByUser User?      @relation("postAuth", fields: [createdBy], references: [id], onDelete: SetNull)
     thumbnail     File?      @relation("postThumbnail", fields: [thumbnailId], references: [id], onDelete: SetNull)
     categories    Category[] @relation("PostToCategory")
+    tags          Tag[]      @relation("PostToTag")
 
     @@index([search(ops: raw("gin_trgm_ops"))], type: Gin)
 }

@@ -1,0 +1,15 @@
+model Tag {
+    id        String   @id @default(cuid())
+    name      String
+    slug      String   @unique @default(dbgenerated())
+    search    String   @default(dbgenerated())
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+    createdBy String?  @map("created_by")
+
+    // 
+    createdByUser User?  @relation("tagAuth", fields: [createdBy], references: [id], onDelete: SetNull)
+    posts         Post[] @relation("PostToTag")
+
+    @@index([search(ops: raw("gin_trgm_ops"))], type: Gin)
+}

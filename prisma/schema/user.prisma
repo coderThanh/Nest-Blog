@@ -1,24 +1,25 @@
 model User {
-    id           String    @id @default(cuid())
+    id           String      @id @default(cuid())
     name         String
     phone        String?
-    search       String?   @default(dbgenerated())
+    search       String?     @default(dbgenerated())
     email        String
     username     String
     dob          DateTime?
     gender       GenderEnum?
     verified     DateTime?
-    passwordHash String    @map("password_hash")
-    thumbnailId  String?   @map("thumbnail_id")
-    createdAt    DateTime  @default(now()) @map("created_at")
-    updatedAt    DateTime  @default(now()) @updatedAt @map("updated_at")
-    createdBy    String?   @map("created_by")
-    deletedAt    DateTime? @map("deleted_at")
-    deletedBy    String?   @map("deleted_by")
+    passwordHash String      @map("password_hash")
+    thumbnailId  String?     @map("thumbnail_id")
+    createdAt    DateTime    @default(now()) @map("created_at")
+    updatedAt    DateTime    @default(now()) @updatedAt @map("updated_at")
+    createdBy    String?     @map("created_by")
+    deletedAt    DateTime?   @map("deleted_at")
+    deletedBy    String?     @map("deleted_by")
 
     // 
     posts         Post[]     @relation("postAuth")
     users         User[]     @relation("userAuth")
+    tags          Tag[]      @relation("tagAuth")
     createdByUser User?      @relation("userAuth", fields: [createdBy], references: [id], onDelete: SetNull)
     thumbnal      File?      @relation("userThumbnail", fields: [thumbnailId], references: [id])
     files         File[]     @relation("fileAuth")
