@@ -50,13 +50,7 @@ export class CategoryService {
   async findOne(slug: string) {
     return this.categoryRepo.findUniqueOrThrow({
       where: { slug },
-      include: {
-        parent: {
-          select: Category.selectCategoryRelation,
-        },
-        thumbnail: { select: FileEntity.selectRelation },
-        createdByUser: { select: User.selectRelation },
-      },
+      include: CategoryService.getCommonIncludeArg(),
     });
   }
 
@@ -187,14 +181,19 @@ export class CategoryService {
 
     return {
       where: CategoryService.getFindManyWhere(query),
-      include: {
-        parent: { select: Category.selectCategoryRelation },
-        thumbnail: { select: FileEntity.selectRelation },
-        createdByUser: { select: User.selectRelation },
-      },
+      select: Category.selectCategoryFindAll,
+      include: CategoryService.getCommonIncludeArg(),
       orderBy: CategoryService.getOrderBy(orderBy, orderDir),
       take: limit,
       skip: DatabaseUltil.getSkip(page, limit),
+    };
+  }
+
+  static getCommonIncludeArg(): Prisma.CategoryInclude {
+    return {
+      parent: { select: Category.selectCategoryRelation },
+      thumbnail: { select: FileEntity.selectRelation },
+      createdByUser: { select: User.selectRelation },
     };
   }
 }

@@ -57,6 +57,22 @@ export class Category {
     slug: true,
     path: true,
   };
+
+  //
+  public static selectCategoryFindAll: Prisma.CategorySelect = {
+    id: true,
+    name: true,
+    slug: true,
+    thumbnailId: true,
+    thumbnail: true,
+    parentId: true,
+    parent: true,
+    path: true,
+    createdAt: true,
+    updatedAt: true,
+    createdBy: true,
+    createdByUser: true,
+  };
 }
 
 export class CategoryFindAll extends PickType(Category, [

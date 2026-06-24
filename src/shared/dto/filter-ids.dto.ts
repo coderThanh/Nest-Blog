@@ -5,7 +5,7 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 import { QUERY_SEPARATOR } from '@/common/constant/ultil';
 import { ValidateMessage } from '@/common/ultils';
 
-export class FilterIdsDtoString {
+export class FilterIdsStringDto {
   @ApiPropertyOptional({
     type: String,
     description: `ex: id${QUERY_SEPARATOR}id`,
@@ -31,7 +31,7 @@ export class FilterIdsDtoString {
   excludeIds?: string[];
 }
 
-export class FilterIdsDtoInt {
+export class FilterIdsIntDto {
   @ApiPropertyOptional({
     type: String,
     description: `ex: id${QUERY_SEPARATOR}id`,

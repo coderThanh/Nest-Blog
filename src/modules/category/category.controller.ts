@@ -65,7 +65,6 @@ export class CategoryController {
   @ApiCustomResponseOK(Category)
   async findOne(@Param('slug') slug: string) {
     const record = await this.categoryService.findOne(slug);
-
     return plainToInstance(Category, record, {
       excludeExtraneousValues: true,
     });
@@ -76,7 +75,10 @@ export class CategoryController {
     @Param('id') id: string,
     @Body() updateCategoryDto: UpdateCategoryDto,
   ) {
-    return await this.categoryService.update(+id, updateCategoryDto);
+    const record = await this.categoryService.update(+id, updateCategoryDto);
+    return plainToInstance(Category, record, {
+      excludeExtraneousValues: true,
+    });
   }
 
   @Delete(':id')
