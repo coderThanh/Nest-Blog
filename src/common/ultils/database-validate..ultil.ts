@@ -61,4 +61,53 @@ export class DatabaseValidate {
       );
     }
   }
+
+  static async validateRecordEveryExistOrThrow<T>(
+    ids: Array<T> | null,
+    fnFind: (ids: Array<T>) => Promise<Array<{ id: T }> | null>,
+    fieldName: string,
+  ) {
+    if (!ids || !ids.length) return;
+
+    const records = await fnFind(ids);
+
+    if (!records || !records.length) {
+      throw new BadRequestException(
+        ValidateMessage.exceptionThrowErrorsField(
+          fieldName,
+          ValidateMessage.someNotExist().rawMsg(),
+        ),
+      );
+    }
+
+    const idsFound = records.map((item) => item.id);
+
+    const idsNotExist = ids.filter((id) => !idsFound.includes(id));
+
+    if (idsNotExist.length) {
+      throw new BadRequestException(
+        ValidateMessage.exceptionThrowErrorsField(
+          fieldName,
+          ValidateMessage.someNotExist().rawMsg(),
+        ),
+      );
+    }
+  }
+
+  static async validateRecordExistOrThrow<T>(
+    id: T,
+    fnFind: (id: T) => Promise<{ id: T } | null>,
+    fieldName: string,
+  ) {
+    const records = await fnFind(id);
+
+    if (!records) {
+      throw new BadRequestException(
+        ValidateMessage.exceptionThrowErrorsField(
+          fieldName,
+          ValidateMessage.notExist().rawMsg(),
+        ),
+      );
+    }
+  }
 }

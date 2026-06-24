@@ -112,6 +112,17 @@ export class ValidateMessage {
     return this.buildMessage(`không được vượt quá ${maxSize} phần tử`, name);
   }
 
+  static someNotExist(name: string = '') {
+    return this.buildMessage(
+      `một hoặc nhiều phần tử đã không còn tồn tại`,
+      name,
+    );
+  }
+
+  static notExist(name: string = '') {
+    return this.buildMessage(`bảng ghi đã không còn tồn tại`, name);
+  }
+
   static notFound(name: string = '') {
     return this.buildMessage(`không tìm thấy bản ghi`, name);
   }

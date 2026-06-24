@@ -31,6 +31,13 @@ export class CategoryService {
       createCategoryDto.parentId ?? null,
     );
 
+    if (createCategoryDto.parentId) {
+      await this.validateCategoryExit(
+        createCategoryDto.parentId,
+        Prisma.CategoryScalarFieldEnum.parentId,
+      );
+    }
+
     return await this.categoryRepo.create({
       ...createCategoryDto,
       slug,
@@ -73,6 +80,7 @@ export class CategoryService {
       select: { parentId: true, id: true, slug: true },
     });
 
+    //
     if (id === updateCategoryDto.parentId) {
       throw new BadRequestException(
         ValidateMessage.exceptionThrowErrorsField(
@@ -84,13 +92,22 @@ export class CategoryService {
 
     if (updateCategoryDto.name) {
       // Cần lấy parentId hiện tại hoặc từ DTO để validate
-
       await this.validateUniqueName(
         updateCategoryDto.name,
         updateCategoryDto.parentId !== undefined
           ? updateCategoryDto.parentId
           : (current.parentId ?? null),
         id,
+      );
+    }
+
+    if (
+      updateCategoryDto.parentId &&
+      updateCategoryDto.parentId !== current.parentId
+    ) {
+      await this.validateCategoryExit(
+        updateCategoryDto.parentId,
+        Prisma.CategoryScalarFieldEnum.parentId,
       );
     }
 
@@ -115,6 +132,33 @@ export class CategoryService {
     return await this.categoryRepo.deleted(id);
   }
 
+  // Validate
+  async validateCategoryExit(id: number, fieldName: string) {
+    const fn = async (id: number) =>
+      this.categoryRepo.findUnique({ where: { id }, select: { id: true } });
+
+    await DatabaseValidate.validateRecordExistOrThrow<number>(
+      id,
+      fn,
+      fieldName,
+    );
+  }
+
+  async validateCategoryEveryExit(ids: number[], fieldName: string) {
+    const fn = async (ids: number[]) =>
+      this.categoryRepo.findMany({
+        where: { id: { in: ids } },
+        select: { id: true },
+      });
+
+    await DatabaseValidate.validateRecordEveryExistOrThrow<number>(
+      ids,
+      fn,
+      fieldName,
+    );
+  }
+
+  //
   private async validateUniqueName(
     name: string,
     parentId: number | null,
