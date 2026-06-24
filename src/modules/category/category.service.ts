@@ -38,9 +38,14 @@ export class CategoryService {
   }
 
   async findAllAndCount(query: FindAllCategoryDto) {
-    return this.categoryRepo.findManyAndCount(
+    const { items, total } = await this.categoryRepo.findManyAndCount(
       this.getCommonFindAllOptions(query),
     );
+
+    return {
+      items,
+      total,
+    };
   }
 
   async findAll(query: FindAllCategoryDto) {
@@ -181,8 +186,11 @@ export class CategoryService {
 
     return {
       where: CategoryService.getFindManyWhere(query),
-      select: Category.selectCategoryFindAll,
-      include: CategoryService.getCommonIncludeArg(),
+      select: {
+        ...Category.selectCategoryFindAll,
+        ...CategoryService.getCommonIncludeArg(),
+      },
+
       orderBy: CategoryService.getOrderBy(orderBy, orderDir),
       take: limit,
       skip: DatabaseUltil.getSkip(page, limit),

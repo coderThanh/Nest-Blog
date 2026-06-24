@@ -63,7 +63,7 @@ export class DatabaseUltil {
   }
 
   static getSkip(page: number, limit: number): number {
-    return (page ?? 1 - 1) * limit;
+    return Math.max(page - 1, 0) * limit;
   }
 
   static getPaginationMeta(params: {

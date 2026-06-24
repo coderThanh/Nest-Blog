@@ -1,11 +1,11 @@
 import { AuditCreate, AuditUpdate } from '@/shared/types';
-import { Category, Prisma } from '@prisma/client';
 
 import { CategoryCreatedEvent } from '@/modules/category/events/category-created.event';
 import { CategoryUpdatedEvent } from '@/modules/category/events/category-updated.event';
 import { CreateCategoryDto } from '@/modules/category/dto/create-category.dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '@/prisma/prisma.service';
 import { UpdateCategoryDto } from '@/modules/category/dto/update-category.dto';
 import { validateOrReject } from 'class-validator';
@@ -82,7 +82,7 @@ export class CategoryRepository {
   async findManyAndCount(args: Prisma.CategoryFindManyArgs) {
     const { where } = args;
 
-    const [items, total] = await this.prisma.$transaction([
+    const [items, total] = await Promise.all([
       this.prisma.category.findMany(args),
       this.prisma.category.count({ where }),
     ]);
