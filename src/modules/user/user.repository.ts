@@ -1,51 +1,90 @@
+import {
+  AuditCreate,
+  AuditSoftDelete,
+  AuditUpdate,
+} from '@/shared/types/write';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma, User } from '@prisma/client';
 
-import { CreateUserDto } from './dto/create-user.dto';
-import { Injectable } from '@nestjs/common';
+import { CreateUserDto } from '@/modules/user/dto/create-user.dto';
 import { PrismaService } from '@/prisma/prisma.service';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdateUserDto } from '@/modules/user/dto/update-user.dto';
+import { ValidateMessage } from '@/common/utils/validate-message.util';
 
 @Injectable()
 export class UserRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(body: CreateUserDto) {
-    return await this.prisma.user.create({
+  async create(
+    body: AuditCreate<Omit<CreateUserDto, 'password' | 'repeatPassword'>> & {
+      passwordHash: string;
+    },
+  ) {
+    return this.prisma.client.user.create({
       data: body as Prisma.UserUncheckedCreateInput,
       select: { id: true },
     });
   }
 
-  async patch(id: User['id'], data: UpdateUserDto) {
-    return await this.prisma.user.update({
+  async patch(
+    id: User['id'],
+    data: AuditUpdate<UpdateUserDto> & { passwordHash?: string },
+  ) {
+    return this.prisma.client.user.update({
       data: data as Prisma.UserUncheckedUpdateInput,
       where: { id },
     });
   }
 
   async findMany(args: Prisma.UserFindManyArgs) {
-    return await this.prisma.user.findMany(args);
+    return this.prisma.client.user.findMany(args);
+  }
+
+  async findManyAndCount(args: Prisma.UserFindManyArgs) {
+    const { where } = args;
+
+    const [items, total] = await Promise.all([
+      this.prisma.client.user.findMany(args),
+      this.prisma.client.user.count({ where }),
+    ]);
+
+    return { items, total };
   }
 
   async findFirst(args: Prisma.UserFindFirstArgs) {
-    return await this.prisma.user.findFirst(args);
+    return this.prisma.client.user.findFirst(args);
   }
 
   async findFirstOrThrow(args: Prisma.UserFindFirstArgs) {
-    return await this.prisma.user.findFirstOrThrow(args);
+    const record = await this.prisma.client.user.findFirst(args);
+
+    if (!record)
+      throw new NotFoundException(ValidateMessage.notFound().rawMsg());
+
+    return record;
   }
 
   async findUnique(args: Prisma.UserFindUniqueArgs) {
-    return await this.prisma.user.findUnique(args);
+    return this.prisma.client.user.findUnique(args);
   }
 
   async findUniqueOrThrow(args: Prisma.UserFindUniqueArgs) {
-    return await this.prisma.user.findUniqueOrThrow(args);
+    const record = await this.prisma.client.user.findUnique(args);
+
+    if (!record)
+      throw new NotFoundException(ValidateMessage.notFound().rawMsg());
+
+    return record;
   }
 
-  async deleted(id: User['id']) {
-    return await this.prisma.user.delete({
+  async softDelete(id: User['id'], body: AuditSoftDelete) {
+    return this.prisma.client.user.update({
       where: { id },
+      data: {
+        deletedBy: body.deletedBy,
+        deletedAt: body.deletedAt,
+      },
+      select: { id: true },
     });
   }
 }

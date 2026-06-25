@@ -31,14 +31,14 @@ export class PostService {
       }),
       //
       createPostDto.categoryIds &&
-        this.dbValidate.validateExistOrThrow(
+        this.dbValidate.validateRecordExistOrThrow(
           Prisma.ModelName.Category,
           createPostDto.categoryIds,
           'categoryIds',
         ),
       //
       createPostDto.tagIds &&
-        this.dbValidate.validateExistOrThrow(
+        this.dbValidate.validateRecordExistOrThrow(
           Prisma.ModelName.Tag,
           createPostDto.tagIds,
           'tagIds',
@@ -102,14 +102,14 @@ export class PostService {
         : undefined,
       //
       updatePostDto.categoryIds &&
-        this.dbValidate.validateExistOrThrow(
+        this.dbValidate.validateRecordExistOrThrow(
           Prisma.ModelName.Category,
           updatePostDto.categoryIds,
           'categoryIds',
         ),
       //
       updatePostDto.tagIds &&
-        this.dbValidate.validateExistOrThrow(
+        this.dbValidate.validateRecordExistOrThrow(
           Prisma.ModelName.Tag,
           updatePostDto.tagIds,
           'tagIds',

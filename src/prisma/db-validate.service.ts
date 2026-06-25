@@ -12,7 +12,7 @@ import { ValidateMessage } from '@/common/utils/validate-message.util';
 export class DbValidateService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async validateExistOrThrow<T>(
+  async validateRecordExistOrThrow<T>(
     modelName: Prisma.ModelName,
     id: Array<T> | T,
     fieldName: string,

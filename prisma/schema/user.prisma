@@ -10,20 +10,20 @@ model User {
     verified     DateTime?
     passwordHash String      @map("password_hash")
     thumbnailId  String?     @map("thumbnail_id")
+    thumbnal      File?      @relation("userThumbnail", fields: [thumbnailId], references: [id])
     createdAt    DateTime    @default(now()) @map("created_at")
     updatedAt    DateTime    @default(now()) @updatedAt @map("updated_at")
     createdBy    String?     @map("created_by")
+    createdByUser User?      @relation("userAuth", fields: [createdBy], references: [id], onDelete: SetNull)
     deletedAt    DateTime?   @map("deleted_at")
     deletedBy    String?     @map("deleted_by")
+    deletedByUser User?      @relation("userDelete", fields: [deletedBy], references: [id])
 
     // 
     posts         Post[]     @relation("postAuth")
     users         User[]     @relation("userAuth")
     tags          Tag[]      @relation("tagAuth")
-    createdByUser User?      @relation("userAuth", fields: [createdBy], references: [id], onDelete: SetNull)
-    thumbnal      File?      @relation("userThumbnail", fields: [thumbnailId], references: [id])
     files         File[]     @relation("fileAuth")
-    deletedByUser User?      @relation("userDelete", fields: [deletedBy], references: [id])
     usersDeleted  User[]     @relation("userDelete")
     categories    Category[] @relation("categoryAuthor")
 

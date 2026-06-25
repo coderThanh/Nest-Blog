@@ -26,6 +26,8 @@ export function formatToPhoneE164(
   phone: string,
   countryCode: string = 'VN',
 ): string {
+  if (!phone) return phone;
+
   const parsedNumber = phoneUtil.parseAndKeepRawInput(phone, countryCode);
   return phoneUtil.format(parsedNumber, PhoneNumberFormat.E164);
   // Kết quả luôn là: +84912345678

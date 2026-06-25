@@ -42,7 +42,7 @@ export class CategoryService {
       ),
       //
       createCategoryDto.parentId &&
-        this.dbValidate.validateExistOrThrow(
+        this.dbValidate.validateRecordExistOrThrow(
           Prisma.ModelName.Category,
           createCategoryDto.parentId,
           'parentId',
@@ -130,7 +130,7 @@ export class CategoryService {
       //
       updateCategoryDto.parentId &&
         updateCategoryDto.parentId !== current.parentId &&
-        this.dbValidate.validateExistOrThrow(
+        this.dbValidate.validateRecordExistOrThrow(
           Prisma.ModelName.Category,
           updateCategoryDto.parentId,
           'parentId',
