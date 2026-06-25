@@ -1,8 +1,6 @@
-import {
-  DatabaseUltil,
-  DatabaseValidate,
-  removeVietnameseAccents,
-} from '@/common/ultils';
+import { DatabaseUltil } from '@/common/ultils/database.ultil';
+import { DatabaseValidate } from '@/common/ultils/database-validate..ultil';
+import { removeVietnameseAccents } from '@/common/ultils/helper';
 
 import { CreateTagDto } from './dto/create-tag.dto';
 import { DbValidateService } from '@/prisma/db-validate.service';

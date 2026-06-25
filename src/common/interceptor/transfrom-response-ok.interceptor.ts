@@ -5,7 +5,7 @@ import {
   NestInterceptor,
 } from '@nestjs/common';
 
-import { ApiResponseOkDto } from '@/shared/dto';
+import { ApiResponseOkDto } from '@/shared/dto/response.dto';
 import { Observable } from 'rxjs';
 import { Response } from 'express';
 import { map } from 'rxjs/operators';

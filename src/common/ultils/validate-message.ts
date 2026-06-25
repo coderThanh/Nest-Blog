@@ -49,8 +49,19 @@ export class ValidateMessage {
     return this.buildMessage('không đúng định dạng email', name);
   }
 
-  static isPhone(region: any, name: string = '') {
+  static isPhone(name: string = '') {
     return this.buildMessage('không đúng định dạng số điện thoại', name);
+  }
+
+  static isStrongPassword(name: string = '') {
+    return this.buildMessage(
+      'Mật khẩu phải chứa ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt.',
+      name,
+    );
+  }
+
+  static isRepeatMatch(name: string = '') {
+    return this.buildMessage('nhập lại không trùng khớp', name);
   }
 
   static isEnum(enums: string = '', name: string = '') {

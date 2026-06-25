@@ -22,10 +22,13 @@ import {
   ApiCustomResponseOKFindAll,
 } from '@/common/decorator/api-response-ok';
 import { ApiExtraModels } from '@nestjs/swagger';
-import { ApiResponseDataFindAllMeta, ApiResponseOkDto } from '@/shared/dto';
+import {
+  ApiResponseDataFindAllMeta,
+  ApiResponseOkDto,
+} from '@/shared/dto/response.dto';
 import { FindAllCategoryDto } from '@/modules/category/dto/find-all-category.dto';
-import { BaseFindAllData, FindAllDataMeta } from '@/shared/types';
-import { DatabaseUltil } from '@/common/ultils';
+import { BaseFindAllData, FindAllDataMeta } from '@/shared/types/response';
+import { DatabaseUltil } from '@/common/ultils/database.ultil';
 
 @Controller('categorys')
 export class CategoryController {

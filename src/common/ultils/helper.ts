@@ -1,5 +1,35 @@
+import { PhoneNumberFormat, PhoneNumberUtil } from 'google-libphonenumber';
+
 import { INestApplication } from '@nestjs/common';
 import { PAYLOAD_KEY_SECERT } from '@/common/constant/ultil';
+
+// npm i google-libphonenumber
+// npm i -D @types/google-libphonenumber
+const phoneUtil = PhoneNumberUtil.getInstance();
+
+export function isPhoneNumber(
+  phoneNumber: string,
+  countryCode: string = 'VN',
+): boolean {
+  try {
+    const parsedPhone = phoneUtil.parseAndKeepRawInput(
+      phoneNumber,
+      countryCode,
+    );
+    return phoneUtil.isValidNumberForRegion(parsedPhone, countryCode);
+  } catch (err) {
+    return false;
+  }
+}
+
+export function formatToPhoneE164(
+  phone: string,
+  countryCode: string = 'VN',
+): string {
+  const parsedNumber = phoneUtil.parseAndKeepRawInput(phone, countryCode);
+  return phoneUtil.format(parsedNumber, PhoneNumberFormat.E164);
+  // Kết quả luôn là: +84912345678
+}
 
 export function toBoolean(input: any): boolean | null {
   if (['1', 1, true, 'true'].includes(input)) return true;

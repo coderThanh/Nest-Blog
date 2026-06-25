@@ -1,18 +1,16 @@
 import { ApiPropertyOptional, IntersectionType } from '@nestjs/swagger';
-import {
-  FilterIdsStringDto,
-  FilterOrderDirDto,
-  FilterPaginationDto,
-} from '@/shared/dto';
 import { IsEnum, IsInt, IsOptional, IsString } from 'class-validator';
 
+import { FilterIdsStringDto } from '@/shared/dto/filter-ids.dto';
+import { FilterOrderDirDto } from '@/shared/dto/filter-order-dir.dto';
+import { FilterPaginationDto } from '@/shared/dto/filter-pagination.dto';
 import { FilterSearchDto } from '@/shared/dto/filter-search.dto';
 import { NormalizeString } from '@/common/decorator/normalize-string';
-import { OrderDir } from '@/common/enum';
+import { OrderDir } from '@/common/enum/filter.enum';
 import { PostOrderBy } from '@/modules/post/post.enum';
 import { QUERY_SEPARATOR } from '@/common/constant/ultil';
-import { SplitToArrayNumber } from '@/common/decorator';
-import { ValidateMessage } from '@/common/ultils';
+import { SplitToArrayNumber } from '@/common/decorator/to-array';
+import { ValidateMessage } from '@/common/ultils/validate-message';
 
 export class FindAllPostDto extends IntersectionType(
   FilterIdsStringDto,

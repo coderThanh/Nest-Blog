@@ -1,4 +1,5 @@
-import { DatabaseUltil, removeVietnameseAccents } from '@/common/ultils';
+import { DatabaseUltil } from '@/common/ultils/database.ultil';
+import { removeVietnameseAccents } from '@/common/ultils/helper';
 
 import { Category } from '@/modules/category/entities/category.entity';
 import { CreatePostDto } from './dto/create-post.dto';

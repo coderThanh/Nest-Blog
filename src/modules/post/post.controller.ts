@@ -22,10 +22,13 @@ import {
   PostRelation,
 } from '@/modules/post/entities/post.entity';
 import { ApiExtraModels } from '@nestjs/swagger';
-import { ApiResponseDataFindAllMeta, ApiResponseOkDto } from '@/shared/dto';
+import {
+  ApiResponseDataFindAllMeta,
+  ApiResponseOkDto,
+} from '@/shared/dto/response.dto';
 import { plainToInstance } from 'class-transformer';
-import { BaseFindAllData } from '@/shared/types';
-import { DatabaseUltil } from '@/common/ultils';
+import { BaseFindAllData } from '@/shared/types/response';
+import { DatabaseUltil } from '@/common/ultils/database.ultil';
 
 @Controller('posts')
 export class PostController {

@@ -1,11 +1,11 @@
-import { AuditCreate, AuditUpdate } from '@/shared/types';
+import { AuditCreate, AuditUpdate } from '@/shared/types/write';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma, Tag } from '@prisma/client';
 
 import { CreateTagDto } from '@/modules/tag/dto/create-tag.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import { UpdateTagDto } from '@/modules/tag/dto/update-tag.dto';
-import { ValidateMessage } from '@/common/ultils';
+import { ValidateMessage } from '@/common/ultils/validate-message';
 
 @Injectable()
 export class TagRepository {

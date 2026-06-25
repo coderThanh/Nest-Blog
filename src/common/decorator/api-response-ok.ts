@@ -1,5 +1,5 @@
 import { ApiOkResponse, getSchemaPath } from '@nestjs/swagger';
-import { ApiResponseDataFindAllMeta, ApiResponseOkDto } from '@/shared/dto';
+import { ApiResponseDataFindAllMeta, ApiResponseOkDto } from '@/shared/dto/response.dto';
 import { Type, applyDecorators } from '@nestjs/common';
 
 export const ApiCustomResponseOK = <TModel extends Type<any>>(

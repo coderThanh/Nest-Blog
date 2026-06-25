@@ -19,9 +19,12 @@ import {
   ApiCustomResponseOKFindAll,
 } from '@/common/decorator/api-response-ok';
 import { ApiExtraModels } from '@nestjs/swagger';
-import { ApiResponseDataFindAllMeta, ApiResponseOkDto } from '@/shared/dto';
-import { BaseFindAllData } from '@/shared/types';
-import { DatabaseUltil } from '@/common/ultils';
+import { DatabaseUltil } from '@/common/ultils/database.ultil';
+import {
+  ApiResponseOkDto,
+  ApiResponseDataFindAllMeta,
+} from '@/shared/dto/response.dto';
+import { BaseFindAllData } from '@/shared/types/response';
 
 @Controller('tags')
 export class TagController {

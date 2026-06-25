@@ -1,4 +1,4 @@
-import { AuditCreate, AuditUpdate } from '@/shared/types';
+import { AuditCreate, AuditUpdate } from '@/shared/types/write';
 import { File, Prisma } from '@prisma/client';
 
 import { CreateFileDto } from '@/modules/file/dto/create-file.dto';

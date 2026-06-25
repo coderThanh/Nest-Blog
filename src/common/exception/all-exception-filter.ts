@@ -6,11 +6,12 @@ import {
   HttpStatus,
   Logger,
 } from '@nestjs/common';
-import { ConfigUltils, getLoggerMessage } from '@/common/ultils';
+import { ConfigUltils } from '@/common/ultils/config';
+import { getLoggerMessage } from '@/common/ultils/helper';
 
 import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
-import { ResponseBase } from '@/shared/types';
+import { ResponseBase } from '@/shared/types/response';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {

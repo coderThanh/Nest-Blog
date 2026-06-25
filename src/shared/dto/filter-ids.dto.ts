@@ -1,9 +1,9 @@
 import { IsInt, IsNumber, IsOptional, IsString } from 'class-validator';
-import { SplitToArray, SplitToArrayNumber } from '@/common/decorator';
+import { SplitToArray, SplitToArrayNumber } from '@/common/decorator/to-array';
 
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { QUERY_SEPARATOR } from '@/common/constant/ultil';
-import { ValidateMessage } from '@/common/ultils';
+import { ValidateMessage } from '@/common/ultils/validate-message';
 
 export class FilterIdsStringDto {
   @ApiPropertyOptional({

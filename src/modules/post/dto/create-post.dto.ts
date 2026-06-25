@@ -7,21 +7,21 @@ import {
   MaxLength,
   isNotEmpty,
 } from 'class-validator';
+import { IsMaxLength } from '@/common/decorator/is-max-length.decorator';
+import { ToNumber } from '@/common/decorator/to-number';
 
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { MAX_LENGTH_NAME } from '@/common/constant/ultil';
-import { ToNumber } from '@/common/decorator';
-import { ValidateMessage } from '@/common/ultils';
+import { ValidateMessage } from '@/common/ultils/validate-message';
 
 export class CreatePostDto {
   /** @example "Tên bài viết" */
-  @MaxLength(MAX_LENGTH_NAME, {
-    message: ValidateMessage.maxLength(MAX_LENGTH_NAME).exceptionMsg(),
-  })
+  @IsMaxLength()
   @IsString({ message: ValidateMessage.isString().exceptionMsg() })
   @IsNotEmpty({ message: ValidateMessage.isRequired().exceptionMsg() })
   name: string;
 
+  @IsMaxLength()
   @IsString({ message: ValidateMessage.isString().exceptionMsg() })
   @IsNotEmpty({ message: ValidateMessage.isRequired().exceptionMsg() })
   slug: string;

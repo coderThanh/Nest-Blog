@@ -1,4 +1,4 @@
-import { AuditCreate, AuditUpdate } from '@/shared/types';
+import { AuditCreate, AuditUpdate } from '@/shared/types/write';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Post, Prisma } from '@prisma/client';
 
@@ -7,7 +7,7 @@ import { CreatePostDto } from '@/modules/post/dto/create-post.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import { Tag } from '@/modules/tag/entities/tag.entity';
 import { UpdatePostDto } from '@/modules/post/dto/update-post.dto';
-import { ValidateMessage } from '@/common/ultils';
+import { ValidateMessage } from '@/common/ultils/validate-message';
 
 @Injectable()
 export class PostRepository {

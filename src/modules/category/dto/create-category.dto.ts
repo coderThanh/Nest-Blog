@@ -5,6 +5,8 @@ import {
   IsString,
   MaxLength,
 } from 'class-validator';
+import { IsMaxLength } from '@/common/decorator/is-max-length.decorator';
+import { ToNumber } from '@/common/decorator/to-number';
 import {
   NormalizeString,
   ToLowerCaseAndTrim,
@@ -12,19 +14,17 @@ import {
 
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { MAX_LENGTH_NAME } from '@/common/constant/ultil';
-import { ToNumber } from '@/common/decorator';
-import { ValidateMessage } from '@/common/ultils';
+import { ValidateMessage } from '@/common/ultils/validate-message';
 
 export class CreateCategoryDto {
   /** @example 'Danh mục bài viết'*/
-  @MaxLength(MAX_LENGTH_NAME, {
-    message: ValidateMessage.maxLength(MAX_LENGTH_NAME).exceptionMsg(),
-  })
+  @IsMaxLength()
   @NormalizeString()
   @IsString({ message: ValidateMessage.isString().exceptionMsg() })
   @IsNotEmpty({ message: ValidateMessage.isRequired().exceptionMsg() })
   name: string;
 
+  @IsMaxLength()
   @ToLowerCaseAndTrim()
   @IsString({ message: ValidateMessage.isString().exceptionMsg() })
   @IsNotEmpty({ message: ValidateMessage.isRequired().exceptionMsg() })

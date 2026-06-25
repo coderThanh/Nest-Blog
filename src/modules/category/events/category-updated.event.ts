@@ -1,7 +1,7 @@
 import { IsInt, IsOptional, IsString } from 'class-validator';
 
 import { Prisma } from '@prisma/client';
-import { ValidateMessage } from '@/common/ultils';
+import { ValidateMessage } from '@/common/ultils/validate-message';
 
 export class CategoryUpdatedEvent {
   @IsInt({ message: ValidateMessage.isInt().rawMsg() })

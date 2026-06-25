@@ -1,4 +1,4 @@
-import { AuditCreate, AuditUpdate } from '@/shared/types';
+import { AuditCreate, AuditUpdate } from '@/shared/types/write';
 import { Injectable, NotFoundException } from '@nestjs/common';
 
 import { CategoryCreatedEvent } from '@/modules/category/events/category-created.event';
@@ -8,7 +8,7 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '@/prisma/prisma.service';
 import { UpdateCategoryDto } from '@/modules/category/dto/update-category.dto';
-import { ValidateMessage } from '@/common/ultils';
+import { ValidateMessage } from '@/common/ultils/validate-message';
 import { validateOrReject } from 'class-validator';
 
 @Injectable()
