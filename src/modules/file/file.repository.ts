@@ -11,14 +11,14 @@ export class FileRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(body: AuditCreate<CreateFileDto>) {
-    return await this.prisma.file.create({
+    return await this.prisma.client.file.create({
       data: body as Prisma.FileUncheckedCreateInput,
       select: { id: true },
     });
   }
 
   async patch(id: File['id'], body: AuditUpdate<UpdateFileDto>) {
-    return await this.prisma.file.update({
+    return await this.prisma.client.file.update({
       data: body as Prisma.FileUncheckedUpdateInput,
       where: {
         id,
@@ -27,19 +27,19 @@ export class FileRepository {
   }
 
   async findMany(args: Prisma.FileFindManyArgs) {
-    return await this.prisma.file.findMany(args);
+    return await this.prisma.client.file.findMany(args);
   }
 
   async findUnique(args: Prisma.FileFindUniqueArgs) {
-    return await this.prisma.file.findUnique(args);
+    return await this.prisma.client.file.findUnique(args);
   }
 
   async findUniqueOrThrow(args: Prisma.FileFindUniqueArgs) {
-    return await this.prisma.file.findUniqueOrThrow(args);
+    return await this.prisma.client.file.findUniqueOrThrow(args);
   }
 
   async deleted(id: File['id']) {
-    return await this.prisma.file.delete({
+    return await this.prisma.client.file.delete({
       where: {
         id,
       },

@@ -6,7 +6,7 @@ import {
 
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '@/prisma/prisma.service';
-import { ValidateMessage } from '@/common/ultils/validate-message';
+import { ValidateMessage } from '@/common/utils/validate-message.util';
 
 @Injectable()
 export class DbValidateService {
@@ -17,7 +17,7 @@ export class DbValidateService {
     id: Array<T> | T,
     fieldName: string,
   ) {
-    const modelService: any = this.prisma[modelName];
+    const modelService: any = this.prisma.client[modelName];
 
     if (!modelService)
       throw new InternalServerErrorException(
@@ -49,7 +49,7 @@ export class DbValidateService {
     valueWhere: Record<string, any>,
     fieldName: string,
   ) {
-    const modelService: any = this.prisma[modelName];
+    const modelService: any = this.prisma.client[modelName];
 
     if (!modelService) {
       throw new InternalServerErrorException(
@@ -81,7 +81,7 @@ export class DbValidateService {
   }): Promise<string> {
     const { modelName, valueWhereMore, fieldName, slug, columnName } = params;
 
-    const modelService: any = this.prisma[modelName];
+    const modelService: any = this.prisma.client[modelName];
 
     if (!modelService) {
       throw new InternalServerErrorException(

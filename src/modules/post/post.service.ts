@@ -1,8 +1,6 @@
-import { DatabaseUltil } from '@/common/ultils/database.ultil';
-import { removeVietnameseAccents } from '@/common/ultils/helper';
-
 import { Category } from '@/modules/category/entities/category.entity';
 import { CreatePostDto } from './dto/create-post.dto';
+import { DatabaseUltil } from '@/common/utils/database.util';
 import { DbValidateService } from '@/prisma/db-validate.service';
 import { FileEntity } from '@/modules/file/entities/file.entity';
 import { FindAllPostDto } from '@/modules/post/dto/find-all-post.dto';
@@ -13,6 +11,7 @@ import { Prisma } from '@prisma/client';
 import { Tag } from '@/modules/tag/entities/tag.entity';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { User } from '@/modules/user/entities/user.entity';
+import { removeVietnameseAccents } from '@/common/utils/helper.util';
 
 @Injectable()
 export class PostService {

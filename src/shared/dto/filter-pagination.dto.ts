@@ -5,7 +5,7 @@ import {
 } from '@/common/constant/ultil';
 
 import { Type } from 'class-transformer';
-import { ValidateMessage } from '@/common/ultils/validate-message';
+import { ValidateMessage } from '@/common/utils/validate-message.util';
 
 export class FilterPaginationDto {
   @Min(1, { message: ValidateMessage.min(1).exceptionMsg() })

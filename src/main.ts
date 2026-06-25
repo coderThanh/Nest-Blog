@@ -4,7 +4,7 @@ import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
 import { AppModule } from './app.module';
 import { NestFactory } from '@nestjs/core';
 import { TransformResponseOkInterceptor } from '@/common/interceptor/transfrom-response-ok.interceptor';
-import { getUrl } from '@/common/ultils/helper';
+import { getUrl } from '@/common/utils/helper.util';
 import { setupSwagger } from 'src/config/swagger.config';
 
 // Fix BigInt serialization

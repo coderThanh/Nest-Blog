@@ -1,8 +1,6 @@
-import { DatabaseUltil } from '@/common/ultils/database.ultil';
-import { DatabaseValidate } from '@/common/ultils/database-validate..ultil';
-import { removeVietnameseAccents } from '@/common/ultils/helper';
-
 import { CreateTagDto } from './dto/create-tag.dto';
+import { DatabaseUltil } from '@/common/utils/database.util';
+import { DatabaseValidate } from '@/common/utils/database-validate..util';
 import { DbValidateService } from '@/prisma/db-validate.service';
 import { FindAllTagDto } from '@/modules/tag/dto/find-all-tag.dto';
 import { Injectable } from '@nestjs/common';
@@ -11,6 +9,7 @@ import { Tag } from '@/modules/tag/entities/tag.entity';
 import { TagRepository } from '@/modules/tag/tag.repository';
 import { UpdateTagDto } from './dto/update-tag.dto';
 import { User } from '@/modules/user/entities/user.entity';
+import { removeVietnameseAccents } from '@/common/utils/helper.util';
 
 @Injectable()
 export class TagService {

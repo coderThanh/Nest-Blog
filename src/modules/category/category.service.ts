@@ -4,7 +4,7 @@ import { Category } from '@/modules/category/entities/category.entity';
 import { CategoryOrderBy } from '@/modules/category/category.enum';
 import { CategoryRepository } from '@/modules/category/category.repository';
 import { CreateCategoryDto } from './dto/create-category.dto';
-import { DatabaseUltil } from '@/common/ultils/database.ultil';
+import { DatabaseUltil } from '@/common/utils/database.util';
 import { DbValidateService } from '@/prisma/db-validate.service';
 import { FileEntity } from '@/modules/file/entities/file.entity';
 import { FindAllCategoryDto } from '@/modules/category/dto/find-all-category.dto';
@@ -12,8 +12,8 @@ import { OrderDir } from '@/common/enum/filter.enum';
 import { Prisma } from '@prisma/client';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { User } from '@/modules/user/entities/user.entity';
-import { ValidateMessage } from '@/common/ultils/validate-message';
-import { removeVietnameseAccents } from '@/common/ultils/helper';
+import { ValidateMessage } from '@/common/utils/validate-message.util';
+import { removeVietnameseAccents } from '@/common/utils/helper.util';
 
 @Injectable()
 export class CategoryService {

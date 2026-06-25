@@ -3,7 +3,7 @@ import { SplitToArray, SplitToArrayNumber } from '@/common/decorator/to-array';
 
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { QUERY_SEPARATOR } from '@/common/constant/ultil';
-import { ValidateMessage } from '@/common/ultils/validate-message';
+import { ValidateMessage } from '@/common/utils/validate-message.util';
 
 export class FilterIdsStringDto {
   @ApiPropertyOptional({

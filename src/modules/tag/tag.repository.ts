@@ -5,47 +5,47 @@ import { Prisma, Tag } from '@prisma/client';
 import { CreateTagDto } from '@/modules/tag/dto/create-tag.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import { UpdateTagDto } from '@/modules/tag/dto/update-tag.dto';
-import { ValidateMessage } from '@/common/ultils/validate-message';
+import { ValidateMessage } from '@/common/utils/validate-message.util';
 
 @Injectable()
 export class TagRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(body: AuditCreate<CreateTagDto>) {
-    return this.prisma.tag.create({
+    return this.prisma.client.tag.create({
       data: body as Prisma.TagUncheckedCreateInput,
       select: { id: true, slug: true },
     });
   }
 
   async patch(id: Tag['id'], data: AuditUpdate<UpdateTagDto>) {
-    return this.prisma.tag.update({
+    return this.prisma.client.tag.update({
       data: data as Prisma.TagUncheckedUpdateInput,
       where: { id },
     });
   }
 
   async findMany(args: Prisma.TagFindManyArgs) {
-    return this.prisma.tag.findMany(args);
+    return this.prisma.client.tag.findMany(args);
   }
 
   async findManyAndCount(args: Prisma.TagFindManyArgs) {
     const { where } = args;
 
     const [items, total] = await Promise.all([
-      this.prisma.tag.findMany(args),
-      this.prisma.tag.count({ where }),
+      this.prisma.client.tag.findMany(args),
+      this.prisma.client.tag.count({ where }),
     ]);
 
     return { items, total };
   }
 
   async findFirst(args: Prisma.TagFindFirstArgs) {
-    return this.prisma.tag.findFirst(args);
+    return this.prisma.client.tag.findFirst(args);
   }
 
   async findFirstOrThrow(args: Prisma.TagFindFirstArgs) {
-    const record = await this.prisma.tag.findFirst(args);
+    const record = await this.prisma.client.tag.findFirst(args);
 
     if (!record)
       throw new NotFoundException(ValidateMessage.notFound().rawMsg());
@@ -54,11 +54,11 @@ export class TagRepository {
   }
 
   async findUnique(args: Prisma.TagFindUniqueArgs) {
-    return this.prisma.tag.findUnique(args);
+    return this.prisma.client.tag.findUnique(args);
   }
 
   async findUniqueOrThrow(args: Prisma.TagFindUniqueArgs) {
-    const record = await this.prisma.tag.findUnique(args);
+    const record = await this.prisma.client.tag.findUnique(args);
 
     if (!record)
       throw new NotFoundException(ValidateMessage.notFound().rawMsg());
@@ -67,7 +67,7 @@ export class TagRepository {
   }
 
   async delete(id: Tag['id']) {
-    return this.prisma.tag.delete({
+    return this.prisma.client.tag.delete({
       where: { id },
       select: { id: true },
     });

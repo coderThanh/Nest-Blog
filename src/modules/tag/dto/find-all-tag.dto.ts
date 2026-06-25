@@ -7,7 +7,7 @@ import { FilterSearchDto } from '@/shared/dto/filter-search.dto';
 import { IntersectionType } from '@nestjs/swagger';
 import { OrderDir } from '@/common/enum/filter.enum';
 import { TagOrderBy } from '@/modules/tag/tag.enum';
-import { ValidateMessage } from '@/common/ultils/validate-message';
+import { ValidateMessage } from '@/common/utils/validate-message.util';
 
 export class FindAllTagDto extends IntersectionType(
   FilterSearchDto,

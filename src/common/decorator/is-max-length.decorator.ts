@@ -1,6 +1,6 @@
 import { MAX_LENGTH_NAME } from '@/common/constant/ultil';
 import { MaxLength } from 'class-validator';
-import { ValidateMessage } from '@/common/ultils/validate-message';
+import { ValidateMessage } from '@/common/utils/validate-message.util';
 import { applyDecorators } from '@nestjs/common';
 
 /**

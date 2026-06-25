@@ -8,7 +8,7 @@ import {
 
 import { IsMaxLength } from '@/common/decorator/is-max-length.decorator';
 import { StoreProvider } from '@prisma/client';
-import { ValidateMessage } from '@/common/ultils/validate-message';
+import { ValidateMessage } from '@/common/utils/validate-message.util';
 
 export class CreateFileDto {
   @IsMaxLength()

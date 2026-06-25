@@ -9,7 +9,7 @@ import { IntersectionType } from '@nestjs/swagger';
 import { NormalizeString } from '@/common/decorator/normalize-string';
 import { OrderDir } from '@/common/enum/filter.enum';
 import { Type } from 'class-transformer';
-import { ValidateMessage } from '@/common/ultils/validate-message';
+import { ValidateMessage } from '@/common/utils/validate-message.util';
 
 export class FindAllCategoryDto extends IntersectionType(
   FilterSearchDto,

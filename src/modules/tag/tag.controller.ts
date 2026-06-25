@@ -19,7 +19,7 @@ import {
   ApiCustomResponseOKFindAll,
 } from '@/common/decorator/api-response-ok';
 import { ApiExtraModels } from '@nestjs/swagger';
-import { DatabaseUltil } from '@/common/ultils/database.ultil';
+import { DatabaseUltil } from '@/common/utils/database.util';
 import {
   ApiResponseOkDto,
   ApiResponseDataFindAllMeta,

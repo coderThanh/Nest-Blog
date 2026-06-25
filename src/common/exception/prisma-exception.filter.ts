@@ -5,13 +5,13 @@ import {
   HttpStatus,
   Logger,
 } from '@nestjs/common';
-import { ConfigUltils } from '@/common/ultils/config';
-import { getLoggerMessage } from '@/common/ultils/helper';
 
 import { ConfigService } from '@nestjs/config';
+import { ConfigUltils } from '@/common/utils/config.util';
 import { Prisma } from '@prisma/client';
 import { Response } from 'express';
 import { ResponseBase } from '@/shared/types/response';
+import { getLoggerMessage } from '@/common/utils/helper.util';
 
 @Catch(Prisma.PrismaClientKnownRequestError)
 export class PrismaClientExceptionFilter implements ExceptionFilter {

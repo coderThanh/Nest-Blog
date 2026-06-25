@@ -28,7 +28,7 @@ import {
 } from '@/shared/dto/response.dto';
 import { plainToInstance } from 'class-transformer';
 import { BaseFindAllData } from '@/shared/types/response';
-import { DatabaseUltil } from '@/common/ultils/database.ultil';
+import { DatabaseUltil } from '@/common/utils/database.util';
 
 @Controller('posts')
 export class PostController {

@@ -10,7 +10,7 @@ import { OrderDir } from '@/common/enum/filter.enum';
 import { PostOrderBy } from '@/modules/post/post.enum';
 import { QUERY_SEPARATOR } from '@/common/constant/ultil';
 import { SplitToArrayNumber } from '@/common/decorator/to-array';
-import { ValidateMessage } from '@/common/ultils/validate-message';
+import { ValidateMessage } from '@/common/utils/validate-message.util';
 
 export class FindAllPostDto extends IntersectionType(
   FilterIdsStringDto,

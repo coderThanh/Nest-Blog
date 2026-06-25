@@ -1,7 +1,7 @@
 import { IsOptional, IsString } from 'class-validator';
 
 import { NormalizeString } from '@/common/decorator/normalize-string';
-import { ValidateMessage } from '@/common/ultils/validate-message';
+import { ValidateMessage } from '@/common/utils/validate-message.util';
 
 export class FilterSearchDto {
   @IsString({ message: ValidateMessage.isString().exceptionMsg() })

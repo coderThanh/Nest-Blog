@@ -5,16 +5,16 @@ import {
   IsString,
   MaxLength,
 } from 'class-validator';
-import { IsMaxLength } from '@/common/decorator/is-max-length.decorator';
-import { ToNumber } from '@/common/decorator/to-number';
 import {
   NormalizeString,
   ToLowerCaseAndTrim,
 } from '@/common/decorator/normalize-string';
 
 import { ApiPropertyOptional } from '@nestjs/swagger';
+import { IsMaxLength } from '@/common/decorator/is-max-length.decorator';
 import { MAX_LENGTH_NAME } from '@/common/constant/ultil';
-import { ValidateMessage } from '@/common/ultils/validate-message';
+import { ToNumber } from '@/common/decorator/to-number';
+import { ValidateMessage } from '@/common/utils/validate-message.util';
 
 export class CreateCategoryDto {
   /** @example 'Danh mục bài viết'*/

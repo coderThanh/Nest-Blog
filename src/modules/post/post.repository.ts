@@ -7,7 +7,7 @@ import { CreatePostDto } from '@/modules/post/dto/create-post.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import { Tag } from '@/modules/tag/entities/tag.entity';
 import { UpdatePostDto } from '@/modules/post/dto/update-post.dto';
-import { ValidateMessage } from '@/common/ultils/validate-message';
+import { ValidateMessage } from '@/common/utils/validate-message.util';
 
 @Injectable()
 export class PostRepository {
@@ -16,7 +16,7 @@ export class PostRepository {
   async create(body: AuditCreate<CreatePostDto>) {
     const { categoryIds, tagIds, ...rest } = body;
 
-    return this.prisma.post.create({
+    return this.prisma.client.post.create({
       data: {
         ...rest,
         categories: categoryIds
@@ -31,7 +31,7 @@ export class PostRepository {
   async patch(id: Post['id'], body: AuditUpdate<UpdatePostDto>) {
     const { categoryIds, tagIds, ...rest } = body;
 
-    return this.prisma.post.update({
+    return this.prisma.client.post.update({
       data: {
         ...rest,
         categories:
@@ -56,26 +56,26 @@ export class PostRepository {
   }
 
   async findMany(args: Prisma.PostFindManyArgs) {
-    return this.prisma.post.findMany(args);
+    return this.prisma.client.post.findMany(args);
   }
 
   async findManyAndCount(args: Prisma.PostFindManyArgs) {
     const { where } = args;
 
     const [items, total] = await Promise.all([
-      this.prisma.post.findMany(args),
-      this.prisma.post.count({ where }),
+      this.prisma.client.post.findMany(args),
+      this.prisma.client.post.count({ where }),
     ]);
 
     return { items, total };
   }
 
   async findUnique(args: Prisma.PostFindUniqueArgs) {
-    return this.prisma.post.findUnique(args);
+    return this.prisma.client.post.findUnique(args);
   }
 
   async findUniqueOrThrow(args: Prisma.PostFindUniqueArgs) {
-    const record = await this.prisma.post.findUnique(args);
+    const record = await this.prisma.client.post.findUnique(args);
 
     if (!record)
       throw new NotFoundException(ValidateMessage.notFound().rawMsg());
@@ -84,11 +84,11 @@ export class PostRepository {
   }
 
   async findFirst(args: Prisma.PostFindFirstArgs) {
-    return this.prisma.post.findFirst(args);
+    return this.prisma.client.post.findFirst(args);
   }
 
   async findFirstOrThrow(args: Prisma.PostFindFirstArgs) {
-    const record = await this.prisma.post.findFirst(args);
+    const record = await this.prisma.client.post.findFirst(args);
 
     if (!record)
       throw new NotFoundException(ValidateMessage.notFound().rawMsg());
@@ -97,7 +97,7 @@ export class PostRepository {
   }
 
   async delete(id: Post['id']) {
-    return this.prisma.post.delete({
+    return this.prisma.client.post.delete({
       where: {
         id,
       },

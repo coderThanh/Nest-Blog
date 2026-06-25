@@ -1,7 +1,7 @@
 import { IsEnum, IsOptional } from 'class-validator';
 
 import { OrderDir } from '@/common/enum/filter.enum';
-import { ValidateMessage } from '@/common/ultils/validate-message';
+import { ValidateMessage } from '@/common/utils/validate-message.util';
 
 export function FilterOrderDirDto(defaultField: OrderDir) {
   class MixinOrderDto {

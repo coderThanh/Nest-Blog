@@ -8,7 +8,7 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '@/prisma/prisma.service';
 import { UpdateCategoryDto } from '@/modules/category/dto/update-category.dto';
-import { ValidateMessage } from '@/common/ultils/validate-message';
+import { ValidateMessage } from '@/common/utils/validate-message.util';
 import { validateOrReject } from 'class-validator';
 
 @Injectable()
@@ -19,7 +19,7 @@ export class CategoryRepository {
   ) {}
 
   async create(body: AuditCreate<CreateCategoryDto>) {
-    return this.prisma.$transaction(async (ctx) => {
+    return this.prisma.client.$transaction(async (ctx) => {
       const record = await ctx.category.create({
         data: body,
         select: { id: true, slug: true, name: true },
@@ -41,7 +41,7 @@ export class CategoryRepository {
   }
 
   async patch(id: number, data: AuditUpdate<UpdateCategoryDto>) {
-    return this.prisma.$transaction(async (ctx) => {
+    return this.prisma.client.$transaction(async (ctx) => {
       const oldRecord = await ctx.category.findUniqueOrThrow({
         where: { id },
         select: { path: true, parentId: true },
@@ -60,7 +60,7 @@ export class CategoryRepository {
         oldPath: oldRecord.path,
         oldParentId: oldRecord.parentId,
         newParentId: data.parentId ?? null,
-        tx: ctx,
+        tx: ctx as Prisma.TransactionClient,
       });
 
       await validateOrReject(event);
@@ -77,26 +77,26 @@ export class CategoryRepository {
   }
 
   async findMany(args: Prisma.CategoryFindManyArgs) {
-    return this.prisma.category.findMany(args);
+    return this.prisma.client.category.findMany(args);
   }
 
   async findManyAndCount(args: Prisma.CategoryFindManyArgs) {
     const { where } = args;
 
     const [items, total] = await Promise.all([
-      this.prisma.category.findMany(args),
-      this.prisma.category.count({ where }),
+      this.prisma.client.category.findMany(args),
+      this.prisma.client.category.count({ where }),
     ]);
 
     return { items, total };
   }
 
   async findFirst(args: Prisma.CategoryFindFirstArgs) {
-    return this.prisma.category.findFirst(args);
+    return this.prisma.client.category.findFirst(args);
   }
 
   async findFirstOrThrow(args: Prisma.CategoryFindFirstArgs) {
-    const record = await this.prisma.category.findFirst(args);
+    const record = await this.prisma.client.category.findFirst(args);
 
     if (!record)
       throw new NotFoundException(ValidateMessage.notFound().rawMsg());
@@ -105,11 +105,11 @@ export class CategoryRepository {
   }
 
   async findUnique(args: Prisma.CategoryFindUniqueArgs) {
-    return this.prisma.category.findUnique(args);
+    return this.prisma.client.category.findUnique(args);
   }
 
   async findUniqueOrThrow(args: Prisma.CategoryFindUniqueArgs) {
-    const record = await this.prisma.category.findUnique(args);
+    const record = await this.prisma.client.category.findUnique(args);
 
     if (!record)
       throw new NotFoundException(ValidateMessage.notFound().rawMsg());
@@ -118,7 +118,7 @@ export class CategoryRepository {
   }
 
   async deleted(id: number) {
-    return this.prisma.category.delete({
+    return this.prisma.client.category.delete({
       where: {
         id,
       },

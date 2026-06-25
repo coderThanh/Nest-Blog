@@ -1,7 +1,7 @@
 import { IsInt, IsOptional } from 'class-validator';
 
 import { Prisma } from '@prisma/client';
-import { ValidateMessage } from '@/common/ultils/validate-message';
+import { ValidateMessage } from '@/common/utils/validate-message.util';
 
 export class CategoryCreatedEvent {
   @IsInt({ message: ValidateMessage.isInt().rawMsg() })
@@ -11,7 +11,7 @@ export class CategoryCreatedEvent {
   @IsOptional()
   parentId: number | null;
 
-  tx: Prisma.TransactionClient;
+  tx: any;
 
   constructor(params: CategoryCreatedEvent) {
     Object.assign(this, params);

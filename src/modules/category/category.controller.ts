@@ -28,7 +28,7 @@ import {
 } from '@/shared/dto/response.dto';
 import { FindAllCategoryDto } from '@/modules/category/dto/find-all-category.dto';
 import { BaseFindAllData, FindAllDataMeta } from '@/shared/types/response';
-import { DatabaseUltil } from '@/common/ultils/database.ultil';
+import { DatabaseUltil } from '@/common/utils/database.util';
 
 @Controller('categorys')
 export class CategoryController {

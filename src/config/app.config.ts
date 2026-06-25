@@ -1,6 +1,6 @@
 import * as joi from 'joi';
 
-import { toBoolean } from '@/common/ultils/helper';
+import { toBoolean } from '@/common/utils/helper.util';
 
 export const configValidationSchema = joi.object({
   PORT: joi.number().default(3000),

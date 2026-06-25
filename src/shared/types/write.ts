@@ -6,7 +6,7 @@ export type AuditUpdate<T> = T & {
   createdBy?: string | null;
 };
 
-export type AuditSoftDelete<T> = T & {
+export type AuditSoftDelete = {
   deletedBy: string | null;
   deletedAt: string;
 };
