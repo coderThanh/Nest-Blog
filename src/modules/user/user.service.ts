@@ -1,5 +1,6 @@
 import { CreateUserDto } from './dto/create-user.dto';
 import { CryptoUtil } from '@/common/utils/crypto.util';
+import { DatabaseValidate } from '@/common/utils/database-validate..util';
 import { DbValidateService } from '@/prisma/db-validate.service';
 import { FileEntity } from '@/modules/file/entities/file.entity';
 import { Injectable } from '@nestjs/common';
@@ -19,7 +20,7 @@ export class UserService {
   async create(createUserDto: CreateUserDto) {
     const { password, repeatPassword, phone, ...restBody } = createUserDto;
     // Validate
-    await Promise.all([
+    await DatabaseValidate.validateOrThrow([
       this.dbValidate.validateUniqueOrThrow(
         Prisma.ModelName.User,
         {
@@ -71,15 +72,15 @@ export class UserService {
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
-    const record = this.userRepo.findUniqueOrThrow({
+    const record = await this.userRepo.findUniqueOrThrow({
       where: { id },
       select: { email: true },
     });
 
     // Validate
-    await Promise.all([
+    await DatabaseValidate.validateOrThrow([
       updateUserDto.email &&
-        (await record).email !== updateUserDto.email &&
+        record.email !== updateUserDto.email &&
         this.dbValidate.validateUniqueOrThrow(
           Prisma.ModelName.User,
           {
