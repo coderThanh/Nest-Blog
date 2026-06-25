@@ -1,6 +1,5 @@
 import { CreateTagDto } from './dto/create-tag.dto';
 import { DatabaseUltil } from '@/common/utils/database.util';
-import { DatabaseValidate } from '@/common/utils/database-validate..util';
 import { DbValidateService } from '@/prisma/db-validate.service';
 import { FindAllTagDto } from '@/modules/tag/dto/find-all-tag.dto';
 import { Injectable } from '@nestjs/common';

@@ -91,7 +91,7 @@ export class DbValidateService {
 
     let uniqueSlug = slug;
     let currentIndexSlug = 1;
-    const maxSlugCountCheck = 100;
+    const maxSlugCountCheck = 10;
 
     while (true) {
       const currRecordBySlug = await modelService.findFirst({

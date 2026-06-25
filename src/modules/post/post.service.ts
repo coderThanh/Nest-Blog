@@ -1,6 +1,7 @@
 import { Category } from '@/modules/category/entities/category.entity';
 import { CreatePostDto } from './dto/create-post.dto';
 import { DatabaseUltil } from '@/common/utils/database.util';
+import { DatabaseValidate } from '@/common/utils/database-validate..util';
 import { DbValidateService } from '@/prisma/db-validate.service';
 import { FileEntity } from '@/modules/file/entities/file.entity';
 import { FindAllPostDto } from '@/modules/post/dto/find-all-post.dto';
@@ -21,14 +22,7 @@ export class PostService {
   ) {}
 
   async create(createPostDto: CreatePostDto) {
-    const [slug] = await Promise.all([
-      // check slug
-      this.dbValidate.generateUniqueSlugOrThrow({
-        modelName: Prisma.ModelName.Post,
-        fieldName: 'slug',
-        slug: createPostDto.slug,
-        columnName: Prisma.TagScalarFieldEnum.slug,
-      }),
+    await DatabaseValidate.validateOrThrow([
       //
       createPostDto.categoryIds &&
         this.dbValidate.validateRecordExistOrThrow(
@@ -44,6 +38,13 @@ export class PostService {
           'tagIds',
         ),
     ]);
+
+    const slug = await this.dbValidate.generateUniqueSlugOrThrow({
+      modelName: Prisma.ModelName.Post,
+      fieldName: 'slug',
+      slug: createPostDto.slug,
+      columnName: Prisma.TagScalarFieldEnum.slug,
+    });
 
     return await this.postRepo.create({
       ...createPostDto,
@@ -89,17 +90,7 @@ export class PostService {
     });
 
     // validate
-    const [slug] = await Promise.all([
-      // check slug
-      updatePostDto.slug && curr.slug !== updatePostDto.slug
-        ? this.dbValidate.generateUniqueSlugOrThrow({
-            modelName: Prisma.ModelName.Post,
-            fieldName: 'slug',
-            slug: updatePostDto.slug,
-            columnName: Prisma.TagScalarFieldEnum.slug,
-            valueWhereMore: { id: { not: id } },
-          })
-        : undefined,
+    await DatabaseValidate.validateOrThrow([
       //
       updatePostDto.categoryIds &&
         this.dbValidate.validateRecordExistOrThrow(
@@ -115,6 +106,17 @@ export class PostService {
           'tagIds',
         ),
     ]);
+
+    const slug =
+      updatePostDto.slug && curr.slug !== updatePostDto.slug
+        ? await this.dbValidate.generateUniqueSlugOrThrow({
+            modelName: Prisma.ModelName.Post,
+            fieldName: 'slug',
+            slug: updatePostDto.slug,
+            columnName: Prisma.TagScalarFieldEnum.slug,
+            valueWhereMore: { id: { not: id } },
+          })
+        : undefined;
 
     return await this.postRepo.patch(curr.id, {
       ...updatePostDto,

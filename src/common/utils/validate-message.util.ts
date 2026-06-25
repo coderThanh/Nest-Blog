@@ -152,6 +152,7 @@ export class ValidateMessage {
     return this.buildMessage('đã tồn tại', name);
   }
 
+  // return array to connact with errors class-validator handle at all-exception-filter
   static exceptionThrowErrorsField(field: string, message: string) {
     return [`${field}-${message}`];
   }

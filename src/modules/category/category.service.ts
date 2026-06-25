@@ -5,6 +5,7 @@ import { CategoryOrderBy } from '@/modules/category/category.enum';
 import { CategoryRepository } from '@/modules/category/category.repository';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { DatabaseUltil } from '@/common/utils/database.util';
+import { DatabaseValidate } from '@/common/utils/database-validate..util';
 import { DbValidateService } from '@/prisma/db-validate.service';
 import { FileEntity } from '@/modules/file/entities/file.entity';
 import { FindAllCategoryDto } from '@/modules/category/dto/find-all-category.dto';
@@ -23,14 +24,7 @@ export class CategoryService {
   ) {}
 
   async create(createCategoryDto: CreateCategoryDto) {
-    const [slug] = await Promise.all([
-      // check slug
-      this.dbValidate.generateUniqueSlugOrThrow({
-        modelName: Prisma.ModelName.Category,
-        fieldName: 'slug',
-        slug: createCategoryDto.slug,
-        columnName: Prisma.TagScalarFieldEnum.slug,
-      }),
+    await DatabaseValidate.validateOrThrow([
       // check unique parentId + name
       this.dbValidate.validateUniqueOrThrow(
         Prisma.ModelName.Category,
@@ -48,6 +42,13 @@ export class CategoryService {
           'parentId',
         ),
     ]);
+
+    const slug = await this.dbValidate.generateUniqueSlugOrThrow({
+      modelName: Prisma.ModelName.Category,
+      fieldName: 'slug',
+      slug: createCategoryDto.slug,
+      columnName: Prisma.TagScalarFieldEnum.slug,
+    });
 
     return await this.categoryRepo.create({
       ...createCategoryDto,
@@ -101,18 +102,7 @@ export class CategoryService {
       select: { parentId: true, id: true, slug: true },
     });
 
-    const [slug] = await Promise.all([
-      // check slug
-      updateCategoryDto.slug && current.slug !== updateCategoryDto.slug
-        ? this.dbValidate.generateUniqueSlugOrThrow({
-            modelName: Prisma.ModelName.Category,
-            fieldName: 'slug',
-            slug: updateCategoryDto.slug,
-            columnName: Prisma.TagScalarFieldEnum.slug,
-            valueWhereMore: { id: { not: id } },
-          })
-        : undefined,
-
+    await DatabaseValidate.validateOrThrow([
       // Cần lấy parentId hiện tại hoặc từ DTO để validate
       updateCategoryDto.name &&
         this.dbValidate.validateUniqueOrThrow(
@@ -136,6 +126,17 @@ export class CategoryService {
           'parentId',
         ),
     ]);
+
+    const slug =
+      updateCategoryDto.slug && current.slug !== updateCategoryDto.slug
+        ? await this.dbValidate.generateUniqueSlugOrThrow({
+            modelName: Prisma.ModelName.Category,
+            fieldName: 'slug',
+            slug: updateCategoryDto.slug,
+            columnName: Prisma.TagScalarFieldEnum.slug,
+            valueWhereMore: { id: { not: id } },
+          })
+        : undefined;
 
     return await this.categoryRepo.patch(id, {
       ...updateCategoryDto,
