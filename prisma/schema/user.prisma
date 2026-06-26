@@ -8,7 +8,8 @@ model User {
     dob           DateTime?
     gender        GenderEnum?
     verifiedAt    DateTime?   @map("verified_at")
-    // roleId        String      @default("clv1j8y6m000008l2h000002") @map("role_id") // clv1j8y6m000008l2h000002 is role member
+    roleId        String      @default("clv1j8y6m000008l2h000002") @map("role_id") // clv1j8y6m000008l2h000002 is role member
+    role          Role        @relation("userRole", fields: [roleId], references: [id], onDelete: Restrict)
     passwordHash  String      @map("password_hash")
     thumbnailId   String?     @map("thumbnail_id")
     thumbnal      File?       @relation("userThumbnail", fields: [thumbnailId], references: [id])

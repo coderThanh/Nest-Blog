@@ -2,9 +2,11 @@ model Role {
     id          String  @id @default(cuid())
     name        String
     description String?
-    isSystem    Boolean @default(false)
+    isSystem    Boolean @default(false) @map("is_system")
 
+    // 
     permissions RolePermission[] @relation("RoleToPermission")
+    users       User[]           @relation("userRole")
 }
 
 model RolePermission {
