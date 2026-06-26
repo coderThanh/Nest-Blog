@@ -51,6 +51,14 @@ export class CreateUserDto {
   @IsNotEmpty({ message: ValidateMessage.isNotEmpty().exceptionMsg() })
   username: string;
 
+  /** @example 'clv1j8y6m000008l2h000002' */
+  @IsString({
+    message: ValidateMessage.isString().exceptionMsg(),
+  })
+  @NormalizeString()
+  @IsNotEmpty({ message: ValidateMessage.isNotEmpty().exceptionMsg() })
+  roleId: string;
+
   /** @example '2000-06-25T07:41:05.871Z' */
   @IsDateString(undefined, {
     message: ValidateMessage.isString().exceptionMsg(),

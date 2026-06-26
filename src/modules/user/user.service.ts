@@ -27,6 +27,7 @@ export class UserService {
     const { password, repeatPassword, phone, ...restBody } = createUserDto;
     // Validate
     await DatabaseValidate.validateOrThrow([
+      //
       this.dbValidate.validateUniqueOrThrow(
         Prisma.ModelName.User,
         {
@@ -41,6 +42,12 @@ export class UserService {
           username: createUserDto.username,
         },
         Prisma.UserScalarFieldEnum.username,
+      ),
+      //
+      this.dbValidate.validateRecordExistOrThrow(
+        Prisma.ModelName.Role,
+        createUserDto.roleId,
+        Prisma.UserScalarFieldEnum.roleId,
       ),
     ]);
 
@@ -100,6 +107,13 @@ export class UserService {
           },
           Prisma.UserScalarFieldEnum.email,
         ),
+      updateUserDto.roleId &&
+        updateUserDto.roleId !== record.roleId &&
+        this.dbValidate.validateRecordExistOrThrow(
+          Prisma.ModelName.Role,
+          updateUserDto.roleId,
+          Prisma.UserScalarFieldEnum.roleId,
+        ),
     ]);
 
     const { normalPhone } = await UserService.normalizeFields({
@@ -150,7 +164,7 @@ export class UserService {
     return {
       where: UserService.getCommonWhere(query),
       select: {
-        ...User.selectRelation,
+        ...User.selectFindMany,
         ...UserService.getCommonInclue(),
       },
       orderBy: sort,

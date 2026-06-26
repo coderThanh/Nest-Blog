@@ -5,6 +5,7 @@ import { Category } from '@/modules/category/entities/category.entity';
 import { FileEntity } from '@/modules/file/entities/file.entity';
 import { PickType } from '@nestjs/swagger';
 import { PostEntity } from '@/modules/post/entities/post.entity';
+import { Role } from '@/modules/role/entities/role.entity';
 
 export class User {
   @Expose()
@@ -31,7 +32,13 @@ export class User {
   gender?: GenderEnum;
 
   @Expose()
-  verified: string | null;
+  verifiedAt: string | null;
+
+  @Expose()
+  roleId: string;
+
+  @Expose()
+  role: Role;
 
   passwordHash: string;
 
@@ -68,14 +75,20 @@ export class User {
   @Expose()
   categories: Category[] | null;
 
-  static selectRelation: Prisma.UserSelect = {
+  static selectFindMany: Prisma.UserSelect = {
     id: true,
     name: true,
     phone: true,
     email: true,
     username: true,
-    // roleId:true,
-    // verify_at: true,
+    roleId: true,
+    role: {
+      select: {
+        id: true,
+        name: true,
+      },
+    },
+    verifiedAt: true,
     createdAt: true,
     updatedAt: true,
     createdBy: true,
@@ -91,6 +104,17 @@ export class User {
         },
       },
     },
+    thumbnal: {
+      select: {
+        id: true,
+        path: true,
+      },
+    },
+  };
+
+  static selectRelation: Prisma.UserSelect = {
+    id: true,
+    name: true,
     thumbnal: {
       select: {
         id: true,

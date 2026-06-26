@@ -131,7 +131,7 @@ export class ValidateMessage {
   }
 
   static notExist(name: string = '') {
-    return this.buildMessage(`bảng ghi đã không còn tồn tại`, name);
+    return this.buildMessage(`bảng ghi không tồn tại`, name);
   }
 
   static notFound(name: string = '') {

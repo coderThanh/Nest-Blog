@@ -15,6 +15,7 @@ import { PrismaClientExceptionFilter } from './common/exception/prisma-exception
 import { PrismaModule } from '@/prisma/prisma.module';
 import { TagModule } from './modules/tag/tag.module';
 import { UserModule } from './modules/user/user.module';
+import { RoleModule } from './modules/role/role.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { UserModule } from './modules/user/user.module';
     FileModule,
     UserModule,
     TagModule,
+    RoleModule,
   ],
   controllers: [AppController],
   providers: [
