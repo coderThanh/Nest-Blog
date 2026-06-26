@@ -6,15 +6,25 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { plainToInstance } from 'class-transformer';
 import { User } from '@/modules/user/entities/user.entity';
-import { ApiCustomResponseOK } from '@/common/decorator/api-response-ok';
+import {
+  ApiCustomResponseOK,
+  ApiCustomResponseOKFindAll,
+} from '@/common/decorator/api-response-ok';
 import { ApiExtraModels } from '@nestjs/swagger';
-import { ApiResponseOkDto } from '@/shared/dto/response.dto';
+import {
+  ApiResponseDataFindAllMeta,
+  ApiResponseOkDto,
+} from '@/shared/dto/response.dto';
+import { FindAllUserDto } from '@/modules/user/dto/find-all-user.dto';
+import { BaseFindAllData } from '@/shared/types/response';
+import { DatabaseUltil } from '@/common/utils/database.util';
 
 @Controller('user')
 export class UserController {
@@ -30,8 +40,21 @@ export class UserController {
   }
 
   @Get()
-  async findAll() {
-    return this.userService.findAll();
+  @ApiExtraModels(ApiResponseOkDto, User, ApiResponseDataFindAllMeta)
+  @ApiCustomResponseOKFindAll(User)
+  async findAll(@Query() query: FindAllUserDto) {
+    const { items, total } = await this.userService.findAllAndCount(query);
+
+    return {
+      items: items.map((item) =>
+        plainToInstance(User, item, { excludeExtraneousValues: true }),
+      ),
+      meta: DatabaseUltil.getPaginationMeta({
+        currentPage: query.page,
+        limit: query.limit,
+        totalItems: total,
+      }),
+    } as BaseFindAllData;
   }
 
   @Get(':id')

@@ -71,6 +71,26 @@ export class User {
   static selectRelation: Prisma.UserSelect = {
     id: true,
     name: true,
+    phone: true,
+    email: true,
+    username: true,
+    // roleId:true,
+    // verify_at: true,
+    createdAt: true,
+    updatedAt: true,
+    createdBy: true,
+    createdByUser: {
+      select: {
+        id: true,
+        name: true,
+        thumbnal: {
+          select: {
+            path: true,
+            id: true,
+          },
+        },
+      },
+    },
     thumbnal: {
       select: {
         id: true,

@@ -1,31 +1,33 @@
 model User {
-    id           String      @id @default(cuid())
-    name         String
-    phone        String?
-    search       String?     @default(dbgenerated())
-    email        String
-    username     String
-    dob          DateTime?
-    gender       GenderEnum?
-    verified     DateTime?
-    passwordHash String      @map("password_hash")
-    thumbnailId  String?     @map("thumbnail_id")
-    thumbnal      File?      @relation("userThumbnail", fields: [thumbnailId], references: [id])
-    createdAt    DateTime    @default(now()) @map("created_at")
-    updatedAt    DateTime    @default(now()) @updatedAt @map("updated_at")
-    createdBy    String?     @map("created_by")
-    createdByUser User?      @relation("userAuth", fields: [createdBy], references: [id], onDelete: SetNull)
-    deletedAt    DateTime?   @map("deleted_at")
-    deletedBy    String?     @map("deleted_by")
-    deletedByUser User?      @relation("userDelete", fields: [deletedBy], references: [id])
+    id            String      @id @default(cuid())
+    name          String
+    phone         String?
+    // search        String?     @default(dbgenerated())
+    search     String     @default(dbgenerated()) 
+    email         String
+    username      String
+    dob           DateTime?
+    gender        GenderEnum?
+    verifiedAt    DateTime?   @map("verified_at")
+    // roleId        Int         @default(2) @map("role_id") // 2 is role user base
+    passwordHash  String      @map("password_hash")
+    thumbnailId   String?     @map("thumbnail_id")
+    thumbnal      File?       @relation("userThumbnail", fields: [thumbnailId], references: [id])
+    createdAt     DateTime    @default(now()) @map("created_at")
+    updatedAt     DateTime    @default(now()) @updatedAt @map("updated_at")
+    createdBy     String?     @map("created_by")
+    createdByUser User?       @relation("userAuth", fields: [createdBy], references: [id], onDelete: SetNull)
+    deletedAt     DateTime?   @map("deleted_at")
+    deletedBy     String?     @map("deleted_by")
+    deletedByUser User?       @relation("userDelete", fields: [deletedBy], references: [id])
 
     // 
-    posts         Post[]     @relation("postAuth")
-    users         User[]     @relation("userAuth")
-    tags          Tag[]      @relation("tagAuth")
-    files         File[]     @relation("fileAuth")
-    usersDeleted  User[]     @relation("userDelete")
-    categories    Category[] @relation("categoryAuthor")
+    posts        Post[]     @relation("postAuth")
+    users        User[]     @relation("userAuth")
+    tags         Tag[]      @relation("tagAuth")
+    files        File[]     @relation("fileAuth")
+    usersDeleted User[]     @relation("userDelete")
+    categories   Category[] @relation("categoryAuthor")
 
     @@unique([email, deletedAt], where: raw("deleted_at is null"))
     @@unique([username, deletedAt], where: raw("deleted_at is null"))
