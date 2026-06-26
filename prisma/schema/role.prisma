@@ -1,21 +1,17 @@
 model Role {
-    id          String  @id @default(cuid())
-    name        String
+    id          String   @id @default(cuid())
+    name        String   @unique
+    search      String   @default(dbgenerated())
     description String?
-    isSystem    Boolean @default(false) @map("is_system")
+    isSystem    Boolean  @default(false) @map("is_system")
+    createdAt   DateTime @default(now()) @map("created_at")
+    updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
+    createdBy   String?  @map("created_by")
+
+    // 
+    createdByUser User? @relation("roleAuth", fields: [createdBy], references: [id], onDelete: SetNull)
 
     // 
     permissions RolePermission[] @relation("RoleToPermission")
     users       User[]           @relation("userRole")
-}
-
-model RolePermission {
-    roleId       String          @map("role_id")
-    permissionId Int             @map("permission_id")
-    scope        PermissionScope
-
-    role       Role       @relation("RoleToPermission", fields: [roleId], references: [id], onDelete: Cascade)
-    permission Permission @relation("RoleToPermission", fields: [permissionId], references: [id], onDelete: Cascade)
-
-    @@id([roleId, permissionId])
 }

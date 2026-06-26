@@ -11,6 +11,8 @@ const AUDIT_MODELS: Set<Prisma.ModelName> = new Set([
   'Post',
   'Tag',
   'File',
+  'Role',
+  'Permission',
 ]);
 
 /**

@@ -1,8 +1,9 @@
 model Permission {
     id         Int    @id @default(autoincrement())
-    name       String
-    permission String
+    action     String
+    permission String @unique
     module     String
+    search     String @default(dbgenerated())
 
     roles RolePermission[] @relation("RoleToPermission")
 }

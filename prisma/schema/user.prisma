@@ -28,6 +28,7 @@ model User {
     files        File[]     @relation("fileAuth")
     usersDeleted User[]     @relation("userDelete")
     categories   Category[] @relation("categoryAuthor")
+    roles        Role[]     @relation("roleAuth")
 
     @@unique([email, deletedAt], where: raw("deleted_at is null"))
     @@unique([username, deletedAt], where: raw("deleted_at is null"))

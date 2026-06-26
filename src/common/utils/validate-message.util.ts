@@ -152,6 +152,20 @@ export class ValidateMessage {
     return this.buildMessage('đã tồn tại', name);
   }
 
+  static isSystemDoNotEdit(name: string = '') {
+    return this.buildMessage(
+      'đây là bảng ghi hệ thống không được phép sửa',
+      name,
+    );
+  }
+
+  static isSystemDoNotDelete(name: string = '') {
+    return this.buildMessage(
+      'đây là bảng ghi hệ thống không được phép xoá',
+      name,
+    );
+  }
+
   // return array to connact with errors class-validator handle at all-exception-filter
   static exceptionThrowErrorsField(field: string, message: string) {
     return [`${field}-${message}`];
