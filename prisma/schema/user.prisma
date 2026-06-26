@@ -2,14 +2,13 @@ model User {
     id            String      @id @default(cuid())
     name          String
     phone         String?
-    // search        String?     @default(dbgenerated())
-    search     String     @default(dbgenerated()) 
+    search        String      @default(dbgenerated())
     email         String
     username      String
     dob           DateTime?
     gender        GenderEnum?
     verifiedAt    DateTime?   @map("verified_at")
-    // roleId        Int         @default(2) @map("role_id") // 2 is role user base
+    // roleId        String      @default("clv1j8y6m000008l2h000002") @map("role_id") // clv1j8y6m000008l2h000002 is role member
     passwordHash  String      @map("password_hash")
     thumbnailId   String?     @map("thumbnail_id")
     thumbnal      File?       @relation("userThumbnail", fields: [thumbnailId], references: [id])

@@ -1,0 +1,19 @@
+model Role {
+    id          String  @id @default(cuid())
+    name        String
+    description String?
+    isSystem    Boolean @default(false)
+
+    permissions RolePermission[] @relation("RoleToPermission")
+}
+
+model RolePermission {
+    roleId       String          @map("role_id")
+    permissionId Int             @map("permission_id")
+    scope        PermissionScope
+
+    role       Role       @relation("RoleToPermission", fields: [roleId], references: [id], onDelete: Cascade)
+    permission Permission @relation("RoleToPermission", fields: [permissionId], references: [id], onDelete: Cascade)
+
+    @@id([roleId, permissionId])
+}

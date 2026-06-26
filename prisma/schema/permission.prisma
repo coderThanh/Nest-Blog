@@ -1,0 +1,8 @@
+model Permission {
+    id         Int    @id @default(autoincrement())
+    name       String
+    permission String
+    module     String
+
+    roles RolePermission[] @relation("RoleToPermission")
+}

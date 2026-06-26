@@ -13,3 +13,8 @@ enum GenderEnum {
     FEMALE
     OTHER
 }
+
+enum PermissionScope {
+    OWN
+    ANY
+}
