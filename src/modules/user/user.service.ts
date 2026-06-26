@@ -181,7 +181,7 @@ export class UserService {
 
     if (excludeIds?.length) andCondition.push({ id: { notIn: excludeIds } });
 
-    // if (roleId) andCondition.push({ roleId: roleId });
+    if (roleId) andCondition.push({ roleId: roleId });
 
     if (search)
       andCondition.push({

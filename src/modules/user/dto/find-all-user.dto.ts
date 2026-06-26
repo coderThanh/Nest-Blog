@@ -1,4 +1,4 @@
-import { IsEnum, IsInt, IsOptional } from 'class-validator';
+import { IsEnum, IsInt, IsOptional, IsString } from 'class-validator';
 
 import { FilterIdsStringDto } from '@/shared/dto/filter-ids.dto';
 import { FilterOrderDirDto } from '@/shared/dto/filter-order-dir.dto';
@@ -15,9 +15,9 @@ export class FindAllUserDto extends IntersectionType(
   FilterPaginationDto,
   FilterOrderDirDto(OrderDir.desc),
 ) {
-  @IsInt({ message: ValidateMessage.isInt().exceptionMsg() })
+  @IsString({ message: ValidateMessage.isString().exceptionMsg() })
   @IsOptional()
-  roleId?: number;
+  roleId?: string;
 
   @IsEnum(UserOrderBy, { message: ValidateMessage.isEnum().exceptionMsg() })
   @IsOptional()
