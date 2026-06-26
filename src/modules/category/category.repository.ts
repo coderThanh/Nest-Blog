@@ -1,4 +1,3 @@
-import { AuditCreate, AuditUpdate } from '@/shared/types/write';
 import { Injectable, NotFoundException } from '@nestjs/common';
 
 import { CategoryCreatedEvent } from '@/modules/category/events/category-created.event';
@@ -18,16 +17,16 @@ export class CategoryRepository {
     private readonly emitEvent: EventEmitter2,
   ) {}
 
-  async create(body: AuditCreate<CreateCategoryDto>) {
+  async create(data: CreateCategoryDto) {
     return this.prisma.client.$transaction(async (ctx) => {
       const record = await ctx.category.create({
-        data: body,
+        data: data as Prisma.CategoryUncheckedCreateInput,
         select: { id: true, slug: true, name: true },
       });
 
       // event
       const event = new CategoryCreatedEvent({
-        parentId: body.parentId ?? null,
+        parentId: data.parentId ?? null,
         categoryId: record.id,
         tx: ctx,
       });
@@ -40,7 +39,11 @@ export class CategoryRepository {
     });
   }
 
-  async patch(id: number, data: AuditUpdate<UpdateCategoryDto>) {
+  async patch(id: number, body: UpdateCategoryDto) {
+    const data: Prisma.CategoryUncheckedUpdateInput = {
+      ...body,
+    };
+
     return this.prisma.client.$transaction(async (ctx) => {
       const oldRecord = await ctx.category.findUniqueOrThrow({
         where: { id },
@@ -59,7 +62,7 @@ export class CategoryRepository {
         categoryId: id,
         oldPath: oldRecord.path,
         oldParentId: oldRecord.parentId,
-        newParentId: data.parentId ?? null,
+        newParentId: body.parentId ?? null,
         tx: ctx as Prisma.TransactionClient,
       });
 

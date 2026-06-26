@@ -1,4 +1,3 @@
-import { AuditCreate, AuditUpdate } from '@/shared/types/write';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Post, Prisma } from '@prisma/client';
 
@@ -13,7 +12,7 @@ import { ValidateMessage } from '@/common/utils/validate-message.util';
 export class PostRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(body: AuditCreate<CreatePostDto>) {
+  async create(body: CreatePostDto) {
     const { categoryIds, tagIds, ...rest } = body;
 
     return this.prisma.client.post.create({
@@ -28,7 +27,7 @@ export class PostRepository {
     });
   }
 
-  async patch(id: Post['id'], body: AuditUpdate<UpdatePostDto>) {
+  async patch(id: Post['id'], body: UpdatePostDto) {
     const { categoryIds, tagIds, ...rest } = body;
 
     return this.prisma.client.post.update({

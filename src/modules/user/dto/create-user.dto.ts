@@ -25,7 +25,7 @@ export class CreateUserDto {
   @IsString({ message: ValidateMessage.isString().exceptionMsg() })
   @NormalizeString()
   @IsOptional()
-  name?: string | null;
+  name: string;
 
   @ApiPropertyOptional({ example: null })
   @IsPhoneNumberByCountry(undefined, {

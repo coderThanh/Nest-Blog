@@ -49,7 +49,6 @@ export class UserService {
       ...restBody,
       phone: normalPhone,
       passwordHash,
-      createdBy: null,
     });
   }
 
@@ -99,10 +98,7 @@ export class UserService {
   }
 
   async remove(id: string) {
-    return this.userRepo.softDelete(id, {
-      deletedBy: null,
-      deletedAt: new Date().toISOString(),
-    });
+    return this.userRepo.softDelete(id);
   }
 
   //

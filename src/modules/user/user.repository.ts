@@ -1,22 +1,22 @@
-import {
-  AuditCreate,
-  AuditSoftDelete,
-  AuditUpdate,
-} from '@/shared/types/write';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma, User } from '@prisma/client';
 
+import { ClsService } from 'nestjs-cls';
 import { CreateUserDto } from '@/modules/user/dto/create-user.dto';
+import { GlobalClsStore } from '@/shared/types/cls-store';
 import { PrismaService } from '@/prisma/prisma.service';
 import { UpdateUserDto } from '@/modules/user/dto/update-user.dto';
 import { ValidateMessage } from '@/common/utils/validate-message.util';
 
 @Injectable()
 export class UserRepository {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly cls: ClsService<GlobalClsStore>,
+  ) {}
 
   async create(
-    body: AuditCreate<Omit<CreateUserDto, 'password' | 'repeatPassword'>> & {
+    body: Omit<CreateUserDto, 'password' | 'repeatPassword'> & {
       passwordHash: string;
     },
   ) {
@@ -26,12 +26,9 @@ export class UserRepository {
     });
   }
 
-  async patch(
-    id: User['id'],
-    data: AuditUpdate<UpdateUserDto> & { passwordHash?: string },
-  ) {
+  async patch(id: User['id'], body: UpdateUserDto & { passwordHash?: string }) {
     return this.prisma.client.user.update({
-      data: data as Prisma.UserUncheckedUpdateInput,
+      data: body as Prisma.UserUncheckedUpdateInput,
       where: { id },
     });
   }
@@ -77,12 +74,14 @@ export class UserRepository {
     return record;
   }
 
-  async softDelete(id: User['id'], body: AuditSoftDelete) {
+  async softDelete(id: User['id']) {
+    const authId = this.cls.get('userId');
+
     return this.prisma.client.user.update({
       where: { id },
       data: {
-        deletedBy: body.deletedBy,
-        deletedAt: body.deletedAt,
+        deletedBy: authId,
+        deletedAt: new Date().toISOString(),
       },
       select: { id: true },
     });

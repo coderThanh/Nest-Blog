@@ -1,22 +1,25 @@
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 
+import { ClsService } from 'nestjs-cls';
 import { ConfigService } from '@nestjs/config';
 import { ConfigUltils } from '@/common/utils/config.util';
+import { GlobalClsStore } from '@/shared/types/cls-store';
 import { PrismaClient } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
+import { auditExtension } from './extensions/audit.extension';
 import pg from 'pg';
 import { softDeleteExtension } from './extensions/soft-delete.extension';
 
 @Injectable()
-// extends PrismaClient
 export class PrismaService implements OnModuleInit, OnModuleDestroy {
-  // 1. Giữ instance gốc ở dạng private để quản lý kết nối nội bộ
   private readonly prismaClient: PrismaClient;
 
-  // 2. Định nghĩa client public chứa Extension để các Service khác gọi vào
   readonly client: ReturnType<typeof this.initClient>;
 
-  constructor(configService: ConfigService) {
+  constructor(
+    configService: ConfigService,
+    private readonly cls: ClsService<GlobalClsStore>,
+  ) {
     const connectString = new ConfigUltils(configService).getDataBaseURL();
 
     if (!connectString) throw new Error('DATABASE_URL is not set');
@@ -24,18 +27,15 @@ export class PrismaService implements OnModuleInit, OnModuleDestroy {
     const pool = new pg.Pool({ connectionString: connectString });
     const adapter = new PrismaPg(pool);
 
-    // Khởi tạo client gốc với pg adapter
     this.prismaClient = new PrismaClient({ adapter });
 
-    // Khởi tạo client mở rộng kèm extension
     this.client = this.initClient();
   }
 
-  /**
-   * Tích hợp các extension vào Prisma Client
-   */
   private initClient() {
-    return this.prismaClient.$extends(softDeleteExtension);
+    return this.prismaClient
+      .$extends(softDeleteExtension)
+      .$extends(auditExtension(this.cls));
   }
 
   async onModuleInit() {

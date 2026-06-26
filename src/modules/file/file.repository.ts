@@ -1,4 +1,3 @@
-import { AuditCreate, AuditUpdate } from '@/shared/types/write';
 import { File, Prisma } from '@prisma/client';
 
 import { CreateFileDto } from '@/modules/file/dto/create-file.dto';
@@ -10,14 +9,14 @@ import { UpdateFileDto } from '@/modules/file/dto/update-file.dto';
 export class FileRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(body: AuditCreate<CreateFileDto>) {
+  async create(body: CreateFileDto) {
     return await this.prisma.client.file.create({
       data: body as Prisma.FileUncheckedCreateInput,
       select: { id: true },
     });
   }
 
-  async patch(id: File['id'], body: AuditUpdate<UpdateFileDto>) {
+  async patch(id: File['id'], body: UpdateFileDto) {
     return await this.prisma.client.file.update({
       data: body as Prisma.FileUncheckedUpdateInput,
       where: {

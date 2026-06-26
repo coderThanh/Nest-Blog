@@ -38,7 +38,6 @@ export class TagService {
 
     return this.tagRepo.create({
       ...createTagDto,
-      createdBy: null,
       slug,
     });
   }

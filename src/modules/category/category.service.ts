@@ -53,7 +53,6 @@ export class CategoryService {
     return await this.categoryRepo.create({
       ...createCategoryDto,
       slug,
-      createdBy: null,
     });
   }
 
@@ -141,7 +140,6 @@ export class CategoryService {
     return await this.categoryRepo.patch(id, {
       ...updateCategoryDto,
       slug: slug,
-      createdBy: null,
     });
   }
 

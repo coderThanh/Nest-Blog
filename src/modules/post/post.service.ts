@@ -49,7 +49,6 @@ export class PostService {
     return await this.postRepo.create({
       ...createPostDto,
       slug: slug,
-      createdBy: null, // TODO fix lated
     });
   }
 

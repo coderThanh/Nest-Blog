@@ -1,4 +1,3 @@
-import { AuditCreate, AuditUpdate } from '@/shared/types/write';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma, Tag } from '@prisma/client';
 
@@ -11,14 +10,14 @@ import { ValidateMessage } from '@/common/utils/validate-message.util';
 export class TagRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(body: AuditCreate<CreateTagDto>) {
+  async create(body: CreateTagDto) {
     return this.prisma.client.tag.create({
       data: body as Prisma.TagUncheckedCreateInput,
       select: { id: true, slug: true },
     });
   }
 
-  async patch(id: Tag['id'], data: AuditUpdate<UpdateTagDto>) {
+  async patch(id: Tag['id'], data: UpdateTagDto) {
     return this.prisma.client.tag.update({
       data: data as Prisma.TagUncheckedUpdateInput,
       where: { id },
