@@ -10,7 +10,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { PassportStrategyType } from '@/common/enum/ultil.enum';
 import { Role } from '@/modules/role/entities/role.entity';
 import { RoleService } from '@/modules/role/role.service';
-import { UserService } from '@/modules/user/user.service';
+import { UserProfileService } from '@/modules/user/user-profile.service';
 import { plainToInstance } from 'class-transformer';
 
 @Injectable()
@@ -20,7 +20,7 @@ export class JwtStrategy extends PassportStrategy(
 ) {
   constructor(
     private readonly configService: ConfigService,
-    private readonly userService: UserService,
+    private readonly profileService: UserProfileService,
     private readonly roleService: RoleService,
     private readonly cls: ClsService<GlobalClsStore>,
   ) {
@@ -36,7 +36,7 @@ export class JwtStrategy extends PassportStrategy(
   async validate(payload: JwtPayload) {
     console.log('jwt validate', payload);
 
-    const user = await this.userService.findOneForAuthGuardUserOrThrow(
+    const user = await this.profileService.findOneForAuthGuardUserOrThrow(
       payload.sub,
     );
 

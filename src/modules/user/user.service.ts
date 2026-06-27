@@ -90,29 +90,6 @@ export class UserService {
     });
   }
 
-  async findOneEmbedPermissionsOrThrow(id: string) {
-    return this.userRepo.findUniqueOrThrow({
-      where: { id },
-      include: {
-        ...UserService.getCommonInclue(),
-        role: {
-          select: Role.selectRelationEmbedPermission,
-        },
-      },
-    });
-  }
-
-  async findOneForAuthGuardUserOrThrow(id: string) {
-    return this.userRepo.findUniqueOrThrow({
-      where: { id },
-      select: {
-        id: true,
-        email: true,
-        roleId: true,
-      },
-    });
-  }
-
   async update(id: string, updateUserDto: UpdateUserDto) {
     const record = await this.userRepo.findUniqueOrThrow({
       where: { id },
