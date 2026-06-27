@@ -32,12 +32,13 @@ export class User {
   gender?: GenderEnum;
 
   @Expose()
-  verifiedAt: string | null;
+  emailVerifiedAt: string | null;
 
   @Expose()
   roleId: string;
 
   @Expose()
+  @Type(() => Role)
   role: Role;
 
   passwordHash: string;
@@ -88,7 +89,7 @@ export class User {
         name: true,
       },
     },
-    verifiedAt: true,
+    emailVerifiedAt: true,
     createdAt: true,
     updatedAt: true,
     createdBy: true,

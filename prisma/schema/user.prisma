@@ -1,25 +1,25 @@
 model User {
-    id            String      @id @default(cuid())
-    name          String
-    phone         String?
-    search        String      @default(dbgenerated())
-    email         String
-    username      String
-    dob           DateTime?
-    gender        GenderEnum?
-    verifiedAt    DateTime?   @map("verified_at")
-    roleId        String      @default("clv1j8y6m000008l2h000002") @map("role_id") // clv1j8y6m000008l2h000002 is role member
-    role          Role        @relation("userRole", fields: [roleId], references: [id], onDelete: Restrict)
-    passwordHash  String      @map("password_hash")
-    thumbnailId   String?     @map("thumbnail_id")
-    thumbnal      File?       @relation("userThumbnail", fields: [thumbnailId], references: [id])
-    createdAt     DateTime    @default(now()) @map("created_at")
-    updatedAt     DateTime    @default(now()) @updatedAt @map("updated_at")
-    createdBy     String?     @map("created_by")
-    createdByUser User?       @relation("userAuth", fields: [createdBy], references: [id], onDelete: SetNull)
-    deletedAt     DateTime?   @map("deleted_at")
-    deletedBy     String?     @map("deleted_by")
-    deletedByUser User?       @relation("userDelete", fields: [deletedBy], references: [id])
+    id              String      @id @default(cuid())
+    name            String
+    phone           String?
+    search          String      @default(dbgenerated())
+    email           String
+    username        String
+    dob             DateTime?
+    gender          GenderEnum?
+    emailVerifiedAt DateTime?   @map("email_verified_at")
+    roleId          String      @default("clv1j8y6m000008l2h000002") @map("role_id") // clv1j8y6m000008l2h000002 is role member
+    role            Role        @relation("userRole", fields: [roleId], references: [id], onDelete: Restrict)
+    passwordHash    String      @map("password_hash")
+    thumbnailId     String?     @map("thumbnail_id")
+    thumbnal        File?       @relation("userThumbnail", fields: [thumbnailId], references: [id])
+    createdAt       DateTime    @default(now()) @map("created_at")
+    updatedAt       DateTime    @default(now()) @updatedAt @map("updated_at")
+    createdBy       String?     @map("created_by")
+    createdByUser   User?       @relation("userAuth", fields: [createdBy], references: [id], onDelete: SetNull)
+    deletedAt       DateTime?   @map("deleted_at")
+    deletedBy       String?     @map("deleted_by")
+    deletedByUser   User?       @relation("userDelete", fields: [deletedBy], references: [id])
 
     // 
     posts        Post[]     @relation("postAuth")
@@ -29,6 +29,8 @@ model User {
     usersDeleted User[]     @relation("userDelete")
     categories   Category[] @relation("categoryAuthor")
     roles        Role[]     @relation("roleAuth")
+    tokens       Token[]    @relation("userToken")
+    sessions     Session[]  @relation("userSession")
 
     @@unique([email, deletedAt], where: raw("deleted_at is null"))
     @@unique([username, deletedAt], where: raw("deleted_at is null"))
