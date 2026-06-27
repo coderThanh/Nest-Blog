@@ -55,14 +55,20 @@ export class RoleService {
   async findOneIncludePermissions(id: string) {
     return this.roleRepo.findUnique({
       where: { id },
-      include: { ...RoleService.getCommonInclude(), permissions: true },
+      include: {
+        ...RoleService.getCommonInclude(),
+        ...RoleService.getCommonIncluePermissions(),
+      },
     });
   }
 
   async findOneIncludePermissionsOrthrow(id: string) {
     return this.roleRepo.findUniqueOrThrow({
       where: { id },
-      include: { ...RoleService.getCommonInclude(), permissions: true },
+      include: {
+        ...RoleService.getCommonInclude(),
+        ...RoleService.getCommonIncluePermissions(),
+      },
     });
   }
 
@@ -146,6 +152,21 @@ export class RoleService {
       take: limit,
       skip: DatabaseUltil.getSkip(page, limit),
       orderBy: sort,
+    };
+  }
+
+  static getCommonIncluePermissions(): Prisma.RoleInclude {
+    return {
+      permissions: {
+        select: {
+          scope: true,
+          permission: {
+            select: {
+              permission: true,
+            },
+          },
+        },
+      },
     };
   }
 }

@@ -12,6 +12,7 @@ import { DbValidateService } from '@/prisma/db-validate.service';
 import { FileEntity } from '@/modules/file/entities/file.entity';
 import { FindAllUserDto } from '@/modules/user/dto/find-all-user.dto';
 import { Injectable } from '@nestjs/common';
+import { Role } from '@/modules/role/entities/role.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from '@/modules/user/entities/user.entity';
 import { UserRepository } from '@/modules/user/user.repository';
@@ -89,6 +90,29 @@ export class UserService {
     });
   }
 
+  async findOneEmbedPermissionsOrThrow(id: string) {
+    return this.userRepo.findUniqueOrThrow({
+      where: { id },
+      include: {
+        ...UserService.getCommonInclue(),
+        role: {
+          select: Role.selectRelationEmbedPermission,
+        },
+      },
+    });
+  }
+
+  async findOneForAuthGuardUserOrThrow(id: string) {
+    return this.userRepo.findUniqueOrThrow({
+      where: { id },
+      select: {
+        id: true,
+        email: true,
+        roleId: true,
+      },
+    });
+  }
+
   async update(id: string, updateUserDto: UpdateUserDto) {
     const record = await this.userRepo.findUniqueOrThrow({
       where: { id },
@@ -130,6 +154,7 @@ export class UserService {
   //
   static getCommonInclue(): Prisma.UserInclude {
     return {
+      role: { select: Role.selectRelation },
       thumbnal: { select: FileEntity.selectRelation },
       createdByUser: { select: User.selectRelation },
     };

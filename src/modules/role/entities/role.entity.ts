@@ -1,6 +1,6 @@
-import { Prisma, RolePermission } from '@prisma/client';
+import { Expose, Transform, Type } from 'class-transformer';
+import { PermissionScope, Prisma, RolePermission } from '@prisma/client';
 
-import { Expose } from 'class-transformer';
 import { UserRelation } from '@/modules/user/entities/user.entity';
 
 export class Role {
@@ -17,7 +17,14 @@ export class Role {
   isSystem: boolean;
 
   @Expose()
-  permissions: RolePermission[];
+  @Transform(({ obj }: { obj: Role }) => {
+    if (obj.permissions === undefined) return null;
+
+    return (obj.permissions as any).map(
+      (item) => new PermissionInRole(item.permission.permission, item.scope),
+    );
+  })
+  permissions: PermissionInRole[];
 
   @Expose()
   createdAt: string | null;
@@ -54,4 +61,32 @@ export class Role {
     },
     updatedAt: true,
   };
+
+  static selectRelationEmbedPermission: Prisma.RoleSelect = {
+    id: true,
+    name: true,
+    permissions: {
+      select: {
+        scope: true,
+        permission: {
+          select: {
+            permission: true,
+          },
+        },
+      },
+    },
+  };
+}
+
+export class PermissionInRole {
+  @Expose()
+  permission: string;
+
+  @Expose()
+  scope: PermissionScope;
+
+  constructor(permission: string, scope: PermissionScope) {
+    this.permission = permission;
+    this.scope = scope;
+  }
 }
