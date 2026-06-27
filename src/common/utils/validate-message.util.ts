@@ -152,6 +152,10 @@ export class ValidateMessage {
     return this.buildMessage('đã tồn tại', name);
   }
 
+  static isConnectingNotDelete(name: string = '') {
+    return this.buildMessage('vẫn còn bảng ghi liên kết không thể xoá', name);
+  }
+
   static isSystemDoNotEdit(name: string = '') {
     return this.buildMessage(
       'đây là bảng ghi hệ thống không được phép sửa',

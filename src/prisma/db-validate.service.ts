@@ -72,6 +72,30 @@ export class DbValidateService {
     }
   }
 
+  async validateNoConnectOrThrow(
+    modelName: Prisma.ModelName,
+    whereInput: Record<string, any>,
+  ) {
+    const modelService: any = this.prisma.client[modelName];
+
+    if (!modelService) {
+      throw new InternalServerErrorException(
+        `Model ${modelName} không tồn tại.`,
+      );
+    }
+
+    const record = await modelService.findFirst({
+      where: whereInput,
+      select: { id: true },
+    });
+
+    if (record) {
+      throw new BadRequestException(
+        ValidateMessage.isConnectingNotDelete().rawMsg(),
+      );
+    }
+  }
+
   async generateUniqueSlugOrThrow(params: {
     modelName: Prisma.ModelName;
     valueWhereMore?: Record<string, any>;

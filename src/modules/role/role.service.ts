@@ -8,6 +8,7 @@ import { Prisma } from '@prisma/client';
 import { Role } from '@/modules/role/entities/role.entity';
 import { RoleRepository } from '@/modules/role/role.repository';
 import { UpdateRoleDto } from './dto/update-role.dto';
+import { UpdateRolePermissionDto } from '@/modules/role/dto/update-role-permission.dto';
 import { User } from '@/modules/user/entities/user.entity';
 import { ValidateMessage } from '@/common/utils/validate-message.util';
 import { removeVietnameseAccents } from '@/common/utils/helper.util';
@@ -82,6 +83,10 @@ export class RoleService {
     return this.roleRepo.patch(id, updateRoleDto);
   }
 
+  async setPermission(id: string, updateRoleDto: UpdateRolePermissionDto) {
+    return this.roleRepo.setPermission(id, updateRoleDto);
+  }
+
   async remove(id: string) {
     const curr = await this.roleRepo.findUniqueOrThrow({
       where: { id },
@@ -93,6 +98,10 @@ export class RoleService {
         ValidateMessage.isSystemDoNotDelete().rawMsg(),
       );
     }
+
+    await this.dbValidate.validateNoConnectOrThrow(Prisma.ModelName.User, {
+      roleId: id,
+    });
 
     return this.roleRepo.delete(id);
   }

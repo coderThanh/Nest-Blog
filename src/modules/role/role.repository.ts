@@ -6,7 +6,7 @@ import { CreateRoleDto } from '@/modules/role/dto/create-role.dto';
 import { GlobalClsStore } from '@/shared/types/cls-store';
 import { PrismaService } from '@/prisma/prisma.service';
 import { UpdateRoleDto } from '@/modules/role/dto/update-role.dto';
-import { UpdateRolePermissionDto } from '@/modules/role/dto/update-role-permission';
+import { UpdateRolePermissionDto } from '@/modules/role/dto/update-role-permission.dto';
 import { ValidateMessage } from '@/common/utils/validate-message.util';
 
 @Injectable()

@@ -26,7 +26,7 @@ import { FindAllUserDto } from '@/modules/user/dto/find-all-user.dto';
 import { BaseFindAllData } from '@/shared/types/response';
 import { DatabaseUltil } from '@/common/utils/database.util';
 
-@Controller('user')
+@Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 

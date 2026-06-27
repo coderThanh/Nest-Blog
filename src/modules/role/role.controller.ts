@@ -25,8 +25,9 @@ import {
   ApiResponseDataFindAllMeta,
   ApiResponseOkDto,
 } from '@/shared/dto/response.dto';
+import { UpdateRolePermissionDto } from '@/modules/role/dto/update-role-permission.dto';
 
-@Controller('role')
+@Controller('roles')
 export class RoleController {
   constructor(private readonly roleService: RoleService) {}
 
@@ -66,6 +67,17 @@ export class RoleController {
   @ApiCustomResponseOK(Role)
   async update(@Param('id') id: string, @Body() updateRoleDto: UpdateRoleDto) {
     const record = await this.roleService.update(id, updateRoleDto);
+    return plainToInstance(Role, record);
+  }
+
+  @Patch(':id/permission')
+  @ApiExtraModels(ApiResponseOkDto, Role)
+  @ApiCustomResponseOK(Role)
+  async setPermission(
+    @Param('id') id: string,
+    @Body() updateRoleDto: UpdateRolePermissionDto,
+  ) {
+    const record = await this.roleService.setPermission(id, updateRoleDto);
     return plainToInstance(Role, record);
   }
 
