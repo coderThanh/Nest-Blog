@@ -16,6 +16,7 @@ import { PrismaModule } from '@/prisma/prisma.module';
 import { TagModule } from './modules/tag/tag.module';
 import { UserModule } from './modules/user/user.module';
 import { RoleModule } from './modules/role/role.module';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { RoleModule } from './modules/role/role.module';
     UserModule,
     TagModule,
     RoleModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [

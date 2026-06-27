@@ -3,3 +3,7 @@ export enum Environment {
   Production = 'production',
   Test = 'test',
 }
+
+export enum PassportStrategyType {
+  jwt = 'jwt',
+}
