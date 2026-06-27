@@ -127,19 +127,23 @@ export class ValidateMessage {
     return this.buildMessage(`không được vượt quá ${maxSize} phần tử`, name);
   }
 
-  static someNotExist(name: string = '') {
+  static someNotFound(name: string = '') {
     return this.buildMessage(
       `một hoặc nhiều phần tử đã không còn tồn tại`,
       name,
     );
   }
 
-  static notExist(name: string = '') {
+  static notFound(name: string = '') {
     return this.buildMessage(`bảng ghi không tồn tại`, name);
   }
 
-  static notFound(name: string = '') {
-    return this.buildMessage(`không tìm thấy bản ghi`, name);
+  static notFoundUser(name: string = '') {
+    return this.buildMessage(`tài khoản không tồn tại`, name);
+  }
+
+  static notFoundToken(name: string = '') {
+    return this.buildMessage(`token không tồn tại hoặc đã hết hạn`, name);
   }
 
   static matches(example: string = '', name: string = '') {

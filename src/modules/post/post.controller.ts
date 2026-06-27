@@ -15,7 +15,7 @@ import { FindAllPostDto } from '@/modules/post/dto/find-all-post.dto';
 import {
   ApiCustomResponseOK,
   ApiCustomResponseOKFindAll,
-} from '@/common/decorator/api-response-ok';
+} from '@/common/decorator/api-response-ok.decorator';
 import {
   PostEntity,
   PostFindAll,

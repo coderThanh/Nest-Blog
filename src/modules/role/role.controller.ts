@@ -19,7 +19,7 @@ import { DatabaseUltil } from '@/common/utils/database.util';
 import {
   ApiCustomResponseOK,
   ApiCustomResponseOKFindAll,
-} from '@/common/decorator/api-response-ok';
+} from '@/common/decorator/api-response-ok.decorator';
 import { ApiExtraModels } from '@nestjs/swagger';
 import {
   ApiResponseDataFindAllMeta,

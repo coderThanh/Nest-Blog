@@ -56,7 +56,7 @@ export class UserRepository {
     const record = await this.prisma.client.user.findFirst(args);
 
     if (!record)
-      throw new NotFoundException(ValidateMessage.notFound().rawMsg());
+      throw new NotFoundException(ValidateMessage.notFoundUser().rawMsg());
 
     return record;
   }
@@ -69,7 +69,7 @@ export class UserRepository {
     const record = await this.prisma.client.user.findUnique(args);
 
     if (!record)
-      throw new NotFoundException(ValidateMessage.notFound().rawMsg());
+      throw new NotFoundException(ValidateMessage.notFoundUser().rawMsg());
 
     return record;
   }

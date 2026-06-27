@@ -37,8 +37,8 @@ export class DbValidateService {
         ValidateMessage.exceptionThrowErrorsField(
           fieldName,
           Array.isArray(id)
-            ? ValidateMessage.someNotExist().rawMsg()
-            : ValidateMessage.notExist().rawMsg(),
+            ? ValidateMessage.someNotFound().rawMsg()
+            : ValidateMessage.notFound().rawMsg(),
         ),
       );
     }
