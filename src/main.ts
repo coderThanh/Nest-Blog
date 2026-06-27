@@ -1,4 +1,4 @@
-import { APP_VERSION_CODE, APP_VERSION_PREFIX } from '@/common/constant/ultil';
+import { APP_VERSION_CODE, APP_VERSION_PREFIX } from '@/common/constant/util';
 import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
 
 import { AppModule } from './app.module';

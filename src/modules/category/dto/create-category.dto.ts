@@ -12,7 +12,7 @@ import {
 
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsMaxLength } from '@/common/decorator/is-max-length.decorator';
-import { MAX_LENGTH_NAME } from '@/common/constant/ultil';
+import { MAX_LENGTH_NAME } from '@/common/constant/util';
 import { ToNumber } from '@/common/decorator/to-number';
 import { ValidateMessage } from '@/common/utils/validate-message.util';
 

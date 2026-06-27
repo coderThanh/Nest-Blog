@@ -2,7 +2,7 @@ import { IsInt, IsOptional, Max, Min } from 'class-validator';
 import {
   PAGINATION_LIMIT_DEFAULT,
   PAGINATION_LIMIT_MAX,
-} from '@/common/constant/ultil';
+} from '@/common/constant/util';
 
 import { Type } from 'class-transformer';
 import { ValidateMessage } from '@/common/utils/validate-message.util';

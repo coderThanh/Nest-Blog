@@ -2,7 +2,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { INestApplication, Logger } from '@nestjs/common';
 
 import { Environment } from '@/common/enum/ultil.enum';
-import { SWAGGER_JWT_AUTH } from 'src/common/constant/ultil';
+import { SWAGGER_JWT_AUTH } from '@/common/constant/util';
 
 export function setupSwagger(app: INestApplication): void {
   // Nếu là môi trường Production thì không khởi tạo Swagger

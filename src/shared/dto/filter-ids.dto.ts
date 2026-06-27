@@ -2,7 +2,7 @@ import { IsInt, IsNumber, IsOptional, IsString } from 'class-validator';
 import { SplitToArray, SplitToArrayNumber } from '@/common/decorator/to-array';
 
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { QUERY_SEPARATOR } from '@/common/constant/ultil';
+import { QUERY_SEPARATOR } from '@/common/constant/util';
 import { ValidateMessage } from '@/common/utils/validate-message.util';
 
 export class FilterIdsStringDto {

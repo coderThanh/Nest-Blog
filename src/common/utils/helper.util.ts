@@ -1,7 +1,7 @@
 import { PhoneNumberFormat, PhoneNumberUtil } from 'google-libphonenumber';
 
 import { INestApplication } from '@nestjs/common';
-import { PAYLOAD_KEY_SECERT } from '@/common/constant/ultil';
+import { PAYLOAD_KEY_SECERT } from '@/common/constant/util';
 
 // npm i google-libphonenumber
 // npm i -D @types/google-libphonenumber

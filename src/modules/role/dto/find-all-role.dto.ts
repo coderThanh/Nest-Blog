@@ -13,7 +13,7 @@ import { FilterPaginationDto } from '@/shared/dto/filter-pagination.dto';
 import { FilterSearchDto } from '@/shared/dto/filter-search.dto';
 import { NormalizeString } from '@/common/decorator/normalize-string';
 import { OrderDir } from '@/common/enum/filter.enum';
-import { QUERY_SEPARATOR } from '@/common/constant/ultil';
+import { QUERY_SEPARATOR } from '@/common/constant/util';
 import { RoleOrderBy } from '@/modules/role/role.enum';
 import { SplitToArrayNumber } from '@/common/decorator/to-array';
 import { ToBoolean } from '@/common/decorator/to-bool';
