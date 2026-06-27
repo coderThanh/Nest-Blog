@@ -1,6 +1,6 @@
 model Permission {
     id         Int    @id @default(autoincrement())
-    action     String
+    name     String
     permission String @unique
     module     String
     search     String @default(dbgenerated())
