@@ -91,6 +91,10 @@ export class ValidateMessage {
     return this.buildMessage('không đúng định dạng ngày tháng', name);
   }
 
+  static isTimeString(name: string = '') {
+    return this.buildMessage('không đúng định dạng thời gian', name);
+  }
+
   static isUrl(name: string = '') {
     return this.buildMessage('không đúng định dạng URL', name);
   }

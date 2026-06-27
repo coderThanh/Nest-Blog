@@ -1,6 +1,18 @@
-import { ApiPropertyOptional, IntersectionType } from '@nestjs/swagger';
-import { IsEnum, IsInt, IsOptional, IsString } from 'class-validator';
+import {
+  ApiPropertyOptional,
+  IntersectionType,
+  PartialType,
+} from '@nestjs/swagger';
+import {
+  IsDateString,
+  IsEnum,
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
+import { FilterFromToDateDto } from '@/shared/dto/filter-from-to-date';
 import { FilterIdsStringDto } from '@/shared/dto/filter-ids.dto';
 import { FilterOrderDirDto } from '@/shared/dto/filter-order-dir.dto';
 import { FilterPaginationDto } from '@/shared/dto/filter-pagination.dto';
@@ -16,6 +28,7 @@ export class FindAllPostDto extends IntersectionType(
   FilterIdsStringDto,
   FilterSearchDto,
   FilterPaginationDto,
+  PartialType(FilterFromToDateDto),
   FilterOrderDirDto(OrderDir.desc),
 ) {
   @ApiPropertyOptional({ type: String, description: 'ex: id,id' })

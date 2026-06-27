@@ -1,3 +1,5 @@
+import { endOfDay, startOfDay } from 'date-fns';
+
 import { Category } from '@/modules/category/entities/category.entity';
 import { CreatePostDto } from './dto/create-post.dto';
 import { DatabaseUltil } from '@/common/utils/database.util';
@@ -134,7 +136,15 @@ export class PostService {
   };
 
   static getCommonFindAllWhere(query: FindAllPostDto): Prisma.PostWhereInput[] {
-    const { ids, excludeIds, categoryIds, categoryPath, search } = query;
+    const {
+      ids,
+      excludeIds,
+      categoryIds,
+      categoryPath,
+      search,
+      fromDate,
+      toDate,
+    } = query;
 
     const andCondition: Prisma.PostWhereInput[] = [];
 
@@ -154,6 +164,18 @@ export class PostService {
       andCondition.push({
         search: { contains: removeVietnameseAccents(search).toLowerCase() },
       });
+
+    if (fromDate) {
+      andCondition.push({
+        createdAt: { gte: startOfDay(new Date(fromDate)) },
+      });
+    }
+
+    if (toDate) {
+      andCondition.push({
+        createdAt: { lt: endOfDay(new Date(toDate)) },
+      });
+    }
 
     return andCondition;
   }
