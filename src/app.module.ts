@@ -4,6 +4,7 @@ import { APP_FILTER } from '@nestjs/core';
 import { AllExceptionsFilter } from '@/common/exception/all-exception-filter';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { AuthModule } from './modules/auth/auth.module';
 import { CategoryModule } from './modules/category/category.module';
 import { ClsModule } from 'nestjs-cls';
 import { ConfigModule } from '@nestjs/config';
@@ -13,10 +14,9 @@ import { Module } from '@nestjs/common';
 import { PostModule } from '@/modules/post/post.module';
 import { PrismaClientExceptionFilter } from './common/exception/prisma-exception.filter';
 import { PrismaModule } from '@/prisma/prisma.module';
+import { RoleModule } from './modules/role/role.module';
 import { TagModule } from './modules/tag/tag.module';
 import { UserModule } from './modules/user/user.module';
-import { RoleModule } from './modules/role/role.module';
-import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -39,13 +39,14 @@ import { AuthModule } from './modules/auth/auth.module';
       },
     }),
     PrismaModule,
+    // route module
+    AuthModule,
+    UserModule,
+    RoleModule,
     PostModule,
     CategoryModule,
-    FileModule,
-    UserModule,
     TagModule,
-    RoleModule,
-    AuthModule,
+    FileModule,
   ],
   controllers: [AppController],
   providers: [

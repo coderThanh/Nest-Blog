@@ -18,7 +18,6 @@ import {
   ApiCustomResponseOK,
   ApiCustomResponseOKFindAll,
 } from '@/common/decorator/api-response-ok.decorator';
-import { ApiExtraModels } from '@nestjs/swagger';
 import { DatabaseUltil } from '@/common/utils/database.util';
 import {
   ApiResponseOkDto,
@@ -31,14 +30,12 @@ export class TagController {
   constructor(private readonly tagService: TagService) {}
 
   @Post()
-  @ApiExtraModels(ApiResponseOkDto, Tag)
   @ApiCustomResponseOK(Tag)
   create(@Body() createTagDto: CreateTagDto) {
     return this.tagService.create(createTagDto);
   }
 
   @Get()
-  @ApiExtraModels(ApiResponseOkDto, Tag, ApiResponseDataFindAllMeta)
   @ApiCustomResponseOKFindAll(Tag)
   async findAll(@Query() query: FindAllTagDto) {
     const { total, items } = await this.tagService.findAllAndCount(query);
@@ -58,7 +55,6 @@ export class TagController {
   }
 
   @Get(':slug')
-  @ApiExtraModels(ApiResponseOkDto, Tag)
   @ApiCustomResponseOK(Tag)
   async findOne(@Param('slug') slug: string) {
     const record = await this.tagService.findOneOrthrow(slug);
@@ -67,7 +63,6 @@ export class TagController {
   }
 
   @Patch(':id')
-  @ApiExtraModels(ApiResponseOkDto, Tag)
   @ApiCustomResponseOK(Tag)
   async update(@Param('id') id: string, @Body() updateTagDto: UpdateTagDto) {
     const record = await this.tagService.update(id, updateTagDto);
@@ -76,7 +71,6 @@ export class TagController {
   }
 
   @Delete(':id')
-  @ApiExtraModels(ApiResponseOkDto, Tag)
   @ApiCustomResponseOK(Tag)
   remove(@Param('id') id: string) {
     return this.tagService.remove(id);

@@ -1,11 +1,15 @@
-import { ApiOkResponse, getSchemaPath } from '@nestjs/swagger';
-import { ApiResponseDataFindAllMeta, ApiResponseOkDto } from '@/shared/dto/response.dto';
+import { ApiExtraModels, ApiOkResponse, getSchemaPath } from '@nestjs/swagger';
+import {
+  ApiResponseDataFindAllMeta,
+  ApiResponseOkDto,
+} from '@/shared/dto/response.dto';
 import { Type, applyDecorators } from '@nestjs/common';
 
 export const ApiCustomResponseOK = <TModel extends Type<any>>(
   model: TModel,
 ) => {
   return applyDecorators(
+    ApiExtraModels(ApiResponseOkDto, model),
     ApiOkResponse({
       schema: {
         allOf: [
@@ -27,6 +31,7 @@ export const ApiCustomResponseOKFindAll = <TModel extends Type<any>>(
   model: TModel,
 ) => {
   return applyDecorators(
+    ApiExtraModels(ApiResponseOkDto, ApiResponseDataFindAllMeta, model),
     ApiOkResponse({
       schema: {
         allOf: [

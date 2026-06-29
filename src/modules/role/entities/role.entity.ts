@@ -21,7 +21,12 @@ export class Role {
     if (obj.permissions === undefined) return null;
 
     return (obj.permissions as any).map(
-      (item) => new PermissionInRole(item.permission.permission, item.scope),
+      (item) =>
+        new PermissionInRole({
+          permissionId: item.permission.id,
+          permission: item.permission.permission,
+          scope: item.scope,
+        }),
     );
   })
   permissions: PermissionInRole[];
@@ -71,6 +76,7 @@ export class Role {
         permission: {
           select: {
             permission: true,
+            id: true,
           },
         },
       },
@@ -80,13 +86,15 @@ export class Role {
 
 export class PermissionInRole {
   @Expose()
+  permissionId: number;
+
+  @Expose()
   permission: string;
 
   @Expose()
   scope: PermissionScope;
 
-  constructor(permission: string, scope: PermissionScope) {
-    this.permission = permission;
-    this.scope = scope;
+  constructor(params: PermissionInRole) {
+    Object.assign(this, params);
   }
 }

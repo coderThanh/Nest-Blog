@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -17,21 +18,24 @@ import {
   ApiCustomResponseOK,
   ApiCustomResponseOKFindAll,
 } from '@/common/decorator/api-response-ok.decorator';
-import { ApiExtraModels } from '@nestjs/swagger';
-import {
-  ApiResponseDataFindAllMeta,
-  ApiResponseOkDto,
-} from '@/shared/dto/response.dto';
 import { FindAllUserDto } from '@/modules/user/dto/find-all-user.dto';
 import { BaseFindAllData } from '@/shared/types/response';
 import { DatabaseUltil } from '@/common/utils/database.util';
+import { UserProfileService } from '@/modules/user/user-profile.service';
+import { GetUser } from '@/common/decorator/get-user.decorator';
+import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
+import { ApiAuthJwt } from '@/common/decorator/api-auth.decorator';
 
 @Controller('users')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly userProfileService: UserProfileService,
+  ) {}
 
   @Post()
-  @ApiExtraModels(ApiResponseOkDto, User)
+  @UseGuards(JwtAuthGuard)
+  @ApiAuthJwt()
   @ApiCustomResponseOK(User)
   async create(@Body() createUserDto: CreateUserDto) {
     const record = await this.userService.create(createUserDto);
@@ -40,7 +44,6 @@ export class UserController {
   }
 
   @Get()
-  @ApiExtraModels(ApiResponseOkDto, User, ApiResponseDataFindAllMeta)
   @ApiCustomResponseOKFindAll(User)
   async findAll(@Query() query: FindAllUserDto) {
     const { items, total } = await this.userService.findAllAndCount(query);
@@ -57,8 +60,16 @@ export class UserController {
     } as BaseFindAllData;
   }
 
+  @Get('me')
+  @UseGuards(JwtAuthGuard)
+  @ApiAuthJwt()
+  @ApiCustomResponseOK(User)
+  async findUserProfile(@GetUser('sub') userId: string) {
+    const record = await this.userProfileService.findProfile(userId);
+    return plainToInstance(User, record, { excludeExtraneousValues: true });
+  }
+
   @Get(':id')
-  @ApiExtraModels(ApiResponseOkDto, User)
   @ApiCustomResponseOK(User)
   async findOne(@Param('id') id: string) {
     const record = await this.userService.findOneOrThorw(id);
@@ -67,7 +78,8 @@ export class UserController {
   }
 
   @Patch(':id')
-  @ApiExtraModels(ApiResponseOkDto, User)
+  @UseGuards(JwtAuthGuard)
+  @ApiAuthJwt()
   @ApiCustomResponseOK(User)
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     const record = await this.userService.update(id, updateUserDto);
@@ -76,7 +88,8 @@ export class UserController {
   }
 
   @Delete(':id')
-  @ApiExtraModels(ApiResponseOkDto, User)
+  @UseGuards(JwtAuthGuard)
+  @ApiAuthJwt()
   @ApiCustomResponseOK(User)
   async remove(@Param('id') id: string) {
     const record = await this.userService.remove(id);
