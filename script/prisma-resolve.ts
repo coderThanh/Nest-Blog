@@ -66,7 +66,7 @@ function parseArgs(argv) {
 }
 
 function printHelp() {
-  console.log(
+  console.info(
     `
 Usage:
   ts-node script/prisma-resolve.ts [options]
@@ -132,7 +132,7 @@ function sliceMigrations(migrations, from, to) {
 
 function runCommand(command, args, dryRun) {
   const rendered = [command, ...args].join(' ');
-  console.log(`\n$ ${rendered}`);
+  console.info(`\n$ ${rendered}`);
 
   if (dryRun) {
     return { status: 0 };
@@ -151,14 +151,14 @@ function main() {
   const targetMigrations = sliceMigrations(allMigrations, args.from, args.to);
 
   if (targetMigrations.length === 0) {
-    console.log('No migrations to resolve.');
+    console.info('No migrations to resolve.');
     return;
   }
 
-  console.log(`Project root: ${projectRoot}`);
-  console.log(`Migrations dir: ${migrationsDir}`);
-  console.log(`Action: --${args.action}`);
-  console.log(`Total migrations: ${targetMigrations.length}`);
+  console.info(`Project root: ${projectRoot}`);
+  console.info(`Migrations dir: ${migrationsDir}`);
+  console.info(`Action: --${args.action}`);
+  console.info(`Total migrations: ${targetMigrations.length}`);
 
   for (const migration of targetMigrations) {
     const result = runCommand(
@@ -184,7 +184,7 @@ function main() {
     }
   }
 
-  console.log('\nDone.');
+  console.info('\nDone.');
 }
 
 try {

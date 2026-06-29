@@ -3,6 +3,7 @@ import * as dotenv from 'dotenv';
 import { PrismaClient } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import pg from 'pg';
+import { seedAccount } from './seeds/account.seed';
 import { seedPermission } from './seeds/permission.seed.';
 import { seedRole } from './seeds/role.seed';
 import { seedRolePermission } from 'prisma/seeds/role-permission.seed';
@@ -22,6 +23,7 @@ async function main() {
     await seedRole(ctx as any);
     await seedPermission(ctx as any);
     await seedRolePermission(ctx as any);
+    await seedAccount(ctx as any);
     console.info('End seeding...');
   });
 }
