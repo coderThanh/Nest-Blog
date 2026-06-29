@@ -10,6 +10,10 @@ import { ValidateMessage } from '@/common/utils/validate-message.util';
 export class CreateSessionDto {
   @IsString({ message: ValidateMessage.isString().exceptionMsg() })
   @IsNotEmpty({ message: ValidateMessage.isNotEmpty().exceptionMsg() })
+  id: string;
+
+  @IsString({ message: ValidateMessage.isString().exceptionMsg() })
+  @IsNotEmpty({ message: ValidateMessage.isNotEmpty().exceptionMsg() })
   refreshtokenHash: string;
 
   @IsString({ message: ValidateMessage.isString().exceptionMsg() })

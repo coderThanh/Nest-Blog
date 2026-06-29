@@ -1,12 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { JwtPayload } from '@/shared/entities/auth.entity';
 import { PassportStrategy } from '@nestjs/passport';
+import { PassportStrategyType } from '@/common/enum/ultil.enum';
 import { Strategy } from 'passport-local';
 import { UserProfileService } from '@/modules/user/user-profile.service';
-import { v7 as uuidv7 } from 'uuid';
-
+import { cuid } from '@/common/utils/helper.util';
 @Injectable()
-export class LocalStrategy extends PassportStrategy(Strategy, 'local') {
+export class LocalStrategy extends PassportStrategy(
+  Strategy,
+  PassportStrategyType.local,
+) {
   constructor(private profileService: UserProfileService) {
     super({
       usernameField: 'username',
@@ -14,7 +17,7 @@ export class LocalStrategy extends PassportStrategy(Strategy, 'local') {
     });
   }
 
-  async validate(username: string, password: string): Promise<any> {
+  async validate(username: string, password: string): Promise<JwtPayload> {
     const user = await this.profileService.validateLoginUserOrThrow(
       username,
       password,
@@ -24,7 +27,7 @@ export class LocalStrategy extends PassportStrategy(Strategy, 'local') {
       sub: user.id,
       userId: user.id,
       email: user.email,
-      jti: uuidv7(),
+      jti: cuid(),
     } as JwtPayload;
   }
 }

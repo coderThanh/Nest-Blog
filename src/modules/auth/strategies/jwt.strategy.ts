@@ -34,8 +34,6 @@ export class JwtStrategy extends PassportStrategy(
   }
 
   async validate(payload: JwtPayload) {
-    console.log('jwt validate', payload);
-
     const user = await this.profileService.findOneForAuthGuardUserOrThrow(
       payload.sub,
     );

@@ -1,4 +1,8 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  JwtDecodedPayload,
+  LoginRequestInfo,
+} from '@/modules/auth/types/auth.type';
 
 import { ConfigService } from '@nestjs/config';
 import { ConfigUltils } from '@/common/utils/config.util';
@@ -6,7 +10,6 @@ import { CryptoUtil } from '@/common/utils/crypto.util';
 import { JwtPayload } from '@/shared/entities/auth.entity';
 import { JwtService } from '@nestjs/jwt';
 import { SessionRepository } from '@/modules/auth/session.repository';
-import { UserProfileService } from '@/modules/user/user-profile.service';
 import { ValidateMessage } from '@/common/utils/validate-message.util';
 
 @Injectable()
@@ -17,9 +20,29 @@ export class AuthService {
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
     private readonly sessionRepo: SessionRepository,
-    private readonly profileService: UserProfileService,
   ) {
     this.config = new ConfigUltils(this.configService);
+  }
+
+  async login(payload: JwtPayload, meta?: LoginRequestInfo) {
+    const tokens = await this.generateTokens(payload);
+
+    const refreshTokenPayload = this.jwtService.decode<JwtDecodedPayload>(
+      tokens.refreshToken,
+    );
+
+    const refreshtokenHash = await CryptoUtil.hash(tokens.refreshToken);
+
+    await this.sessionRepo.create({
+      id: refreshTokenPayload.jti,
+      refreshtokenHash: refreshtokenHash,
+      userAgent: meta?.userAgent ?? null,
+      ipAddress: meta?.ipAddress ?? null,
+      userId: refreshTokenPayload.sub,
+      expiresAt: new Date(refreshTokenPayload.exp * 1000).toISOString(),
+    });
+
+    return tokens;
   }
 
   async generateTokens(payload: JwtPayload) {
@@ -45,7 +68,7 @@ export class AuthService {
 
   async refreshTokens(refreshToken: string) {
     try {
-      const payload = await this.jwtService.verifyAsync<JwtPayload>(
+      const payload = await this.jwtService.verifyAsync<JwtDecodedPayload>(
         refreshToken,
         {
           secret: this.config.getJwtRefreshSecret(),
@@ -53,17 +76,28 @@ export class AuthService {
       );
 
       // check revoke token
-      const refreshTokenHas = await CryptoUtil.hash(refreshToken);
-
-      await this.sessionRepo.findUniqueOrThrow({
+      const session = await this.sessionRepo.findUniqueOrThrow({
         where: {
-          refreshtokenHash: refreshTokenHas,
+          id: payload.jti,
         },
-        select: { id: true },
+        select: { refreshtokenHash: true },
       });
 
+      if (
+        !(await CryptoUtil.compareHash(refreshToken, session.refreshtokenHash))
+      ) {
+        throw new UnauthorizedException(
+          ValidateMessage.unauthorized().rawMsg(),
+        );
+      }
+
       // No RefreshToken rotaion
-      const accessToken = await this.generateAccessToken(payload);
+      const accessToken = await this.generateAccessToken({
+        sub: payload.sub,
+        email: payload.email,
+        userId: payload.userId,
+        jti: payload.jti, // if payload has exp and iat will throw error
+      });
 
       return {
         accessToken,

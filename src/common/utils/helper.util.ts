@@ -2,6 +2,7 @@ import { PhoneNumberFormat, PhoneNumberUtil } from 'google-libphonenumber';
 
 import { INestApplication } from '@nestjs/common';
 import { PAYLOAD_KEY_SECERT } from '@/common/constant/util';
+import { v7 as uuidv7 } from 'uuid';
 
 // npm i google-libphonenumber
 // npm i -D @types/google-libphonenumber
@@ -123,3 +124,6 @@ export const removeVietnameseAccents = (
     .replace(/đ/g, 'd')
     .replace(/Đ/g, 'D');
 };
+
+// npm i uuid
+export const cuid = () => uuidv7();
