@@ -1,17 +1,30 @@
 import { ExecutionContext, createParamDecorator } from '@nestjs/common';
-
-import { ReqUserEmbed } from '@/shared/types/auth';
+import { JwtPayload, ReqUserEmbed } from '@/shared/entities/auth.entity';
 
 export const GetUser = createParamDecorator(
   (field: keyof ReqUserEmbed | undefined, ctx: ExecutionContext) => {
-    const requet = ctx.switchToHttp().getRequest();
+    const request = ctx.switchToHttp().getRequest();
 
-    const user: ReqUserEmbed | undefined = requet.user;
+    const user: ReqUserEmbed | undefined = request.user;
 
-    if (field && user) {
-      return user[field];
+    if (field) {
+      return user ? user[field] : undefined;
     }
 
-    return user;
+    return user as ReqUserEmbed;
+  },
+);
+
+export const GetUserLocalStrategy = createParamDecorator(
+  (field: keyof JwtPayload | undefined, ctx: ExecutionContext) => {
+    const request = ctx.switchToHttp().getRequest();
+
+    const user: JwtPayload | undefined = request.user;
+
+    if (field) {
+      return user ? user[field] : undefined;
+    }
+
+    return user as JwtPayload;
   },
 );

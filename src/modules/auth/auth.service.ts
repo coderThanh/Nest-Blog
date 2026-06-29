@@ -3,9 +3,10 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ConfigUltils } from '@/common/utils/config.util';
 import { CryptoUtil } from '@/common/utils/crypto.util';
-import { JwtPayload } from '@/shared/types/auth';
+import { JwtPayload } from '@/shared/entities/auth.entity';
 import { JwtService } from '@nestjs/jwt';
 import { SessionRepository } from '@/modules/auth/session.repository';
+import { UserProfileService } from '@/modules/user/user-profile.service';
 import { ValidateMessage } from '@/common/utils/validate-message.util';
 
 @Injectable()
@@ -16,6 +17,7 @@ export class AuthService {
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
     private readonly sessionRepo: SessionRepository,
+    private readonly profileService: UserProfileService,
   ) {
     this.config = new ConfigUltils(this.configService);
   }

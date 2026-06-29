@@ -146,6 +146,10 @@ export class ValidateMessage {
     return this.buildMessage(`token không tồn tại hoặc đã hết hạn`, name);
   }
 
+  static unauthorized(name: string = '') {
+    return this.buildMessage(`token không hợp lệ hoặc đã hết hạn`, name);
+  }
+
   static matches(example: string = '', name: string = '') {
     return example
       ? this.buildMessage(`không đúng định dạng. Ví dụ: ${example}`, name)

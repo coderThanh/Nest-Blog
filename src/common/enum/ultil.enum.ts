@@ -6,4 +6,5 @@ export enum Environment {
 
 export enum PassportStrategyType {
   jwt = 'jwt',
+  local = 'local',
 }

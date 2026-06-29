@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { JwtPayload, ReqUserEmbed } from '@/shared/types/auth';
+import { JwtPayload, ReqUserEmbed } from '@/shared/entities/auth.entity';
 
 import { ClsService } from 'nestjs-cls';
 import { ConfigService } from '@nestjs/config';
