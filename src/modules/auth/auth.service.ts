@@ -45,6 +45,13 @@ export class AuthService {
     return tokens;
   }
 
+  async logout(sessionId: string) {
+    // validate record
+    await this.sessionRepo.findUniqueOrThrow({ where: { id: sessionId } });
+
+    return this.sessionRepo.delete(sessionId);
+  }
+
   async generateTokens(payload: JwtPayload) {
     const accessToken = await this.generateAccessToken(payload);
     const refreshToken = await this.generateRefreshToken(payload);

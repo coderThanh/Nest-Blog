@@ -6,19 +6,21 @@ import {
 import { Type, applyDecorators } from '@nestjs/common';
 
 export const ApiCustomResponseOK = <TModel extends Type<any>>(
-  model: TModel,
+  model: TModel | null,
 ) => {
   return applyDecorators(
-    ApiExtraModels(ApiResponseOkDto, model),
+    ApiExtraModels(ApiResponseOkDto, model ? model : () => {}),
     ApiOkResponse({
       schema: {
         allOf: [
           { $ref: getSchemaPath(ApiResponseOkDto) },
           {
             properties: {
-              data: {
-                $ref: getSchemaPath(model),
-              },
+              data: model
+                ? {
+                    $ref: getSchemaPath(model),
+                  }
+                : {},
             },
           },
         ],

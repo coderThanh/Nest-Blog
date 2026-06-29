@@ -2,7 +2,7 @@ import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 
 import { AuthService } from './auth.service';
 import { GetUser } from '@/common/decorator/get-user.decorator';
-import { JwtPayload } from '@/shared/entities/auth.entity';
+import { JwtPayload, ReqUserEmbed } from '@/shared/entities/auth.entity';
 import { LocalAuthGuard } from '@/common/guards/local-auth.guard';
 import { LoginDto } from '@/modules/auth/dto/login.dto';
 
@@ -15,6 +15,8 @@ import {
 } from '@/common/decorator/request-info.decorator';
 import { RefreshtokenReturn } from '@/modules/auth/entities/refresh-token-return.entity';
 import { RefreshTokenDto } from '@/modules/auth/dto/refresh-token.dto';
+import { ApiAuthJwt } from '@/common/decorator/api-auth.decorator';
+import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -47,5 +49,13 @@ export class AuthController {
     return plainToInstance(RefreshtokenReturn, tokens, {
       excludeExtraneousValues: true,
     });
+  }
+
+  @Post('logout')
+  @ApiAuthJwt()
+  @UseGuards(JwtAuthGuard)
+  @ApiCustomResponseOK(null)
+  async logout(@GetUser() user: ReqUserEmbed) {
+    return await this.authService.logout(user.jti);
   }
 }
