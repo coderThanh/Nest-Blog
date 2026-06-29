@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { TagService } from './tag.service';
 import { CreateTagDto } from './dto/create-tag.dto';
@@ -24,12 +25,16 @@ import {
   ApiResponseDataFindAllMeta,
 } from '@/shared/dto/response.dto';
 import { BaseFindAllData } from '@/shared/types/response';
+import { ApiAuthJwt } from '@/common/decorator/api-auth.decorator';
+import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
 
 @Controller('tags')
 export class TagController {
   constructor(private readonly tagService: TagService) {}
 
   @Post()
+  @UseGuards(JwtAuthGuard)
+  @ApiAuthJwt()
   @ApiCustomResponseOK(Tag)
   create(@Body() createTagDto: CreateTagDto) {
     return this.tagService.create(createTagDto);
@@ -63,6 +68,8 @@ export class TagController {
   }
 
   @Patch(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiAuthJwt()
   @ApiCustomResponseOK(Tag)
   async update(@Param('id') id: string, @Body() updateTagDto: UpdateTagDto) {
     const record = await this.tagService.update(id, updateTagDto);
@@ -71,6 +78,8 @@ export class TagController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiAuthJwt()
   @ApiCustomResponseOK(Tag)
   remove(@Param('id') id: string) {
     return this.tagService.remove(id);

@@ -60,6 +60,8 @@ export class RoleController {
   }
 
   @Patch(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiAuthJwt()
   @ApiCustomResponseOK(Role)
   async update(@Param('id') id: string, @Body() updateRoleDto: UpdateRoleDto) {
     const record = await this.roleService.update(id, updateRoleDto);
@@ -67,6 +69,8 @@ export class RoleController {
   }
 
   @Patch(':id/permission')
+  @UseGuards(JwtAuthGuard)
+  @ApiAuthJwt()
   @ApiCustomResponseOK(Role)
   async setPermission(
     @Param('id') id: string,
@@ -77,6 +81,8 @@ export class RoleController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiAuthJwt()
   @ApiCustomResponseOK(Role)
   remove(@Param('id') id: string) {
     return this.roleService.remove(id);

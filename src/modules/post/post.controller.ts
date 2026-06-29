@@ -22,19 +22,19 @@ import {
   PostFindAll,
   PostRelation,
 } from '@/modules/post/entities/post.entity';
-import { ApiBearerAuth } from '@nestjs/swagger';
 import { plainToInstance } from 'class-transformer';
 import { BaseFindAllData } from '@/shared/types/response';
 import { DatabaseUltil } from '@/common/utils/database.util';
 import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
+import { ApiAuthJwt } from '@/common/decorator/api-auth.decorator';
 
 @Controller('posts')
 export class PostController {
   constructor(private readonly postService: PostService) {}
 
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
   @Post()
+  @UseGuards(JwtAuthGuard)
+  @ApiAuthJwt()
   @ApiCustomResponseOK(PostRelation)
   async create(@Body() createPostDto: CreatePostDto) {
     const record = await this.postService.create(createPostDto);
@@ -71,9 +71,9 @@ export class PostController {
     });
   }
 
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
   @Patch(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiAuthJwt()
   async update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
     const record = await this.postService.update(id, updatePostDto);
     return plainToInstance(PostEntity, record, {
@@ -81,9 +81,9 @@ export class PostController {
     });
   }
 
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiAuthJwt()
   async remove(@Param('id') id: string) {
     const record = await this.postService.remove(id);
     return plainToInstance(PostEntity, record, {

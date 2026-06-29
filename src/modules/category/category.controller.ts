@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiCustomResponseOK,
@@ -24,12 +25,16 @@ import { DatabaseUltil } from '@/common/utils/database.util';
 import { FindAllCategoryDto } from '@/modules/category/dto/find-all-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { plainToInstance } from 'class-transformer';
+import { ApiAuthJwt } from '@/common/decorator/api-auth.decorator';
+import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
 
 @Controller('categorys')
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
   @Post()
+  @UseGuards(JwtAuthGuard)
+  @ApiAuthJwt()
   @ApiCustomResponseOK(CategoryRelation)
   async create(@Body() createCategoryDto: CreateCategoryDto) {
     return await this.categoryService.create(createCategoryDto);
@@ -62,6 +67,8 @@ export class CategoryController {
   }
 
   @Patch(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiAuthJwt()
   async update(
     @Param('id') id: string,
     @Body() updateCategoryDto: UpdateCategoryDto,
@@ -73,6 +80,8 @@ export class CategoryController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiAuthJwt()
   async remove(@Param('id') id: string) {
     return await this.categoryService.remove(+id);
   }
