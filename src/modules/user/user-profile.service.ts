@@ -4,6 +4,7 @@ import { CryptoUtil } from '@/common/utils/crypto.util';
 import { Role } from '@/modules/role/entities/role.entity';
 import { UserRepository } from '@/modules/user/user.repository';
 import { UserService } from '@/modules/user/user.service';
+import { ValidateMessage } from '@/common/utils/validate-message.util';
 
 @Injectable()
 export class UserProfileService {
@@ -16,11 +17,11 @@ export class UserProfileService {
     });
 
     if (!user) {
-      throw new UnauthorizedException('Sai tên đăng nhập hoặc mật khẩu');
+      throw new UnauthorizedException(ValidateMessage.loginFaild().rawMsg());
     }
 
     if (!(await CryptoUtil.compareHash(password, user.passwordHash))) {
-      throw new UnauthorizedException('Sai tên đăng nhập hoặc mật khẩu');
+      throw new UnauthorizedException(ValidateMessage.loginFaild().rawMsg());
     }
     return user;
   }
