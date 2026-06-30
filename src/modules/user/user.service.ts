@@ -1,4 +1,5 @@
 import { Prisma, PrismaClient } from '@prisma/client';
+import { UpdateUserDto, UpdateUserSelfDto } from './dto/update-user.dto';
 import {
   formatToPhoneE164,
   removeVietnameseAccents,
@@ -13,7 +14,6 @@ import { FileEntity } from '@/modules/file/entities/file.entity';
 import { FindAllUserDto } from '@/modules/user/dto/find-all-user.dto';
 import { Injectable } from '@nestjs/common';
 import { Role } from '@/modules/role/entities/role.entity';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from '@/modules/user/entities/user.entity';
 import { UserRepository } from '@/modules/user/user.repository';
 
@@ -53,9 +53,7 @@ export class UserService {
     ]);
 
     // Normalize
-    const { normalPhone } = await UserService.normalizeFields({
-      phone,
-    });
+    const normalPhone = UserService.normalizePhone(phone ?? null);
 
     const passwordHash: string = await CryptoUtil.hash(password);
 
@@ -90,7 +88,7 @@ export class UserService {
     });
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto) {
+  async update(id: string, updateUserDto: UpdateUserDto | UpdateUserSelfDto) {
     const record = await this.userRepo.findUniqueOrThrow({
       where: { id },
       select: { email: true },
@@ -108,7 +106,8 @@ export class UserService {
           },
           Prisma.UserScalarFieldEnum.email,
         ),
-      updateUserDto.roleId &&
+      'roleId' in updateUserDto &&
+        updateUserDto.roleId &&
         updateUserDto.roleId !== record.roleId &&
         this.dbValidate.validateRecordExistOrThrow(
           Prisma.ModelName.Role,
@@ -117,11 +116,23 @@ export class UserService {
         ),
     ]);
 
-    const { normalPhone } = await UserService.normalizeFields({
-      phone: updateUserDto.phone,
-    });
+    let emailFinal = record.email;
+    let isChangeNewEmail = false;
 
-    return this.userRepo.patch(id, { ...updateUserDto, phone: normalPhone });
+    //  reset verified email
+    if (updateUserDto.email && record.email !== updateUserDto.email) {
+      emailFinal = updateUserDto.email;
+      isChangeNewEmail = true;
+    }
+
+    const normalPhone = UserService.normalizePhone(updateUserDto.phone ?? null);
+
+    return this.userRepo.patch(id, {
+      ...updateUserDto,
+      phone: normalPhone,
+      email: emailFinal,
+      emailVerifiedAt: isChangeNewEmail ? null : undefined,
+    });
   }
 
   async remove(id: string) {
@@ -137,21 +148,8 @@ export class UserService {
     };
   }
 
-  static async normalizeFields(params: {
-    password?: string;
-    phone?: string | null;
-  }) {
-    const { password, phone } = params;
-
-    let passwordHash = password ? await CryptoUtil.hash(password) : undefined;
-
-    const normalPhone =
-      typeof phone === 'string' ? formatToPhoneE164(phone) : phone;
-
-    return {
-      passwordHash,
-      normalPhone,
-    };
+  static normalizePhone(phone: string | null) {
+    return typeof phone === 'string' ? formatToPhoneE164(phone) : phone;
   }
 
   static getCommonFindManyInput(

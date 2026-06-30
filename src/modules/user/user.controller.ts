@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdateUserDto, UpdateUserSelfDto } from './dto/update-user.dto';
 import { plainToInstance } from 'class-transformer';
 import { User } from '@/modules/user/entities/user.entity';
 import {
@@ -73,6 +73,19 @@ export class UserController {
   @ApiCustomResponseOK(User)
   async findOne(@Param('id') id: string) {
     const record = await this.userService.findOneOrThorw(id);
+
+    return plainToInstance(User, record, { excludeExtraneousValues: true });
+  }
+
+  @Patch('user-self')
+  @UseGuards(JwtAuthGuard)
+  @ApiAuthJwt()
+  @ApiCustomResponseOK(User)
+  async updateUserSelf(
+    @GetUser('userId') id: string,
+    @Body() updateUserDto: UpdateUserSelfDto,
+  ) {
+    const record = await this.userService.update(id, updateUserDto);
 
     return plainToInstance(User, record, { excludeExtraneousValues: true });
   }

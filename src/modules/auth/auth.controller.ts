@@ -23,6 +23,7 @@ import { ForgotPasswordDto } from '@/modules/auth/dto/forgot-password.dto';
 import { ResetPasswordDto } from '@/modules/auth/dto/reset-password.dto';
 import { VerifyEmailDto } from '@/modules/auth/dto/verify-email.dto';
 import { VerifyAccountService } from '@/modules/auth/verify-account.service';
+import { User } from '@/modules/user/entities/user.entity';
 
 @Controller('auth')
 export class AuthController {
@@ -78,7 +79,7 @@ export class AuthController {
   @Post('reset-password')
   @ApiCustomResponseOK(null)
   async resetPassword(@Body() body: ResetPasswordDto) {
-    return await this.passwordService.resetPassword(body);
+    await this.passwordService.resetPassword(body);
   }
 
   @Post('update-password')
@@ -89,7 +90,7 @@ export class AuthController {
     @Body() body: UpdatePasswordDto,
     @GetUser('sub') userId: string,
   ) {
-    return await this.passwordService.updatePassword(
+    await this.passwordService.updatePassword(
       userId,
       body.oldPassword,
       body.newPassword,
@@ -107,11 +108,16 @@ export class AuthController {
   @Post('verify-email')
   @ApiAuthJwt()
   @UseGuards(JwtAuthGuard)
-  @ApiCustomResponseOK(null)
+  @ApiCustomResponseOK(User)
   async verifyEmail(
     @GetUser() user: ReqUserEmbed,
     @Body() body: VerifyEmailDto,
   ) {
-    return await this.verfiryAccountService.verifyEmail(user.userId, body);
+    const record = await this.verfiryAccountService.verifyEmail(
+      user.userId,
+      body,
+    );
+
+    return plainToInstance(User, record, { excludeExtraneousValues: true });
   }
 }
