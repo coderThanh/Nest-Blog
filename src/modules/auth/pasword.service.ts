@@ -45,7 +45,7 @@ export class PasswordService {
       );
     }
 
-    const passwordHash = await CryptoUtil.hash(newPassword);
+    const passwordHash = await PasswordService.hashPassword(newPassword);
 
     await this.userRepo.patch(userId, {
       passwordHash,
@@ -92,7 +92,7 @@ export class PasswordService {
       select: { id: true },
     });
 
-    const passwordHash = await CryptoUtil.hash(body.password);
+    const passwordHash = await PasswordService.hashPassword(body.password);
 
     await this.userRepo.patch(user.id, {
       passwordHash,
@@ -100,5 +100,9 @@ export class PasswordService {
 
     // delete token
     await this.tokenService.removeByTokenOrThrow(token.token);
+  }
+
+  static async hashPassword(password: string) {
+    return await CryptoUtil.hash(password);
   }
 }
