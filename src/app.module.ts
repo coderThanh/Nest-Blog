@@ -17,6 +17,7 @@ import { PrismaModule } from '@/prisma/prisma.module';
 import { RoleModule } from './modules/role/role.module';
 import { TagModule } from './modules/tag/tag.module';
 import { UserModule } from './modules/user/user.module';
+import { TokenModule } from './modules/token/token.module';
 
 @Module({
   imports: [
@@ -47,6 +48,7 @@ import { UserModule } from './modules/user/user.module';
     CategoryModule,
     TagModule,
     FileModule,
+    TokenModule,
   ],
   controllers: [AppController],
   providers: [

@@ -4,6 +4,7 @@ import { toBoolean } from '@/common/utils/helper.util';
 
 export const configValidationSchema = joi.object({
   PORT: joi.number().default(3000),
+  PASSWORD_RESET_EXPIRES_IN_MINUTES: joi.number().default(15),
   IS_DEBUG: joi.bool().default(false),
   DATABASE_URL: joi.string().required(),
 
@@ -17,6 +18,9 @@ export const configValidationSchema = joi.object({
 export const appConfiguration = () => ({
   isDebug: toBoolean(process.env.IS_DEBUG) ?? false,
   port: parseInt(process.env.PORT ?? '3000'),
+  passwordResetExpiresInMinutes: parseInt(
+    process.env.PASSWORD_RESET_EXPIRES_IN_MINUTES ?? '15',
+  ),
   DATABASE_URL: process.env.DATABASE_URL,
   jwt: {
     accessSecret: process.env.JWT_ACCESS_SECRET,

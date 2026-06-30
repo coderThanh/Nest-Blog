@@ -9,6 +9,7 @@ import { PassportStrategyType } from '@/common/enum/ultil.enum';
 import { PasswordService } from '@/modules/auth/pasword.service';
 import { RoleModule } from '@/modules/role/role.module';
 import { SessionRepository } from '@/modules/auth/session.repository';
+import { TokenModule } from '@/modules/token/token.module';
 import { UserModule } from '@/modules/user/user.module';
 import { UserService } from '@/modules/user/user.service';
 
@@ -20,6 +21,7 @@ import { UserService } from '@/modules/user/user.service';
     JwtModule.register({}),
     UserModule,
     RoleModule,
+    TokenModule,
   ],
   controllers: [AuthController],
   providers: [

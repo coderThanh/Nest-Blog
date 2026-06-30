@@ -19,6 +19,8 @@ import { ApiAuthJwt } from '@/common/decorator/api-auth.decorator';
 import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
 import { UpdatePasswordDto } from '@/modules/auth/dto/update-password.dto';
 import { PasswordService } from '@/modules/auth/pasword.service';
+import { ForgotPasswordDto } from '@/modules/auth/dto/forgot-password.dto';
+import { ResetPasswordDto } from '@/modules/auth/dto/reset-password.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -66,11 +68,15 @@ export class AuthController {
 
   @Post('forgot-password')
   @ApiCustomResponseOK(null)
-  async forgotPassword() {}
+  async forgotPassword(@Body() body: ForgotPasswordDto) {
+    return await this.passwordService.forgotPassword(body);
+  }
 
   @Post('reset-password')
   @ApiCustomResponseOK(null)
-  async resetPassword() {}
+  async resetPassword(@Body() body: ResetPasswordDto) {
+    return await this.passwordService.resetPassword(body);
+  }
 
   @Post('update-password')
   @ApiAuthJwt()

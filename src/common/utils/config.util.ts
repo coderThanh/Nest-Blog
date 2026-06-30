@@ -19,6 +19,10 @@ export class ConfigUltils {
     return this.configService.get<number>('port');
   }
 
+  public getPasswordResetExpiresInMinutes(): number | undefined {
+    return this.configService.get<number>('passwordResetExpiresInMinutes');
+  }
+
   public getJwtAccessSecret(): string | undefined {
     return this.configService.get<string>('jwt.accessSecret');
   }

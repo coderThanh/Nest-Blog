@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { Role } from '@/modules/role/entities/role.entity';
-import { UpdateUserSelfDto } from '@/modules/user/dto/update-user.dto';
 import { UserRepository } from '@/modules/user/user.repository';
 import { UserService } from '@/modules/user/user.service';
 
