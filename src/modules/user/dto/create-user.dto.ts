@@ -15,6 +15,7 @@ import {
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { GenderEnum } from '@prisma/client';
 import { IsMaxLength } from '@/common/decorator/is-max-length.decorator';
+import { IsPassword } from '@/common/decorator/is-strong-password.decorator';
 import { IsPhoneNumberByCountry } from '@/common/decorator/is-phone.decorator';
 import { IsRepeat } from '@/common/decorator/is-repeat.decorrator';
 import { ValidateMessage } from '@/common/utils/validate-message.util';
@@ -74,17 +75,7 @@ export class CreateUserDto {
   gender?: GenderEnum | null;
 
   /** @example 'User@123456' */
-  @IsStrongPassword(
-    {
-      minLength: 8,
-      minLowercase: 1,
-      minNumbers: 1,
-      minSymbols: 1,
-      minUppercase: 1,
-    },
-    { message: ValidateMessage.isStrongPassword().exceptionMsg() },
-  )
-  @IsMaxLength()
+  @IsPassword()
   @IsNotEmpty({ message: ValidateMessage.isNotEmpty().exceptionMsg() })
   password: string;
 

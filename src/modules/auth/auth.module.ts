@@ -6,6 +6,7 @@ import { LocalStrategy } from '@/modules/auth/strategies/local.strategy';
 import { Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { PassportStrategyType } from '@/common/enum/ultil.enum';
+import { PasswordService } from '@/modules/auth/pasword.service';
 import { RoleModule } from '@/modules/role/role.module';
 import { SessionRepository } from '@/modules/auth/session.repository';
 import { UserModule } from '@/modules/user/user.module';
@@ -21,6 +22,12 @@ import { UserService } from '@/modules/user/user.service';
     RoleModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, LocalStrategy, SessionRepository],
+  providers: [
+    AuthService,
+    JwtStrategy,
+    LocalStrategy,
+    SessionRepository,
+    PasswordService,
+  ],
 })
 export class AuthModule {}

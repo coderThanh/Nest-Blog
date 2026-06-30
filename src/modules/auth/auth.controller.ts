@@ -17,10 +17,15 @@ import { RefreshtokenReturn } from '@/modules/auth/entities/refresh-token-return
 import { RefreshTokenDto } from '@/modules/auth/dto/refresh-token.dto';
 import { ApiAuthJwt } from '@/common/decorator/api-auth.decorator';
 import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
+import { UpdatePasswordDto } from '@/modules/auth/dto/update-password.dto';
+import { PasswordService } from '@/modules/auth/pasword.service';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly passwordService: PasswordService,
+  ) {}
 
   @Post('login')
   @UseGuards(LocalAuthGuard)
@@ -41,7 +46,15 @@ export class AuthController {
     });
   }
 
-  @Post('refreshtoken')
+  @Post('logout')
+  @ApiAuthJwt()
+  @UseGuards(JwtAuthGuard)
+  @ApiCustomResponseOK(null)
+  async logout(@GetUser() user: ReqUserEmbed) {
+    return await this.authService.logout(user.jti);
+  }
+
+  @Post('refresh-token')
   @ApiCustomResponseOK(RefreshtokenReturn)
   async refreshToken(@Body() body: RefreshTokenDto) {
     const tokens = await this.authService.refreshTokens(body.refreshToken);
@@ -51,11 +64,32 @@ export class AuthController {
     });
   }
 
-  @Post('logout')
+  @Post('forgot-password')
+  @ApiCustomResponseOK(null)
+  async forgotPassword() {}
+
+  @Post('reset-password')
+  @ApiCustomResponseOK(null)
+  async resetPassword() {}
+
+  @Post('update-password')
   @ApiAuthJwt()
   @UseGuards(JwtAuthGuard)
   @ApiCustomResponseOK(null)
-  async logout(@GetUser() user: ReqUserEmbed) {
-    return await this.authService.logout(user.jti);
+  async updatePassword(
+    @Body() body: UpdatePasswordDto,
+    @GetUser('sub') userId: string,
+  ) {
+    return await this.passwordService.updatePassword(
+      userId,
+      body.oldPassword,
+      body.newPassword,
+    );
   }
+
+  @Post('verify-email')
+  @ApiAuthJwt()
+  @UseGuards(JwtAuthGuard)
+  @ApiCustomResponseOK(null)
+  async verifyEmail(@GetUser() user: ReqUserEmbed) {}
 }

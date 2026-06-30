@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { JwtPayload, ReqUserEmbed } from '@/shared/entities/auth.entity';
 
@@ -10,7 +14,8 @@ import { PassportStrategy } from '@nestjs/passport';
 import { PassportStrategyType } from '@/common/enum/ultil.enum';
 import { Role } from '@/modules/role/entities/role.entity';
 import { RoleService } from '@/modules/role/role.service';
-import { UserProfileService } from '@/modules/user/user-profile.service';
+import { UserRepository } from '@/modules/user/user.repository';
+import { ValidateMessage } from '@/common/utils/validate-message.util';
 import { plainToInstance } from 'class-transformer';
 
 @Injectable()
@@ -20,7 +25,7 @@ export class JwtStrategy extends PassportStrategy(
 ) {
   constructor(
     private readonly configService: ConfigService,
-    private readonly profileService: UserProfileService,
+    private readonly userRepo: UserRepository,
     private readonly roleService: RoleService,
     private readonly cls: ClsService<GlobalClsStore>,
   ) {
@@ -34,10 +39,16 @@ export class JwtStrategy extends PassportStrategy(
   }
 
   async validate(payload: JwtPayload) {
-    console.log(payload);
-    const user = await this.profileService.findOneForAuthGuardUserOrThrow(
-      payload.sub,
-    );
+    const user = await this.userRepo.findUnique({
+      where: { id: payload.sub },
+      select: {
+        id: true,
+        roleId: true,
+      },
+    });
+
+    if (!user)
+      throw new UnauthorizedException(ValidateMessage.notFoundToken().rawMsg());
 
     //  Cache Hit here when has redis
     const rolePlain = await this.roleService.findOneIncludePermissions(
