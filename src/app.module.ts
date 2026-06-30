@@ -1,6 +1,6 @@
+import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { appConfiguration, configValidationSchema } from '@/config/app.config';
 
-import { APP_FILTER } from '@nestjs/core';
 import { AllExceptionsFilter } from '@/common/exception/all-exception-filter';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -16,8 +16,9 @@ import { PrismaClientExceptionFilter } from './common/exception/prisma-exception
 import { PrismaModule } from '@/prisma/prisma.module';
 import { RoleModule } from './modules/role/role.module';
 import { TagModule } from './modules/tag/tag.module';
-import { UserModule } from './modules/user/user.module';
 import { TokenModule } from './modules/token/token.module';
+import { TransformResponseOkInterceptor } from '@/common/interceptor/transfrom-response-ok.interceptor';
+import { UserModule } from './modules/user/user.module';
 
 @Module({
   imports: [
@@ -60,6 +61,10 @@ import { TokenModule } from './modules/token/token.module';
     {
       provide: APP_FILTER,
       useClass: PrismaClientExceptionFilter,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: TransformResponseOkInterceptor,
     },
   ],
 })

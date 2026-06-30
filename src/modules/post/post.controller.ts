@@ -27,12 +27,14 @@ import { BaseFindAllData } from '@/shared/types/response';
 import { DatabaseUltil } from '@/common/utils/database.util';
 import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
 import { ApiAuthJwt } from '@/common/decorator/api-auth.decorator';
+import { ResponseMessage } from '@/common/decorator/response-message.decorator';
 
 @Controller('posts')
 export class PostController {
   constructor(private readonly postService: PostService) {}
 
   @Post()
+  @ResponseMessage('Tạo bài viết thành công')
   @UseGuards(JwtAuthGuard)
   @ApiAuthJwt()
   @ApiCustomResponseOK(PostRelation)
@@ -72,6 +74,7 @@ export class PostController {
   }
 
   @Patch(':id')
+  @ResponseMessage('Cập nhật bài viết thành công')
   @UseGuards(JwtAuthGuard)
   @ApiAuthJwt()
   async update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
@@ -82,6 +85,7 @@ export class PostController {
   }
 
   @Delete(':id')
+  @ResponseMessage('Xóa bài viết thành công')
   @UseGuards(JwtAuthGuard)
   @ApiAuthJwt()
   async remove(@Param('id') id: string) {

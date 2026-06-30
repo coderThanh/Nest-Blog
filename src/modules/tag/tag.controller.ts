@@ -27,12 +27,14 @@ import {
 import { BaseFindAllData } from '@/shared/types/response';
 import { ApiAuthJwt } from '@/common/decorator/api-auth.decorator';
 import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
+import { ResponseMessage } from '@/common/decorator/response-message.decorator';
 
 @Controller('tags')
 export class TagController {
   constructor(private readonly tagService: TagService) {}
 
   @Post()
+  @ResponseMessage('Tạo nhãn thành công')
   @UseGuards(JwtAuthGuard)
   @ApiAuthJwt()
   @ApiCustomResponseOK(Tag)
@@ -68,6 +70,7 @@ export class TagController {
   }
 
   @Patch(':id')
+  @ResponseMessage('Cập nhật nhãn thành công')
   @UseGuards(JwtAuthGuard)
   @ApiAuthJwt()
   @ApiCustomResponseOK(Tag)
@@ -78,6 +81,7 @@ export class TagController {
   }
 
   @Delete(':id')
+  @ResponseMessage('Xóa nhãn thành công')
   @UseGuards(JwtAuthGuard)
   @ApiAuthJwt()
   @ApiCustomResponseOK(Tag)

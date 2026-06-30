@@ -27,12 +27,14 @@ import { UpdateCategoryDto } from './dto/update-category.dto';
 import { plainToInstance } from 'class-transformer';
 import { ApiAuthJwt } from '@/common/decorator/api-auth.decorator';
 import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
+import { ResponseMessage } from '@/common/decorator/response-message.decorator';
 
 @Controller('categorys')
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
   @Post()
+  @ResponseMessage('Tạo danh mục thành công')
   @UseGuards(JwtAuthGuard)
   @ApiAuthJwt()
   @ApiCustomResponseOK(CategoryRelation)
@@ -67,6 +69,7 @@ export class CategoryController {
   }
 
   @Patch(':id')
+  @ResponseMessage('Cập nhật danh mục thành công')
   @UseGuards(JwtAuthGuard)
   @ApiAuthJwt()
   async update(
@@ -80,6 +83,7 @@ export class CategoryController {
   }
 
   @Delete(':id')
+  @ResponseMessage('Xóa danh mục thành công')
   @UseGuards(JwtAuthGuard)
   @ApiAuthJwt()
   async remove(@Param('id') id: string) {

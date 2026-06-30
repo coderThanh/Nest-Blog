@@ -30,9 +30,6 @@ async function bootstrap() {
   // swagger
   setupSwagger(app);
 
-  // Interceptors
-  app.useGlobalInterceptors(new TransformResponseOkInterceptor());
-
   // Pipes
   app.useGlobalPipes(
     new ValidationPipe({

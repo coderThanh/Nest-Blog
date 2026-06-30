@@ -24,12 +24,14 @@ import { UpdateRolePermissionDto } from '@/modules/role/dto/update-role-permissi
 import { plainToInstance } from 'class-transformer';
 import { ApiAuthJwt } from '@/common/decorator/api-auth.decorator';
 import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
+import { ResponseMessage } from '@/common/decorator/response-message.decorator';
 
 @Controller('roles')
 export class RoleController {
   constructor(private readonly roleService: RoleService) {}
 
   @Post()
+  @ResponseMessage('Tạo vai trò thành công')
   @UseGuards(JwtAuthGuard)
   @ApiAuthJwt()
   @ApiCustomResponseOK(Role)
@@ -60,6 +62,7 @@ export class RoleController {
   }
 
   @Patch(':id')
+  @ResponseMessage('Cập nhật vai trò thành công')
   @UseGuards(JwtAuthGuard)
   @ApiAuthJwt()
   @ApiCustomResponseOK(Role)
@@ -69,6 +72,7 @@ export class RoleController {
   }
 
   @Patch(':id/permission')
+  @ResponseMessage('Cập nhật quyền hạn thành công')
   @UseGuards(JwtAuthGuard)
   @ApiAuthJwt()
   @ApiCustomResponseOK(Role)
@@ -81,6 +85,7 @@ export class RoleController {
   }
 
   @Delete(':id')
+  @ResponseMessage('Xóa vai trò thành công')
   @UseGuards(JwtAuthGuard)
   @ApiAuthJwt()
   @ApiCustomResponseOK(Role)

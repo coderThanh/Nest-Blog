@@ -24,6 +24,7 @@ import { ResetPasswordDto } from '@/modules/auth/dto/reset-password.dto';
 import { VerifyEmailDto } from '@/modules/auth/dto/verify-email.dto';
 import { VerifyAccountService } from '@/modules/auth/verify-account.service';
 import { User } from '@/modules/user/entities/user.entity';
+import { ResponseMessage } from '@/common/decorator/response-message.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -34,6 +35,7 @@ export class AuthController {
   ) {}
 
   @Post('login')
+  @ResponseMessage('Đăng nhập thành công')
   @UseGuards(LocalAuthGuard)
   @ApiCustomResponseOK(LoginToken)
   async login(
@@ -53,6 +55,7 @@ export class AuthController {
   }
 
   @Post('logout')
+  @ResponseMessage('Đăng xuất thành công')
   @ApiAuthJwt()
   @UseGuards(JwtAuthGuard)
   @ApiCustomResponseOK(null)
@@ -61,6 +64,7 @@ export class AuthController {
   }
 
   @Post('refresh-token')
+  @ResponseMessage('Làm mới token thành công')
   @ApiCustomResponseOK(RefreshtokenReturn)
   async refreshToken(@Body() body: RefreshTokenDto) {
     const tokens = await this.authService.refreshTokens(body.refreshToken);
@@ -71,18 +75,21 @@ export class AuthController {
   }
 
   @Post('forgot-password')
+  @ResponseMessage('Gửi email khôi phục mật khẩu thành công')
   @ApiCustomResponseOK(null)
   async forgotPassword(@Body() body: ForgotPasswordDto) {
     return await this.passwordService.forgotPassword(body);
   }
 
   @Post('reset-password')
+  @ResponseMessage('Đặt lại mật khẩu thành công')
   @ApiCustomResponseOK(null)
   async resetPassword(@Body() body: ResetPasswordDto) {
     await this.passwordService.resetPassword(body);
   }
 
   @Post('update-password')
+  @ResponseMessage('Cập nhật mật khẩu thành công')
   @ApiAuthJwt()
   @UseGuards(JwtAuthGuard)
   @ApiCustomResponseOK(null)
@@ -98,6 +105,7 @@ export class AuthController {
   }
 
   @Post('reuquire-verify-email')
+  @ResponseMessage('Gửi mã xác thực email thành công')
   @ApiAuthJwt()
   @UseGuards(JwtAuthGuard)
   @ApiCustomResponseOK(null)
@@ -106,6 +114,7 @@ export class AuthController {
   }
 
   @Post('verify-email')
+  @ResponseMessage('Xác thực email thành công')
   @ApiAuthJwt()
   @UseGuards(JwtAuthGuard)
   @ApiCustomResponseOK(User)

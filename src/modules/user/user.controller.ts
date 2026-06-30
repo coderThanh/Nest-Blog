@@ -25,6 +25,7 @@ import { UserProfileService } from '@/modules/user/user-profile.service';
 import { GetUser } from '@/common/decorator/get-user.decorator';
 import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
 import { ApiAuthJwt } from '@/common/decorator/api-auth.decorator';
+import { ResponseMessage } from '@/common/decorator/response-message.decorator';
 
 @Controller('users')
 export class UserController {
@@ -34,6 +35,7 @@ export class UserController {
   ) {}
 
   @Post()
+  @ResponseMessage('Tạo người dùng thành công')
   @UseGuards(JwtAuthGuard)
   @ApiAuthJwt()
   @ApiCustomResponseOK(User)
@@ -78,6 +80,7 @@ export class UserController {
   }
 
   @Patch('user-self')
+  @ResponseMessage('Cập nhật thông tin cá nhân thành công')
   @UseGuards(JwtAuthGuard)
   @ApiAuthJwt()
   @ApiCustomResponseOK(User)
@@ -91,6 +94,7 @@ export class UserController {
   }
 
   @Patch(':id')
+  @ResponseMessage('Cập nhật người dùng thành công')
   @UseGuards(JwtAuthGuard)
   @ApiAuthJwt()
   @ApiCustomResponseOK(User)
@@ -101,6 +105,7 @@ export class UserController {
   }
 
   @Delete(':id')
+  @ResponseMessage('Xóa người dùng thành công')
   @UseGuards(JwtAuthGuard)
   @ApiAuthJwt()
   @ApiCustomResponseOK(User)
