@@ -5,6 +5,7 @@ import { toBoolean } from '@/common/utils/helper.util';
 export const configValidationSchema = joi.object({
   PORT: joi.number().default(3000),
   PASSWORD_RESET_EXPIRES_IN_MINUTES: joi.number().default(15),
+  VERIFY_EMAIL_EXPIRES_IN_HOURS: joi.number().default(24),
   IS_DEBUG: joi.bool().default(false),
   DATABASE_URL: joi.string().required(),
 
@@ -20,6 +21,9 @@ export const appConfiguration = () => ({
   port: parseInt(process.env.PORT ?? '3000'),
   passwordResetExpiresInMinutes: parseInt(
     process.env.PASSWORD_RESET_EXPIRES_IN_MINUTES ?? '15',
+  ),
+  verifyEmailExpiresInHours: parseInt(
+    process.env.VERIFY_EMAIL_EXPIRES_IN_HOURS ?? '24',
   ),
   DATABASE_URL: process.env.DATABASE_URL,
   jwt: {

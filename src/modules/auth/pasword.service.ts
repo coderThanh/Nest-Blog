@@ -82,6 +82,10 @@ export class PasswordService {
       new Date().toISOString(), // check expires
     );
 
+    if (token.type !== TokenType.PASSWORD_RESET) {
+      throw new BadRequestException(ValidateMessage.notFoundToken().rawMsg());
+    }
+
     // validate User
     const user = await this.userRepo.findUniqueOrThrow({
       where: { id: token.userId },

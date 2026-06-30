@@ -19,6 +19,10 @@ export class ConfigUltils {
     return this.configService.get<number>('port');
   }
 
+  public getVerifyEmailExpiresInHours(): number | undefined {
+    return this.configService.get<number>('verifyEmailExpiresInHours');
+  }
+
   public getPasswordResetExpiresInMinutes(): number | undefined {
     return this.configService.get<number>('passwordResetExpiresInMinutes');
   }

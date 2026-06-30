@@ -12,6 +12,7 @@ import { SessionRepository } from '@/modules/auth/session.repository';
 import { TokenModule } from '@/modules/token/token.module';
 import { UserModule } from '@/modules/user/user.module';
 import { UserService } from '@/modules/user/user.service';
+import { VerifyAccountService } from '@/modules/auth/verify-account.service';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { UserService } from '@/modules/user/user.service';
     LocalStrategy,
     SessionRepository,
     PasswordService,
+    VerifyAccountService,
   ],
 })
 export class AuthModule {}

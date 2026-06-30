@@ -26,7 +26,13 @@ export class UserRepository {
     });
   }
 
-  async patch(id: User['id'], body: UpdateUserDto & { passwordHash?: string }) {
+  async patch(
+    id: User['id'],
+    body: UpdateUserDto & {
+      passwordHash?: string;
+      emailVerifiedAt?: string | null;
+    },
+  ) {
     return this.prisma.client.user.update({
       data: body as Prisma.UserUncheckedUpdateInput,
       where: { id },

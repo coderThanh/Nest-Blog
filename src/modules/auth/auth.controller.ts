@@ -21,12 +21,15 @@ import { UpdatePasswordDto } from '@/modules/auth/dto/update-password.dto';
 import { PasswordService } from '@/modules/auth/pasword.service';
 import { ForgotPasswordDto } from '@/modules/auth/dto/forgot-password.dto';
 import { ResetPasswordDto } from '@/modules/auth/dto/reset-password.dto';
+import { VerifyEmailDto } from '@/modules/auth/dto/verify-email.dto';
+import { VerifyAccountService } from '@/modules/auth/verify-account.service';
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly passwordService: PasswordService,
+    private readonly verfiryAccountService: VerifyAccountService,
   ) {}
 
   @Post('login')
@@ -93,9 +96,22 @@ export class AuthController {
     );
   }
 
+  @Post('reuquire-verify-email')
+  @ApiAuthJwt()
+  @UseGuards(JwtAuthGuard)
+  @ApiCustomResponseOK(null)
+  async requireVerifyEmail(@GetUser() user: ReqUserEmbed) {
+    return await this.verfiryAccountService.requiredVerifyEmail(user.userId);
+  }
+
   @Post('verify-email')
   @ApiAuthJwt()
   @UseGuards(JwtAuthGuard)
   @ApiCustomResponseOK(null)
-  async verifyEmail(@GetUser() user: ReqUserEmbed) {}
+  async verifyEmail(
+    @GetUser() user: ReqUserEmbed,
+    @Body() body: VerifyEmailDto,
+  ) {
+    return await this.verfiryAccountService.verifyEmail(user.userId, body);
+  }
 }
