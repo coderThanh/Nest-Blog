@@ -34,14 +34,15 @@ import { Prisma } from '@prisma/client';
 import { PermissionAction } from '@/common/enum/role-permission.enum';
 import { CheckAuthor } from '@/common/decorator/check-author.decorator';
 import { AuthorGuard } from '@/common/guards/author.guard';
+import { Public } from '@/common/decorator/public.decorator';
 
 @Controller('posts')
+@ApiAuthJwt()
+@UseGuards(JwtAuthGuard, PermissionGuard)
 export class PostController {
   constructor(private readonly postService: PostService) {}
 
   @Post()
-  @ApiAuthJwt()
-  @UseGuards(JwtAuthGuard, PermissionGuard)
   @CheckPermission(Prisma.ModelName.Post, PermissionAction.create)
   @ResponseMessage('Tạo bài viết thành công')
   @ApiCustomResponseOK(PostRelation)
@@ -53,6 +54,7 @@ export class PostController {
   }
 
   @Get()
+  @Public()
   @ApiCustomResponseOKFindAll(PostFindAll)
   async findAll(@Query() query: FindAllPostDto) {
     const { items, total } = await this.postService.findAllAndCount(query);
@@ -72,6 +74,7 @@ export class PostController {
   }
 
   @Get(':slug')
+  @Public()
   @ApiCustomResponseOK(PostEntity)
   async findOne(@Param('slug') slug: string) {
     const record = await this.postService.findOneOrThrow(slug);
@@ -81,8 +84,7 @@ export class PostController {
   }
 
   @Patch(':id')
-  @ApiAuthJwt()
-  @UseGuards(JwtAuthGuard, PermissionGuard, AuthorGuard)
+  @UseGuards(AuthorGuard)
   @CheckAuthor(Prisma.ModelName.Post)
   @CheckPermission(Prisma.ModelName.Post, PermissionAction.update)
   @ResponseMessage('Cập nhật bài viết thành công')
@@ -94,8 +96,7 @@ export class PostController {
   }
 
   @Delete(':id')
-  @ApiAuthJwt()
-  @UseGuards(JwtAuthGuard, PermissionGuard, AuthorGuard)
+  @UseGuards(AuthorGuard)
   @CheckAuthor(Prisma.ModelName.Post)
   @CheckPermission(Prisma.ModelName.Post, PermissionAction.delete)
   @ResponseMessage('Xóa bài viết thành công')

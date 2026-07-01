@@ -26,8 +26,15 @@ import { GetUser } from '@/common/decorator/get-user.decorator';
 import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
 import { ApiAuthJwt } from '@/common/decorator/api-auth.decorator';
 import { ResponseMessage } from '@/common/decorator/response-message.decorator';
+import { PermissionGuard } from '@/common/guards/permission.guard';
+import { CheckPermission } from '@/common/decorator/check-permission.decorator';
+import { Prisma } from '@prisma/client';
+import { PermissionAction } from '@/common/enum/role-permission.enum';
+import { Public } from '@/common/decorator/public.decorator';
 
 @Controller('users')
+@ApiAuthJwt()
+@UseGuards(JwtAuthGuard, PermissionGuard)
 export class UserController {
   constructor(
     private readonly userService: UserService,
@@ -36,8 +43,7 @@ export class UserController {
 
   @Post()
   @ResponseMessage('Tạo người dùng thành công')
-  @UseGuards(JwtAuthGuard)
-  @ApiAuthJwt()
+  @CheckPermission(Prisma.ModelName.User, PermissionAction.create)
   @ApiCustomResponseOK(User)
   async create(@Body() createUserDto: CreateUserDto) {
     const record = await this.userService.create(createUserDto);
@@ -46,7 +52,8 @@ export class UserController {
   }
 
   @Get()
-  @ApiCustomResponseOKFindAll(User)
+  @CheckPermission(Prisma.ModelName.User, PermissionAction.read)
+  @ApiCustomResponseOK(User)
   async findAll(@Query() query: FindAllUserDto) {
     const { items, total } = await this.userService.findAllAndCount(query);
 
@@ -63,8 +70,6 @@ export class UserController {
   }
 
   @Get('me')
-  @UseGuards(JwtAuthGuard)
-  @ApiAuthJwt()
   @ApiCustomResponseOK(User)
   async findUserProfile(@GetUser('sub') userId: string) {
     const record = await this.userProfileService.findProfile(userId);
@@ -72,6 +77,7 @@ export class UserController {
   }
 
   @Get(':id')
+  @CheckPermission(Prisma.ModelName.User, PermissionAction.read)
   @ApiCustomResponseOK(User)
   async findOne(@Param('id') id: string) {
     const record = await this.userService.findOneOrThorw(id);
@@ -81,8 +87,6 @@ export class UserController {
 
   @Patch('user-self')
   @ResponseMessage('Cập nhật thông tin cá nhân thành công')
-  @UseGuards(JwtAuthGuard)
-  @ApiAuthJwt()
   @ApiCustomResponseOK(User)
   async updateUserSelf(
     @GetUser('userId') id: string,
@@ -95,8 +99,7 @@ export class UserController {
 
   @Patch(':id')
   @ResponseMessage('Cập nhật người dùng thành công')
-  @UseGuards(JwtAuthGuard)
-  @ApiAuthJwt()
+  @CheckPermission(Prisma.ModelName.User, PermissionAction.update)
   @ApiCustomResponseOK(User)
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     const record = await this.userService.update(id, updateUserDto);
@@ -106,8 +109,7 @@ export class UserController {
 
   @Delete(':id')
   @ResponseMessage('Xóa người dùng thành công')
-  @UseGuards(JwtAuthGuard)
-  @ApiAuthJwt()
+  @CheckPermission(Prisma.ModelName.User, PermissionAction.delete)
   @ApiCustomResponseOK(User)
   async remove(@Param('id') id: string) {
     const record = await this.userService.remove(id);

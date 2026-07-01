@@ -28,21 +28,30 @@ import { plainToInstance } from 'class-transformer';
 import { ApiAuthJwt } from '@/common/decorator/api-auth.decorator';
 import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
 import { ResponseMessage } from '@/common/decorator/response-message.decorator';
+import { PermissionGuard } from '@/common/guards/permission.guard';
+import { CheckPermission } from '@/common/decorator/check-permission.decorator';
+import { Prisma } from '@prisma/client';
+import { PermissionAction } from '@/common/enum/role-permission.enum';
+import { Public } from '@/common/decorator/public.decorator';
+import { AuthorGuard } from '@/common/guards/author.guard';
+import { CheckAuthor } from '@/common/decorator/check-author.decorator';
 
 @Controller('categorys')
+@ApiAuthJwt()
+@UseGuards(JwtAuthGuard, PermissionGuard)
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
   @Post()
   @ResponseMessage('Tạo danh mục thành công')
-  @UseGuards(JwtAuthGuard)
-  @ApiAuthJwt()
+  @CheckPermission(Prisma.ModelName.Category, PermissionAction.create)
   @ApiCustomResponseOK(CategoryRelation)
   async create(@Body() createCategoryDto: CreateCategoryDto) {
     return await this.categoryService.create(createCategoryDto);
   }
 
   @Get()
+  @Public()
   @ApiCustomResponseOKFindAll(CategoryFindAll)
   async findAll(@Query() query: FindAllCategoryDto) {
     const { items, total } = await this.categoryService.findAllAndCount(query);
@@ -60,6 +69,7 @@ export class CategoryController {
   }
 
   @Get(':slug')
+  @Public()
   @ApiCustomResponseOK(Category)
   async findOne(@Param('slug') slug: string) {
     const record = await this.categoryService.findOneOrThrow(slug);
@@ -70,8 +80,9 @@ export class CategoryController {
 
   @Patch(':id')
   @ResponseMessage('Cập nhật danh mục thành công')
-  @UseGuards(JwtAuthGuard)
-  @ApiAuthJwt()
+  @UseGuards(AuthorGuard)
+  @CheckAuthor(Prisma.ModelName.Category)
+  @CheckPermission(Prisma.ModelName.Category, PermissionAction.update)
   async update(
     @Param('id') id: string,
     @Body() updateCategoryDto: UpdateCategoryDto,
@@ -84,8 +95,9 @@ export class CategoryController {
 
   @Delete(':id')
   @ResponseMessage('Xóa danh mục thành công')
-  @UseGuards(JwtAuthGuard)
-  @ApiAuthJwt()
+  @UseGuards(AuthorGuard)
+  @CheckAuthor(Prisma.ModelName.Category)
+  @CheckPermission(Prisma.ModelName.Category, PermissionAction.delete)
   async remove(@Param('id') id: string) {
     return await this.categoryService.remove(+id);
   }
