@@ -37,12 +37,12 @@ import { AuthorGuard } from '@/common/guards/author.guard';
 import { Public } from '@/common/decorator/public.decorator';
 
 @Controller('posts')
-@ApiAuthJwt()
 @UseGuards(JwtAuthGuard, PermissionGuard)
 export class PostController {
   constructor(private readonly postService: PostService) {}
 
   @Post()
+  @ApiAuthJwt()
   @CheckPermission(Prisma.ModelName.Post, PermissionAction.create)
   @ResponseMessage('Tạo bài viết thành công')
   @ApiCustomResponseOK(PostRelation)
@@ -84,6 +84,7 @@ export class PostController {
   }
 
   @Patch(':id')
+  @ApiAuthJwt()
   @UseGuards(AuthorGuard)
   @CheckAuthor(Prisma.ModelName.Post)
   @CheckPermission(Prisma.ModelName.Post, PermissionAction.update)
@@ -96,6 +97,7 @@ export class PostController {
   }
 
   @Delete(':id')
+  @ApiAuthJwt()
   @UseGuards(AuthorGuard)
   @CheckAuthor(Prisma.ModelName.Post)
   @CheckPermission(Prisma.ModelName.Post, PermissionAction.delete)

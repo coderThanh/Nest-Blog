@@ -31,12 +31,12 @@ import { Prisma } from '@prisma/client';
 import { PermissionAction } from '@/common/enum/role-permission.enum';
 
 @Controller('roles')
-@ApiAuthJwt()
 @UseGuards(JwtAuthGuard, PermissionGuard)
 export class RoleController {
   constructor(private readonly roleService: RoleService) {}
 
   @Post()
+  @ApiAuthJwt()
   @ResponseMessage('Tạo vai trò thành công')
   @CheckPermission(Prisma.ModelName.Role, PermissionAction.create)
   @ApiCustomResponseOK(Role)
@@ -45,8 +45,9 @@ export class RoleController {
   }
 
   @Get()
+  @ApiAuthJwt()
   @CheckPermission(Prisma.ModelName.Role, PermissionAction.read)
-  @ApiCustomResponseOK(Role)
+  @ApiCustomResponseOKFindAll(Role)
   async findAll(@Query() query: FindAllRoleDto) {
     const { total, items } = await this.roleService.findAllOrCount(query);
 
@@ -61,6 +62,7 @@ export class RoleController {
   }
 
   @Get(':id')
+  @ApiAuthJwt()
   @CheckPermission(Prisma.ModelName.Role, PermissionAction.read)
   @ApiCustomResponseOK(Role)
   async findOne(@Param('id') id: string) {
@@ -69,6 +71,7 @@ export class RoleController {
   }
 
   @Patch(':id')
+  @ApiAuthJwt()
   @ResponseMessage('Cập nhật vai trò thành công')
   @CheckPermission(Prisma.ModelName.Role, PermissionAction.update)
   @ApiCustomResponseOK(Role)
@@ -78,6 +81,7 @@ export class RoleController {
   }
 
   @Patch(':id/permission')
+  @ApiAuthJwt()
   @ResponseMessage('Cập nhật quyền hạn thành công')
   @CheckPermission(Prisma.ModelName.Role, PermissionAction.update)
   @ApiCustomResponseOK(Role)
@@ -90,6 +94,7 @@ export class RoleController {
   }
 
   @Delete(':id')
+  @ApiAuthJwt()
   @ResponseMessage('Xóa vai trò thành công')
   @CheckPermission(Prisma.ModelName.Role, PermissionAction.delete)
   @ApiCustomResponseOK(Role)

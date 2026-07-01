@@ -33,7 +33,6 @@ import { PermissionAction } from '@/common/enum/role-permission.enum';
 import { Public } from '@/common/decorator/public.decorator';
 
 @Controller('users')
-@ApiAuthJwt()
 @UseGuards(JwtAuthGuard, PermissionGuard)
 export class UserController {
   constructor(
@@ -42,6 +41,7 @@ export class UserController {
   ) {}
 
   @Post()
+  @ApiAuthJwt()
   @ResponseMessage('Tạo người dùng thành công')
   @CheckPermission(Prisma.ModelName.User, PermissionAction.create)
   @ApiCustomResponseOK(User)
@@ -52,8 +52,9 @@ export class UserController {
   }
 
   @Get()
+  @ApiAuthJwt()
   @CheckPermission(Prisma.ModelName.User, PermissionAction.read)
-  @ApiCustomResponseOK(User)
+  @ApiCustomResponseOKFindAll(User)
   async findAll(@Query() query: FindAllUserDto) {
     const { items, total } = await this.userService.findAllAndCount(query);
 
@@ -70,6 +71,7 @@ export class UserController {
   }
 
   @Get('me')
+  @ApiAuthJwt()
   @ApiCustomResponseOK(User)
   async findUserProfile(@GetUser('sub') userId: string) {
     const record = await this.userProfileService.findProfile(userId);
@@ -77,7 +79,7 @@ export class UserController {
   }
 
   @Get(':id')
-  @CheckPermission(Prisma.ModelName.User, PermissionAction.read)
+  @Public()
   @ApiCustomResponseOK(User)
   async findOne(@Param('id') id: string) {
     const record = await this.userService.findOneOrThorw(id);
@@ -86,6 +88,7 @@ export class UserController {
   }
 
   @Patch('user-self')
+  @ApiAuthJwt()
   @ResponseMessage('Cập nhật thông tin cá nhân thành công')
   @ApiCustomResponseOK(User)
   async updateUserSelf(
@@ -98,6 +101,7 @@ export class UserController {
   }
 
   @Patch(':id')
+  @ApiAuthJwt()
   @ResponseMessage('Cập nhật người dùng thành công')
   @CheckPermission(Prisma.ModelName.User, PermissionAction.update)
   @ApiCustomResponseOK(User)
@@ -108,6 +112,7 @@ export class UserController {
   }
 
   @Delete(':id')
+  @ApiAuthJwt()
   @ResponseMessage('Xóa người dùng thành công')
   @CheckPermission(Prisma.ModelName.User, PermissionAction.delete)
   @ApiCustomResponseOK(User)

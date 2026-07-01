@@ -33,12 +33,12 @@ import { AuthorGuard } from '@/common/guards/author.guard';
 import { CheckAuthor } from '@/common/decorator/check-author.decorator';
 
 @Controller('tags')
-@ApiAuthJwt()
 @UseGuards(JwtAuthGuard, PermissionGuard)
 export class TagController {
   constructor(private readonly tagService: TagService) {}
 
   @Post()
+  @ApiAuthJwt()
   @ResponseMessage('Tạo nhãn thành công')
   @CheckPermission(Prisma.ModelName.Tag, PermissionAction.create)
   @ApiCustomResponseOK(Tag)
@@ -76,6 +76,7 @@ export class TagController {
   }
 
   @Patch(':id')
+  @ApiAuthJwt()
   @ResponseMessage('Cập nhật nhãn thành công')
   @UseGuards(AuthorGuard)
   @CheckAuthor(Prisma.ModelName.Tag)
@@ -88,6 +89,7 @@ export class TagController {
   }
 
   @Delete(':id')
+  @ApiAuthJwt()
   @ResponseMessage('Xóa nhãn thành công')
   @UseGuards(AuthorGuard)
   @CheckAuthor(Prisma.ModelName.Tag)

@@ -37,12 +37,12 @@ import { AuthorGuard } from '@/common/guards/author.guard';
 import { CheckAuthor } from '@/common/decorator/check-author.decorator';
 
 @Controller('categorys')
-@ApiAuthJwt()
 @UseGuards(JwtAuthGuard, PermissionGuard)
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
   @Post()
+  @ApiAuthJwt()
   @ResponseMessage('Tạo danh mục thành công')
   @CheckPermission(Prisma.ModelName.Category, PermissionAction.create)
   @ApiCustomResponseOK(CategoryRelation)
@@ -79,6 +79,7 @@ export class CategoryController {
   }
 
   @Patch(':id')
+  @ApiAuthJwt()
   @ResponseMessage('Cập nhật danh mục thành công')
   @UseGuards(AuthorGuard)
   @CheckAuthor(Prisma.ModelName.Category)
@@ -94,6 +95,7 @@ export class CategoryController {
   }
 
   @Delete(':id')
+  @ApiAuthJwt()
   @ResponseMessage('Xóa danh mục thành công')
   @UseGuards(AuthorGuard)
   @CheckAuthor(Prisma.ModelName.Category)
