@@ -24,6 +24,13 @@ export class PermissionGuard implements CanActivate {
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
+    const isPublic = this.reflector.getAllAndOverride<boolean>(
+      ReflectorEnum.isPublic,
+      [context.getHandler(), context.getClass()],
+    );
+
+    if (isPublic) return true;
+
     const permissionRequire = this.reflector.getAllAndOverride<string>(
       ReflectorEnum.checkPermission,
       [context.getHandler(), context.getClass()],
