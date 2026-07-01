@@ -7,5 +7,5 @@ model Token {
     userId    String    @map("user_id")
     user      User      @relation("userToken", fields: [userId], references: [id], onDelete: Cascade)
 
-    @@index([token, type])
+    @@index([userId])
 }

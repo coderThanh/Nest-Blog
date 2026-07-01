@@ -19,4 +19,6 @@ model File {
 
     @@unique([providerId, providerPublicId], where: raw("provider_public_id is not null") )
     @@index([fileName])
+    @@index([createdBy])
+    @@index([createdAt(sort: Desc)])
 }

@@ -31,6 +31,7 @@ model User {
     roles        Role[]     @relation("roleAuth")
     tokens       Token[]    @relation("userToken")
     sessions     Session[]  @relation("userSession")
+    comments     Comment[]  @relation("commentAuthor")
 
     @@unique([email, deletedAt], where: raw("deleted_at is null"))
     @@unique([username, deletedAt], where: raw("deleted_at is null"))
