@@ -6,10 +6,11 @@ import {
   HttpStatus,
   Logger,
 } from '@nestjs/common';
+import { Request, Response } from 'express';
 
 import { ConfigService } from '@nestjs/config';
 import { ConfigUltils } from '@/common/utils/config.util';
-import { Response } from 'express';
+import { ReqUserEmbed } from '@/shared/entities/auth.entity';
 import { ResponseBase } from '@/shared/types/response';
 import { getLoggerMessage } from '@/common/utils/helper.util';
 
@@ -22,6 +23,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
     const { method, url, body } = request;
+    const user = request.user as ReqUserEmbed;
 
     const log = new Logger('AllException');
 
@@ -91,11 +93,12 @@ export class AllExceptionsFilter implements ExceptionFilter {
         getLoggerMessage({
           statusCode: statusCode.toString(),
           url,
+          userId: user?.userId || null,
           message,
           method,
-          stack,
+          stack: stack ?? null,
           body,
-          errorFields: fieldErrors,
+          errorFields: fieldErrors ?? null,
         }),
       );
 
@@ -113,10 +116,12 @@ export class AllExceptionsFilter implements ExceptionFilter {
         getLoggerMessage({
           statusCode: statusCode.toString(),
           url,
+          userId: user?.userId || null,
           message,
           method,
+          stack: null,
           body,
-          errorFields: fieldErrors,
+          errorFields: fieldErrors ?? null,
         }),
       );
     }

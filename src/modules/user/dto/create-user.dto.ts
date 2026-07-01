@@ -74,12 +74,12 @@ export class CreateUserDto {
   @IsOptional()
   gender?: GenderEnum | null;
 
-  /** @example 'User@123456' */
+  /** @example 'User@123' */
   @IsPassword()
   @IsNotEmpty({ message: ValidateMessage.isNotEmpty().exceptionMsg() })
   password: string;
 
-  /** @example 'User@123456' */
+  /** @example 'User@123' */
   @IsRepeat('password', {
     message: ValidateMessage.isRepeatMatch().exceptionMsg(),
   })

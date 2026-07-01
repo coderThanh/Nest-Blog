@@ -5,11 +5,12 @@ import {
   HttpStatus,
   Logger,
 } from '@nestjs/common';
+import { Request, Response } from 'express';
 
 import { ConfigService } from '@nestjs/config';
 import { ConfigUltils } from '@/common/utils/config.util';
 import { Prisma } from '@prisma/client';
-import { Response } from 'express';
+import { ReqUserEmbed } from '@/shared/entities/auth.entity';
 import { ResponseBase } from '@/shared/types/response';
 import { getLoggerMessage } from '@/common/utils/helper.util';
 
@@ -25,6 +26,7 @@ export class PrismaClientExceptionFilter implements ExceptionFilter {
     const log = new Logger('PrismaException');
 
     const { url, method, body } = request;
+    const user = request.user as ReqUserEmbed;
 
     let statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
     let message = 'Internal server error';
@@ -104,23 +106,26 @@ export class PrismaClientExceptionFilter implements ExceptionFilter {
       log.error(
         getLoggerMessage({
           statusCode: `${statusCode} ${exception.code}`,
+          userId: user?.userId || null,
           url,
           message,
           method,
-          stack: exception.stack,
+          stack: exception.stack || null,
           body,
-          errorFields,
+          errorFields: errorFields ?? null,
         }),
       );
     } else {
       log.warn(
         getLoggerMessage({
           statusCode: `${statusCode} ${exception.code}`,
+          userId: user?.userId || null,
           url,
           message,
           method,
           body,
-          errorFields,
+          stack: exception.stack || null,
+          errorFields: errorFields ?? null,
         }),
       );
     }

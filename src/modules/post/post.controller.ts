@@ -32,6 +32,8 @@ import { PermissionGuard } from '@/common/guards/permission.guard';
 import { CheckPermission } from '@/common/decorator/check-permission.decorator';
 import { Prisma } from '@prisma/client';
 import { PermissionAction } from '@/common/enum/role-permission.enum';
+import { CheckAuthor } from '@/common/decorator/check-author.decorator';
+import { AuthorGuard } from '@/common/guards/author.guard';
 
 @Controller('posts')
 export class PostController {
@@ -80,7 +82,8 @@ export class PostController {
 
   @Patch(':id')
   @ApiAuthJwt()
-  @UseGuards(JwtAuthGuard, PermissionGuard)
+  @UseGuards(JwtAuthGuard, PermissionGuard, AuthorGuard)
+  @CheckAuthor(Prisma.ModelName.Post)
   @CheckPermission(Prisma.ModelName.Post, PermissionAction.update)
   @ResponseMessage('Cập nhật bài viết thành công')
   async update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
@@ -91,9 +94,11 @@ export class PostController {
   }
 
   @Delete(':id')
-  @ResponseMessage('Xóa bài viết thành công')
-  @UseGuards(JwtAuthGuard)
   @ApiAuthJwt()
+  @UseGuards(JwtAuthGuard, PermissionGuard, AuthorGuard)
+  @CheckAuthor(Prisma.ModelName.Post)
+  @CheckPermission(Prisma.ModelName.Post, PermissionAction.delete)
+  @ResponseMessage('Xóa bài viết thành công')
   async remove(@Param('id') id: string) {
     const record = await this.postService.remove(id);
     return plainToInstance(PostEntity, record, {

@@ -1,3 +1,5 @@
+import { RecordStatus } from '@prisma/client';
+
 export class DatabaseUltil {
   static getSkip(page: number, limit: number): number {
     return Math.max(page - 1, 0) * limit;
@@ -28,4 +30,8 @@ export class DatabaseUltil {
       limit,
     };
   }
+
+  static isStatusCanDoAction = (status: RecordStatus): boolean => {
+    return [RecordStatus.DRAFT, RecordStatus.PENDING].includes(status as any);
+  };
 }

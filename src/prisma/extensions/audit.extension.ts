@@ -1,19 +1,7 @@
+import { AUDIT_MODELS } from '@/prisma/prisma.const';
 import { ClsService } from 'nestjs-cls';
 import { GlobalClsStore } from '@/shared/types/cls-store';
 import { Prisma } from '@prisma/client';
-
-/**
- * Danh sách các model có hỗ trợ audit fields (createdBy, updatedBy, deletedBy)
- */
-const AUDIT_MODELS: Set<Prisma.ModelName> = new Set([
-  'User',
-  'Category',
-  'Post',
-  'Tag',
-  'File',
-  'Role',
-  'Permission',
-]);
 
 /**
  * Prisma Extension để tự động thêm thông tin audit từ CLS (userId)

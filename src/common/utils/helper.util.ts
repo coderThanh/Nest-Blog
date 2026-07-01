@@ -53,6 +53,7 @@ export function getLoggerMessage({
   url,
   method,
   message,
+  userId,
   stack,
   body,
   errorFields,
@@ -61,14 +62,33 @@ export function getLoggerMessage({
   url: string;
   method: string;
   message: string;
-  stack?: string;
-  body?: any;
-  errorFields?: Record<string, any>;
+  userId: string | null;
+  stack: string | null;
+  body: any;
+  errorFields: Record<string, any> | null;
 }): string {
+  const log: Record<string, any> = {
+    request: {
+      method,
+      url,
+    },
+    exception: {
+      statusCode,
+      message,
+    },
+  };
+
+  //
   let bodyMasked: Record<string, any> | undefined;
 
   if (body && typeof body === 'object') {
     bodyMasked = maskFieldObj(body, PAYLOAD_KEY_SECERT);
+  }
+
+  if (userId) {
+    log.user = {
+      userId,
+    };
   }
 
   // Gom toàn bộ context động vào meta object
@@ -81,7 +101,11 @@ export function getLoggerMessage({
         }
       : undefined;
 
-  return `[${method}] ${statusCode} ${url} ${message} ${logMeta ? `- Meta: ${JSON.stringify(logMeta)}` : ''}`;
+  if (logMeta) {
+    log.meta = logMeta;
+  }
+
+  return JSON.stringify(log);
 }
 
 export function maskFieldObj(obj: any, secrets: string[]): any {

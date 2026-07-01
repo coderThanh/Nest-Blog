@@ -150,6 +150,13 @@ export class ValidateMessage {
     return this.buildMessage(`token không hợp lệ hoặc đã hết hạn`, name);
   }
 
+  static forbidden(name: string = '') {
+    return this.buildMessage(
+      `bạn không có quyền thực hiện hành động này`,
+      name,
+    );
+  }
+
   static loginFaild(name: string = '') {
     return this.buildMessage('sai tên đăng nhập hoặc mật khẩu', name);
   }
