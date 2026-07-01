@@ -144,6 +144,7 @@ export class CategoryService {
   }
 
   async remove(id: number) {
+    await this.categoryRepo.findUniqueOrThrow({ where: { id } });
     return await this.categoryRepo.deleted(id);
   }
 

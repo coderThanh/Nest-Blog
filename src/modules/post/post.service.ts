@@ -126,6 +126,7 @@ export class PostService {
   }
 
   async remove(id: string) {
+    await this.postRepo.findUniqueOrThrow({ where: { id } });
     return await this.postRepo.delete(id);
   }
 

@@ -103,6 +103,7 @@ export class TagService {
   }
 
   async remove(id: string) {
+    await this.tagRepo.findUniqueOrThrow({ where: { id } });
     return this.tagRepo.delete(id);
   }
 
