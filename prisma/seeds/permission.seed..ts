@@ -1,10 +1,7 @@
 import { Prisma, PrismaClient } from '@prisma/client';
-import {
-  generatePermissionCode,
-  parsePermissionName,
-} from '@/common/utils/role-permission.util';
 
 import { PermissionAction } from '@/common/enum/role-permission.enum';
+import { PermissionUtil } from '@/common/utils/permission.util';
 import { parseModelName } from '@/common/utils/parse.util';
 
 const MODELS_HAS_APPROVE: Set<Prisma.ModelName> = new Set([
@@ -41,12 +38,15 @@ async function upsertPermission(
     for (const action of actions) {
       if (!hasApprove && action === PermissionAction.approve) continue;
 
-      const permissionCode = generatePermissionCode(model, action);
+      const permissionCode = PermissionUtil.generatePermissionCode(
+        model,
+        action,
+      );
 
       await prisma.permission.upsert({
         where: { permission: permissionCode },
         create: {
-          name: parsePermissionName(action),
+          name: PermissionUtil.parsePermissionName(action),
           permission: permissionCode,
           module: parseModelName(model),
         },

@@ -1,3 +1,4 @@
 export enum ReflectorEnum {
-  responseMessage = 'response_message',
+  responseMessage = 'responseMessage',
+  checkPermission = 'checkPermission',
 }

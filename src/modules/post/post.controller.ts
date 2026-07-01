@@ -28,15 +28,20 @@ import { DatabaseUltil } from '@/common/utils/database.util';
 import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
 import { ApiAuthJwt } from '@/common/decorator/api-auth.decorator';
 import { ResponseMessage } from '@/common/decorator/response-message.decorator';
+import { PermissionGuard } from '@/common/guards/permission.guard';
+import { CheckPermission } from '@/common/decorator/check-permission.decorator';
+import { Prisma } from '@prisma/client';
+import { PermissionAction } from '@/common/enum/role-permission.enum';
 
 @Controller('posts')
 export class PostController {
   constructor(private readonly postService: PostService) {}
 
   @Post()
-  @ResponseMessage('Tạo bài viết thành công')
-  @UseGuards(JwtAuthGuard)
   @ApiAuthJwt()
+  @UseGuards(JwtAuthGuard, PermissionGuard)
+  @CheckPermission(Prisma.ModelName.Post, PermissionAction.create)
+  @ResponseMessage('Tạo bài viết thành công')
   @ApiCustomResponseOK(PostRelation)
   async create(@Body() createPostDto: CreatePostDto) {
     const record = await this.postService.create(createPostDto);
@@ -74,9 +79,10 @@ export class PostController {
   }
 
   @Patch(':id')
-  @ResponseMessage('Cập nhật bài viết thành công')
-  @UseGuards(JwtAuthGuard)
   @ApiAuthJwt()
+  @UseGuards(JwtAuthGuard, PermissionGuard)
+  @CheckPermission(Prisma.ModelName.Post, PermissionAction.update)
+  @ResponseMessage('Cập nhật bài viết thành công')
   async update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
     const record = await this.postService.update(id, updatePostDto);
     return plainToInstance(PostEntity, record, {
