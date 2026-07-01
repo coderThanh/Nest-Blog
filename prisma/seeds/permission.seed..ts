@@ -1,22 +1,9 @@
+import { MODELS_HAS_APPROVE, MODELS_NO_APPROVE } from '@/prisma/prisma.const';
 import { Prisma, PrismaClient } from '@prisma/client';
 
 import { PermissionAction } from '@/common/enum/role-permission.enum';
 import { PermissionUtil } from '@/common/utils/permission.util';
 import { parseModelName } from '@/common/utils/parse.util';
-
-const MODELS_HAS_APPROVE: Set<Prisma.ModelName> = new Set([
-  Prisma.ModelName.Post,
-]);
-
-const MODELS_NO_APPROVE: Set<Prisma.ModelName> = new Set([
-  Prisma.ModelName.Category,
-  Prisma.ModelName.File,
-  Prisma.ModelName.Permission,
-  Prisma.ModelName.Post,
-  Prisma.ModelName.Role,
-  Prisma.ModelName.Tag,
-  Prisma.ModelName.User,
-]);
 
 export async function seedPermission(prisma: PrismaClient) {
   console.info('Start seed permisson...');

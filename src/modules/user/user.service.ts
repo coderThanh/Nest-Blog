@@ -1,3 +1,4 @@
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { Prisma, PrismaClient } from '@prisma/client';
 import { UpdateUserDto, UpdateUserSelfDto } from './dto/update-user.dto';
 import {
@@ -12,7 +13,6 @@ import { DatabaseValidate } from '@/common/utils/database-validate..util';
 import { DbValidateService } from '@/prisma/db-validate.service';
 import { FileEntity } from '@/modules/file/entities/file.entity';
 import { FindAllUserDto } from '@/modules/user/dto/find-all-user.dto';
-import { Injectable } from '@nestjs/common';
 import { Role } from '@/modules/role/entities/role.entity';
 import { User } from '@/modules/user/entities/user.entity';
 import { UserRepository } from '@/modules/user/user.repository';
@@ -135,7 +135,12 @@ export class UserService {
     });
   }
 
-  async remove(id: string) {
+  async remove(id: string, currentUserId: string) {
+    if (id === currentUserId) {
+      throw new BadRequestException('Không thể tự xoá người dùng');
+    }
+
+    await this.userRepo.findUniqueOrThrow({ where: { id } });
     return this.userRepo.softDelete(id);
   }
 

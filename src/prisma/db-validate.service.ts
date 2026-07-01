@@ -4,6 +4,7 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 
+import { MODELS_HAS_ID_TYPE_INT } from '@/prisma/prisma.const';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '@/prisma/prisma.service';
 import { ValidateMessage } from '@/common/utils/validate-message.util';
@@ -24,9 +25,14 @@ export class DbValidateService {
         `Model ${modelName} không tồn tại.`,
       );
 
-    const idArray = Array.isArray(id) ? id : [id];
+    let idArray = Array.isArray(id) ? id : [id];
 
     if (idArray.length === 0) return;
+
+    // transfrom type id
+    if (MODELS_HAS_ID_TYPE_INT.has(modelName)) {
+      idArray = idArray.map((id) => parseInt(id as any)) as T[];
+    }
 
     const count: number = await modelService.count({
       where: { id: { in: idArray } },

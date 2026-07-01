@@ -19,6 +19,7 @@ import { TagModule } from './modules/tag/tag.module';
 import { TokenModule } from './modules/token/token.module';
 import { TransformResponseOkInterceptor } from '@/common/interceptor/transfrom-response-ok.interceptor';
 import { UserModule } from './modules/user/user.module';
+import { CommentModule } from './modules/comment/comment.module';
 
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import { UserModule } from './modules/user/user.module';
     TagModule,
     FileModule,
     TokenModule,
+    CommentModule,
   ],
   controllers: [AppController],
   providers: [

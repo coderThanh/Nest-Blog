@@ -116,8 +116,8 @@ export class UserController {
   @ResponseMessage('Xóa người dùng thành công')
   @CheckPermission(Prisma.ModelName.User, PermissionAction.delete)
   @ApiCustomResponseOK(User)
-  async remove(@Param('id') id: string) {
-    const record = await this.userService.remove(id);
+  async remove(@Param('id') id: string, @GetUser('userId') userId: string) {
+    const record = await this.userService.remove(id, userId);
 
     return plainToInstance(User, record, { excludeExtraneousValues: true });
   }

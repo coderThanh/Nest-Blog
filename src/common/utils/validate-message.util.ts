@@ -139,7 +139,7 @@ export class ValidateMessage {
   }
 
   static notFoundUser(name: string = '') {
-    return this.buildMessage(`tài khoản không tồn tại`, name);
+    return this.buildMessage(`người dùng không tồn tại`, name);
   }
 
   static notFoundToken(name: string = '') {
