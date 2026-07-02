@@ -1,4 +1,8 @@
-import { AUDIT_MODELS, STATUS_MODELS } from '@/prisma/prisma.const';
+import {
+  AUDIT_MODELS,
+  MODELS_HAS_ID_TYPE_INT,
+  STATUS_MODELS,
+} from '@/prisma/prisma.const';
 import {
   CanActivate,
   ExecutionContext,
@@ -44,7 +48,8 @@ export class AuthorGuard implements CanActivate {
     const request = context.switchToHttp().getRequest<Request>();
 
     const { userId } = request.user as ReqUserEmbed;
-    const resourceId = request.params.id || request.params.slug;
+    let resourceId =
+      (request.params.id as string) || (request.params.slug as string);
 
     if (!userId) {
       throw new ForbiddenException(ValidateMessage.forbidden());
@@ -57,7 +62,11 @@ export class AuthorGuard implements CanActivate {
     }
 
     const resource = await this.prisma.client[modelName].findUnique({
-      where: { id: resourceId },
+      where: {
+        id: MODELS_HAS_ID_TYPE_INT.has(modelName)
+          ? parseInt(resourceId)
+          : resourceId,
+      },
     });
 
     if (!resource) {
