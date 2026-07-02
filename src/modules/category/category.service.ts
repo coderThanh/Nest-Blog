@@ -1,4 +1,8 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  isNotNullOrUndefined as isNotNullNotUndefined,
+  removeVietnameseAccents,
+} from '@/common/utils/helper.util';
 
 import { Category } from '@/modules/category/entities/category.entity';
 import { CategoryOrderBy } from '@/modules/category/category.enum';
@@ -14,7 +18,6 @@ import { Prisma } from '@prisma/client';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { User } from '@/modules/user/entities/user.entity';
 import { ValidateMessage } from '@/common/utils/validate-message.util';
-import { removeVietnameseAccents } from '@/common/utils/helper.util';
 
 @Injectable()
 export class CategoryService {
@@ -35,7 +38,7 @@ export class CategoryService {
         'name',
       ),
       //
-      createCategoryDto.parentId &&
+      isNotNullNotUndefined(createCategoryDto.parentId) &&
         this.dbValidate.validateRecordExistOrThrow(
           Prisma.ModelName.Category,
           createCategoryDto.parentId,
@@ -117,7 +120,7 @@ export class CategoryService {
           'name',
         ),
       //
-      updateCategoryDto.parentId &&
+      isNotNullNotUndefined(updateCategoryDto.parentId) &&
         updateCategoryDto.parentId !== current.parentId &&
         this.dbValidate.validateRecordExistOrThrow(
           Prisma.ModelName.Category,
