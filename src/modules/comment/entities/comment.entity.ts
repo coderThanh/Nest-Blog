@@ -39,7 +39,7 @@ export class Comment {
   @Expose()
   createdByUser: UserRelation | null;
 
-  static commentInluce: Prisma.CommentInclude = {
+  static commentInclude: Prisma.CommentInclude = {
     createdByUser: {
       select: {
         id: true,

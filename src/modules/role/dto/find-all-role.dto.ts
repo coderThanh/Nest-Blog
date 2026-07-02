@@ -1,22 +1,13 @@
-import { ApiPropertyOptional, IntersectionType } from '@nestjs/swagger';
-import {
-  IsBoolean,
-  IsEnum,
-  IsInt,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsBoolean, IsEnum, IsOptional } from 'class-validator';
 
 import { FilterIdsStringDto } from '@/shared/dto/filter-ids.dto';
 import { FilterOrderDirDto } from '@/shared/dto/filter-order-dir.dto';
 import { FilterPaginationDto } from '@/shared/dto/filter-pagination.dto';
 import { FilterSearchDto } from '@/shared/dto/filter-search.dto';
-import { NormalizeString } from '@/common/decorator/normalize-string';
+import { IntersectionType } from '@nestjs/swagger';
 import { OrderDir } from '@/common/enum/filter.enum';
-import { QUERY_SEPARATOR } from '@/common/constant/util';
 import { RoleOrderBy } from '@/modules/role/role.enum';
-import { SplitToArrayNumber } from '@/common/decorator/to-array';
-import { ToBoolean } from '@/common/decorator/to-bool';
+import { ToBoolean } from '@/common/decorator/to-bool.decorator';
 import { ValidateMessage } from '@/common/utils/validate-message.util';
 
 export class FindAllRoleDto extends IntersectionType(

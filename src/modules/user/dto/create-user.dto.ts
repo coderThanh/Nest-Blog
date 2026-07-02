@@ -10,7 +10,7 @@ import {
 import {
   NormalizeString,
   ToLowerCaseAndTrim,
-} from '@/common/decorator/normalize-string';
+} from '@/common/decorator/normalize-string.decorator';
 
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { GenderEnum } from '@prisma/client';

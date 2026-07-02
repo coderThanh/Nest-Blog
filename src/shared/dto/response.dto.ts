@@ -65,7 +65,7 @@ export class ApiResponseDataFindAllMeta {
 
 export class ResponseFindAllDataMetaCursor<T extends string | number> {
   @ApiProperty()
-  lastCursor: T;
+  lastCursor: T | null;
 
   @ApiProperty()
   totalItems: number;

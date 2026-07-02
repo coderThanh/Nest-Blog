@@ -2,7 +2,7 @@ import { IsNotEmpty, IsString } from 'class-validator';
 
 import { IsPassword } from '@/common/decorator/is-strong-password.decorator';
 import { IsRepeat } from '@/common/decorator/is-repeat.decorrator';
-import { NormalizeString } from '@/common/decorator/normalize-string';
+import { NormalizeString } from '@/common/decorator/normalize-string.decorator';
 import { ValidateMessage } from '@/common/utils/validate-message.util';
 
 export class ResetPasswordDto {

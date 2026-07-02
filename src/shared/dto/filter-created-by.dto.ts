@@ -1,11 +1,13 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 
 import { NormalizeString } from '@/common/decorator/normalize-string.decorator';
+import { ToNullable } from '@/common/decorator/to-nullable.decorator';
 import { ValidateMessage } from '@/common/utils/validate-message.util';
 
-export class RefreshTokenDto {
+export class FilterCreatedByDto {
   @IsString({ message: ValidateMessage.isString().exceptionMsg() })
+  @ToNullable()
   @NormalizeString()
-  @IsNotEmpty({ message: ValidateMessage.isNotEmpty().exceptionMsg() })
-  refreshToken: string;
+  @IsOptional()
+  createdBy?: string | null;
 }

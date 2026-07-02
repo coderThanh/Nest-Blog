@@ -190,6 +190,10 @@ export class ValidateMessage {
     return this.buildMessage('yêu cầu bảng ghi cấp cao nhất', name);
   }
 
+  static isSameParent(name: string = '') {
+    return this.buildMessage('phải cùng 1 cha', name);
+  }
+
   static isSystemDoNotEdit(name: string = '') {
     return this.buildMessage(
       'đây là bảng ghi hệ thống không được phép sửa',

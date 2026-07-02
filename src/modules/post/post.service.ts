@@ -141,20 +141,27 @@ export class PostService {
       ids,
       excludeIds,
       categoryIds,
+      tagIds,
       categoryPath,
       search,
       fromDate,
       toDate,
+      createdBy,
     } = query;
 
     const andCondition: Prisma.PostWhereInput[] = [];
+
+    console.log(categoryIds, categoryIds === null);
+    console.log(tagIds, tagIds === null);
 
     if (ids?.length) andCondition.push({ id: { in: ids } });
 
     if (excludeIds?.length) andCondition.push({ id: { notIn: excludeIds } });
 
-    if (categoryIds?.length)
+    if (categoryIds)
       andCondition.push({ categories: { some: { id: { in: categoryIds } } } });
+
+    if (tagIds) andCondition.push({ tags: { some: { id: { in: tagIds } } } });
 
     if (categoryPath)
       andCondition.push({
@@ -164,6 +171,11 @@ export class PostService {
     if (search)
       andCondition.push({
         search: { contains: removeVietnameseAccents(search).toLowerCase() },
+      });
+
+    if (createdBy !== undefined)
+      andCondition.push({
+        createdBy: createdBy,
       });
 
     if (fromDate) {

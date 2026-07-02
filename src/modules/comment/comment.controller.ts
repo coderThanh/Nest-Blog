@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { CommentService } from './comment.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
@@ -21,10 +22,12 @@ import { Prisma } from '@prisma/client';
 import { PermissionAction } from '@/common/enum/role-permission.enum';
 import {
   ApiCustomResponseOK,
-  ApiCustomResponseOKFindAll,
+  ApiCustomResponseOKFindAllCursor,
 } from '@/common/decorator/api-response-ok.decorator';
 import { Comment } from '@/modules/comment/entities/comment.entity';
 import { plainToInstance } from 'class-transformer';
+import { FindAllCommentDto } from '@/modules/comment/dto/find-all-comment.dto';
+import { ResponseFindAllData } from '@/shared/dto/response.dto';
 
 @ApiAuthJwt()
 @UseGuards(JwtAuthGuard, PermissionGuard)
@@ -42,14 +45,23 @@ export class CommentController {
 
   @Get()
   @Public()
-  @ApiCustomResponseOKFindAll(Comment)
-  async findAll() {
-    return this.commentService.findAll();
+  @ApiCustomResponseOKFindAllCursor(Comment)
+  async findAll(@Query() query: FindAllCommentDto) {
+    const { items, total } = await this.commentService.findAllAndCount(query);
+
+    return new ResponseFindAllData({
+      items: plainToInstance(Comment, items, { excludeExtraneousValues: true }),
+      meta: {
+        limit: query.limit,
+        totalItems: total,
+        lastCursor: items[items.length - 1]?.id ?? null,
+      },
+    });
   }
 
   @Get(':id')
   @Public()
-  @ApiCustomResponseOKFindAll(Comment)
+  @ApiCustomResponseOK(Comment)
   async findOne(@Param('id') id: string) {
     const record = await this.commentService.findOneOrThrow(id);
 

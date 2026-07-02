@@ -10,7 +10,7 @@ import {
 import { COMMENT_MODELS } from '@/modules/comment/comment.const';
 import { IsMaxLength } from '@/common/decorator/is-max-length.decorator';
 import { MAX_LENGTH_COMMENT } from '@/common/constant/util';
-import { NormalizeString } from '@/common/decorator/normalize-string';
+import { NormalizeString } from '@/common/decorator/normalize-string.decorator';
 import { Prisma } from '@prisma/client';
 import { ValidateMessage } from '@/common/utils/validate-message.util';
 import { isNotNullOrUndefined as isNotNullAndUndefined } from '@/common/utils/helper.util';

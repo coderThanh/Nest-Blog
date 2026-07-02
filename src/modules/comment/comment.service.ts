@@ -3,12 +3,11 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { Comment } from '@/modules/comment/entities/comment.entity';
 import { CommentRepository } from '@/modules/comment/comment.repository';
 import { CreateCommentDto } from './dto/create-comment.dto';
-import { DatabaseValidate } from '@/common/utils/database-validate..util';
 import { DbValidateService } from '@/prisma/db-validate.service';
+import { FindAllCommentDto } from '@/modules/comment/dto/find-all-comment.dto';
 import { Prisma } from '@prisma/client';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { ValidateMessage } from '@/common/utils/validate-message.util';
-import { isNotNullOrUndefined } from '@/common/utils/helper.util';
 
 @Injectable()
 export class CommentService {
@@ -19,81 +18,31 @@ export class CommentService {
   async create(createCommentDto: CreateCommentDto) {
     const { parentId, replyToId, targetType, targetId } = createCommentDto;
 
-    //
-    if (replyToId && replyToId === parentId) {
-      throw new BadRequestException(
-        ValidateMessage.exceptionThrowErrorsField(
-          Prisma.CommentScalarFieldEnum.replyToId,
-          ValidateMessage.isNotSameField(
-            Prisma.CommentScalarFieldEnum.parentId,
-          ).rawMsg(),
-        ),
-      );
-    }
-
-    //
-    if (parentId) {
-      const parent = await this.commentRepo.findUnique({
-        where: { id: parentId },
-        select: { id: true, parentId: true },
-      });
-
-      if (!parent) {
-        throw new BadRequestException(
-          ValidateMessage.exceptionThrowErrorsField(
-            Prisma.CommentScalarFieldEnum.parentId,
-            ValidateMessage.notFound().rawMsg(),
-          ),
-        );
-      }
-
-      if (parent.parentId) {
-        throw new BadRequestException(
-          ValidateMessage.exceptionThrowErrorsField(
-            Prisma.CommentScalarFieldEnum.parentId,
-            ValidateMessage.isRootRecord().rawMsg(),
-          ),
-        );
-      }
-    }
-
-    //
-    await DatabaseValidate.validateOrThrow([
-      this.dbValidateService.validateRecordExistOrThrow(
-        targetType,
-        targetId,
-        Prisma.CommentScalarFieldEnum.targetId,
-      ),
-      isNotNullOrUndefined(replyToId)
-        ? this.dbValidateService.validateRecordExistOrThrow(
-            Prisma.ModelName.Comment,
-            replyToId,
-            Prisma.CommentScalarFieldEnum.replyToId,
-          )
-        : undefined,
+    await Promise.all([
+      this.validateParent(parentId),
+      this.validateTarget(targetType, targetId),
+      this.validateReply(replyToId, parentId),
     ]);
 
     return this.commentRepo.create(createCommentDto);
   }
 
-  findAll() {
-    return `This action returns all comment`;
+  async findAll(query: FindAllCommentDto) {
+    return this.commentRepo.findMany(
+      CommentService.getCommonFindAllOptions(query),
+    );
   }
 
-  // async findAll(query: FindAllPostDto) {
-  //   return this.postRepo.findMany(PostService.getCommonFindAllOptions(query));
-  // }
-
-  // async findAllAndCount(query: FindAllPostDto) {
-  //   return this.postRepo.findManyAndCount(
-  //     PostService.getCommonFindAllOptions(query),
-  //   );
-  // }
+  async findAllAndCount(query: FindAllCommentDto) {
+    return this.commentRepo.findManyAndCount(
+      CommentService.getCommonFindAllOptions(query),
+    );
+  }
 
   async findOneOrThrow(id: string) {
     return this.commentRepo.findUniqueOrThrow({
       where: { id },
-      include: Comment.commentInluce,
+      include: Comment.commentInclude,
     });
   }
 
@@ -108,69 +57,114 @@ export class CommentService {
   }
 
   //
-  // static getCommonFindAllWhere(query: FindAllPostDto): Prisma.PostWhereInput[] {
-  //   const {
-  //     ids,
-  //     excludeIds,
-  //     categoryIds,
-  //     categoryPath,
-  //     search,
-  //     fromDate,
-  //     toDate,
-  //   } = query;
+  static getCommonFindAllWhere(
+    query: FindAllCommentDto,
+  ): Prisma.CommentWhereInput[] {
+    const { parentId, replyToId, targetId, targetType, createdBy } = query;
 
-  //   const andCondition: Prisma.PostWhereInput[] = [];
+    const andCondition: Prisma.CommentWhereInput[] = [];
 
-  //   if (ids?.length) andCondition.push({ id: { in: ids } });
+    // accept id and null
+    if (parentId !== undefined) andCondition.push({ parentId: parentId });
 
-  //   if (excludeIds?.length) andCondition.push({ id: { notIn: excludeIds } });
+    if (replyToId) andCondition.push({ replyToId: replyToId });
 
-  //   if (categoryIds?.length)
-  //     andCondition.push({ categories: { some: { id: { in: categoryIds } } } });
+    if (targetId) andCondition.push({ targetId: targetId });
 
-  //   if (categoryPath)
-  //     andCondition.push({
-  //       categories: { some: { path: { startsWith: categoryPath } } },
-  //     });
+    if (targetType) andCondition.push({ targetType: targetType });
 
-  //   if (search)
-  //     andCondition.push({
-  //       search: { contains: removeVietnameseAccents(search).toLowerCase() },
-  //     });
+    if (createdBy !== undefined) andCondition.push({ createdBy: createdBy });
 
-  //   if (fromDate) {
-  //     andCondition.push({
-  //       createdAt: { gte: startOfDay(new Date(fromDate)) },
-  //     });
-  //   }
+    return andCondition;
+  }
 
-  //   if (toDate) {
-  //     andCondition.push({
-  //       createdAt: { lt: endOfDay(new Date(toDate)) },
-  //     });
-  //   }
+  static getCommonFindAllOptions(
+    query: FindAllCommentDto,
+  ): Prisma.CommentFindManyArgs {
+    const { limit, orderDir, orderBy, lastCursor } = query;
 
-  //   return andCondition;
-  // }
+    const order: Prisma.CommentOrderByWithRelationInput[] = [
+      { [orderBy as Prisma.CommentScalarFieldEnum]: orderDir },
+      { id: orderDir }, // Tie-breaker
+    ];
 
-  // static getCommonFindAllOptions(
-  //   query: FindAllPostDto,
-  // ): Prisma.PostFindManyArgs {
-  //   const { page, limit, orderDir, orderBy } = query;
+    const options: Prisma.CommentFindManyArgs = {
+      where: { AND: this.getCommonFindAllWhere(query) },
+      orderBy: order,
+      take: limit,
+      include: Comment.commentInclude,
+    };
 
-  //   const order: Prisma.PostOrderByWithRelationInput = {
-  //     [orderBy as Prisma.PostScalarFieldEnum]: orderDir,
-  //   };
+    if (lastCursor) {
+      options.cursor = { id: lastCursor };
+      options.skip = 1;
+    }
 
-  //   return {
-  //     where: { AND: this.getCommonFindAllWhere(query) },
-  //     select: {
-  //       ...PostEntity.selectFindAll,
-  //       ...PostService.getCommonIncludeArg,
-  //     },
-  //     orderBy: order,
-  //     take: limit,
-  //     skip: DatabaseUltil.getSkip(page, limit),
-  //   };
-  // }
+    return options;
+  }
+
+  private async validateParent(parentId?: string | null) {
+    if (!parentId) return;
+
+    const parent = await this.commentRepo.findUnique({
+      where: { id: parentId },
+      select: { id: true, parentId: true },
+    });
+
+    if (!parent) {
+      throw new BadRequestException(
+        ValidateMessage.exceptionThrowErrorsField(
+          Prisma.CommentScalarFieldEnum.parentId,
+          ValidateMessage.notFound().rawMsg(),
+        ),
+      );
+    }
+
+    if (parent.parentId) {
+      throw new BadRequestException(
+        ValidateMessage.exceptionThrowErrorsField(
+          Prisma.CommentScalarFieldEnum.parentId,
+          ValidateMessage.isRootRecord().rawMsg(),
+        ),
+      );
+    }
+  }
+
+  private async validateTarget(targetType: Prisma.ModelName, targetId: string) {
+    await this.dbValidateService.validateRecordExistOrThrow(
+      targetType,
+      targetId,
+      Prisma.CommentScalarFieldEnum.targetId,
+    );
+  }
+
+  private async validateReply(
+    replyToId?: string | null,
+    parentId?: string | null,
+  ) {
+    if (!replyToId) return;
+
+    const reply = await this.commentRepo.findUnique({
+      where: { id: replyToId },
+      select: { parentId: true },
+    });
+
+    if (!reply) {
+      throw new BadRequestException(
+        ValidateMessage.exceptionThrowErrorsField(
+          Prisma.CommentScalarFieldEnum.replyToId,
+          ValidateMessage.notFound().rawMsg(),
+        ),
+      );
+    }
+
+    if (reply.parentId && reply.parentId !== parentId) {
+      throw new BadRequestException(
+        ValidateMessage.exceptionThrowErrorsField(
+          Prisma.CommentScalarFieldEnum.replyToId,
+          ValidateMessage.isSameParent().rawMsg(),
+        ),
+      );
+    }
+  }
 }

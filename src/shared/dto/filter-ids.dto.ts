@@ -1,5 +1,8 @@
 import { IsInt, IsNumber, IsOptional, IsString } from 'class-validator';
-import { SplitToArray, SplitToArrayNumber } from '@/common/decorator/to-array';
+import {
+  SplitToArray,
+  SplitToArrayNumber,
+} from '@/common/decorator/to-array.decorator';
 
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { QUERY_SEPARATOR } from '@/common/constant/util';
