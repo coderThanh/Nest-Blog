@@ -14,10 +14,14 @@ model Comment {
     createdByUser  User?    @relation("commentAuthor", fields: [createdBy], references: [id], onDelete: SetNull)
 
     // 
-    childrents   Comment[] @relation("commentParent")
-    feedbacks Comment[] @relation("commentReplies")
+    childrents Comment[] @relation("commentParent")
+    feedbacks  Comment[] @relation("commentReplies")
 
     @@index([createdAt(sort: Desc)])
-    @@index([replyToId, createdAt(sort: Desc)])
+    // index comment root only
+    @@index([targetId, targetType, createdAt(sort: Desc)], where: raw("parent_id is null"))
+    // index comment leaf only
     @@index([parentId, createdAt(sort: Desc)], where: raw("parent_id is not null"))
+    // index comment reply only
+    @@index([replyToId, createdAt(sort: Desc)], where: raw("reply_to_id is not null"))
 }
