@@ -1,21 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Prisma, PrismaClient } from '@prisma/client';
 
-import { CategoryCreatedEvent } from '@/modules/category/events/category-created.event';
-import { CategoryUpdatedEvent } from '@/modules/category/events/category-updated.event';
 import { CreateCategoryDto } from '@/modules/category/dto/create-category.dto';
-import { EventEmitter2 } from '@nestjs/event-emitter';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '@/prisma/prisma.service';
 import { UpdateCategoryDto } from '@/modules/category/dto/update-category.dto';
 import { ValidateMessage } from '@/common/utils/validate-message.util';
-import { validateOrReject } from 'class-validator';
 
 @Injectable()
 export class CategoryRepository {
-  constructor(
-    private readonly prisma: PrismaService,
-    private readonly emitEvent: EventEmitter2,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async create(data: CreateCategoryDto) {
     return this.prisma.client.$transaction(async (ctx) => {

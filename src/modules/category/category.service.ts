@@ -28,15 +28,6 @@ export class CategoryService {
 
   async create(createCategoryDto: CreateCategoryDto) {
     await DatabaseValidate.validateOrThrow([
-      // check unique parentId + name
-      this.dbValidate.validateUniqueOrThrow(
-        Prisma.ModelName.Category,
-        {
-          name: createCategoryDto.name,
-          parentId: createCategoryDto.parentId ?? null,
-        },
-        'name',
-      ),
       //
       isNotNullNotUndefined(createCategoryDto.parentId) &&
         this.dbValidate.validateRecordExistOrThrow(
@@ -105,20 +96,6 @@ export class CategoryService {
     });
 
     await DatabaseValidate.validateOrThrow([
-      // Cần lấy parentId hiện tại hoặc từ DTO để validate
-      updateCategoryDto.name &&
-        this.dbValidate.validateUniqueOrThrow(
-          Prisma.ModelName.Category,
-          {
-            name: updateCategoryDto.name,
-            parentId:
-              updateCategoryDto.parentId !== undefined
-                ? updateCategoryDto.parentId
-                : (current.parentId ?? null),
-            id: { not: id },
-          },
-          'name',
-        ),
       //
       isNotNullNotUndefined(updateCategoryDto.parentId) &&
         updateCategoryDto.parentId !== current.parentId &&
