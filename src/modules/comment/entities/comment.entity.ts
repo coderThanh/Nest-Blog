@@ -22,6 +22,12 @@ export class Comment {
   parent: Comment | null;
 
   @Expose()
+  replyToId: string | null;
+
+  @Expose()
+  replyToComment: Comment | null;
+
+  @Expose()
   createdAt: string | null;
 
   @Expose()
@@ -32,4 +38,31 @@ export class Comment {
 
   @Expose()
   createdByUser: UserRelation | null;
+
+  static commentInluce: Prisma.CommentInclude = {
+    createdByUser: {
+      select: {
+        id: true,
+        name: true,
+        thumbnailId: true,
+        thumbnal: {
+          select: {
+            id: true,
+            path: true,
+          },
+        },
+      },
+    },
+    replyToComment: {
+      select: {
+        id: true,
+        createdByUser: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    },
+  };
 }

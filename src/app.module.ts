@@ -7,6 +7,7 @@ import { AppService } from './app.service';
 import { AuthModule } from './modules/auth/auth.module';
 import { CategoryModule } from './modules/category/category.module';
 import { ClsModule } from 'nestjs-cls';
+import { CommentModule } from './modules/comment/comment.module';
 import { ConfigModule } from '@nestjs/config';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { FileModule } from './modules/file/file.module';
@@ -19,7 +20,6 @@ import { TagModule } from './modules/tag/tag.module';
 import { TokenModule } from './modules/token/token.module';
 import { TransformResponseOkInterceptor } from '@/common/interceptor/transfrom-response-ok.interceptor';
 import { UserModule } from './modules/user/user.module';
-import { CommentModule } from './modules/comment/comment.module';
 
 @Module({
   imports: [
@@ -33,6 +33,7 @@ import { CommentModule } from './modules/comment/comment.module';
       wildcard: false,
       // Phục vụ cho việc debug, hiển thị thông tin chi tiết của event nếu có lỗi
       verboseMemoryLeak: true,
+      global: true,
     }),
     ClsModule.forRoot({
       global: true,

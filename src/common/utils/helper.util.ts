@@ -2,6 +2,7 @@ import { PhoneNumberFormat, PhoneNumberUtil } from 'google-libphonenumber';
 
 import { INestApplication } from '@nestjs/common';
 import { PAYLOAD_KEY_SECERT } from '@/common/constant/util';
+import { boolean } from 'joi';
 import { v7 as uuidv7 } from 'uuid';
 
 // npm i google-libphonenumber
@@ -151,3 +152,6 @@ export const removeVietnameseAccents = (
 
 // npm i uuid
 export const cuid = () => uuidv7();
+
+export const isNotNullOrUndefined = (inp: any): boolean =>
+  inp !== undefined && inp !== null;

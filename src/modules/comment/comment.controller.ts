@@ -51,7 +51,9 @@ export class CommentController {
   @Public()
   @ApiCustomResponseOKFindAll(Comment)
   async findOne(@Param('id') id: string) {
-    return this.commentService.findOneOrThrow(id);
+    const record = await this.commentService.findOneOrThrow(id);
+
+    return plainToInstance(Comment, record);
   }
 
   @Patch(':id')

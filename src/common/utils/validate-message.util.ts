@@ -103,6 +103,13 @@ export class ValidateMessage {
     return this.buildMessage('không được phép trùng với chính bảng ghi', name);
   }
 
+  static isNotSameField(fieldName: string, name: string = '') {
+    return this.buildMessage(
+      `không được phép trùng với bảng ghi ${fieldName}`,
+      name,
+    );
+  }
+
   static min(min: number, name: string = '') {
     return this.buildMessage(`phải lớn hơn hoặc bằng ${min}`, name);
   }
@@ -177,6 +184,10 @@ export class ValidateMessage {
 
   static isConnectingNotDelete(name: string = '') {
     return this.buildMessage('vẫn còn bảng ghi liên kết không thể xoá', name);
+  }
+
+  static isRootRecord(name: string = '') {
+    return this.buildMessage('yêu cầu bảng ghi cấp cao nhất', name);
   }
 
   static isSystemDoNotEdit(name: string = '') {
