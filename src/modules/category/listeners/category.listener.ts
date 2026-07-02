@@ -5,6 +5,7 @@ import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { Prisma } from '@prisma/client';
 
+/** @deprecated after 20260702 */
 @Injectable()
 export class CategoryEventListener {
   @OnEvent(CategoryCreatedEvent.name)

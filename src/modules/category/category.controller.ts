@@ -35,6 +35,7 @@ import { PermissionAction } from '@/common/enum/role-permission.enum';
 import { Public } from '@/common/decorator/public.decorator';
 import { AuthorGuard } from '@/common/guards/author.guard';
 import { CheckAuthor } from '@/common/decorator/check-author.decorator';
+import { ParseIntPipeCustom } from '@/common/pipes/parse-int-custom.pipe';
 
 @Controller('categorys')
 @UseGuards(JwtAuthGuard, PermissionGuard)
@@ -85,10 +86,10 @@ export class CategoryController {
   @CheckAuthor(Prisma.ModelName.Category)
   @CheckPermission(Prisma.ModelName.Category, PermissionAction.update)
   async update(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipeCustom()) id: number,
     @Body() updateCategoryDto: UpdateCategoryDto,
   ) {
-    const record = await this.categoryService.update(+id, updateCategoryDto);
+    const record = await this.categoryService.update(id, updateCategoryDto);
     return plainToInstance(Category, record, {
       excludeExtraneousValues: true,
     });

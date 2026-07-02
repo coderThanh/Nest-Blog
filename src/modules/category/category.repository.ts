@@ -1,10 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { Prisma, PrismaClient } from '@prisma/client';
 
 import { CategoryCreatedEvent } from '@/modules/category/events/category-created.event';
 import { CategoryUpdatedEvent } from '@/modules/category/events/category-updated.event';
 import { CreateCategoryDto } from '@/modules/category/dto/create-category.dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { Prisma } from '@prisma/client';
 import { PrismaService } from '@/prisma/prisma.service';
 import { UpdateCategoryDto } from '@/modules/category/dto/update-category.dto';
 import { ValidateMessage } from '@/common/utils/validate-message.util';
@@ -21,21 +21,21 @@ export class CategoryRepository {
     return this.prisma.client.$transaction(async (ctx) => {
       const record = await ctx.category.create({
         data: data as Prisma.CategoryUncheckedCreateInput,
+        select: { id: true },
+      });
+
+      //
+      const path = await this.generateCategoryPath({
+        id: record.id,
+        parentId: data.parentId ?? null,
+        tx: ctx as Prisma.TransactionClient,
+      });
+
+      return await ctx.category.update({
+        data: { path },
+        where: { id: record.id },
         select: { id: true, slug: true, name: true },
       });
-
-      // event
-      const event = new CategoryCreatedEvent({
-        parentId: data.parentId ?? null,
-        categoryId: record.id,
-        tx: ctx,
-      });
-
-      await validateOrReject(event);
-
-      await this.emitEvent.emitAsync(CategoryCreatedEvent.name, event);
-
-      return record;
     });
   }
 
@@ -57,25 +57,33 @@ export class CategoryRepository {
         },
       });
 
-      // event
-      const event = new CategoryUpdatedEvent({
-        categoryId: id,
-        oldPath: oldRecord.path,
-        oldParentId: oldRecord.parentId,
-        newParentId: body.parentId ?? null,
+      // update path on leaft
+      const oldParentId = oldRecord.parentId;
+      const oldPath = oldRecord.path;
+
+      const newParentId = newRerod.parentId;
+
+      if (oldParentId === newParentId) return null;
+
+      let newPath = await this.generateCategoryPath({
+        id: id,
+        parentId: newParentId,
         tx: ctx as Prisma.TransactionClient,
       });
 
-      await validateOrReject(event);
+      // replace olpath form children
+      await ctx.$executeRaw[
+        `
+      UPDATE "Category" 
+      SET "path" = ${newPath} || SUBSTRING("path", LENGTH(${oldPath}) + 1) 
+      WHERE "path" LIKE ${oldPath + '/%'}
+    `
+      ];
 
-      const newRecordAfterUpdatePath = await this.emitEvent.emitAsync(
-        CategoryUpdatedEvent.name,
-        event,
-      );
-
-      return newRecordAfterUpdatePath[0]
-        ? newRecordAfterUpdatePath[0]
-        : newRerod;
+      return await ctx.category.update({
+        data: { path: newPath },
+        where: { id },
+      });
     });
   }
 
@@ -121,11 +129,43 @@ export class CategoryRepository {
   }
 
   async deleted(id: number) {
-    return this.prisma.client.category.delete({
-      where: {
-        id,
-      },
-      select: { id: true },
+    return this.prisma.client.$transaction(async (ctx) => {
+      const record = await ctx.category.findUniqueOrThrow({
+        where: { id },
+        select: { path: true },
+      });
+
+      const path = record.path;
+
+      await ctx.$executeRaw`update "Category" set "path" = replace("path", ${path}, '') where "path" like ${path + '/%'}`;
+
+      return ctx.category.delete({
+        where: {
+          id,
+        },
+        select: { id: true },
+      });
     });
+  }
+
+  private async generateCategoryPath(params: {
+    id: number;
+    parentId: number | null;
+    tx: Prisma.TransactionClient;
+  }): Promise<string> {
+    const { id, parentId, tx } = params;
+
+    let path = `/${id}`;
+
+    if (parentId) {
+      const parent = await tx.category.findUniqueOrThrow({
+        where: { id: parentId },
+        select: { path: true },
+      });
+
+      path = parent.path + `/${id}`;
+    }
+
+    return path;
   }
 }
