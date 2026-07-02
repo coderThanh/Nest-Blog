@@ -29,13 +29,13 @@ import { plainToInstance } from 'class-transformer';
 import { FindAllCommentDto } from '@/modules/comment/dto/find-all-comment.dto';
 import { ResponseFindAllData } from '@/shared/dto/response.dto';
 
-@ApiAuthJwt()
 @UseGuards(JwtAuthGuard, PermissionGuard)
 @Controller('comments')
 export class CommentController {
   constructor(private readonly commentService: CommentService) {}
 
   @Post()
+  @ApiAuthJwt()
   @CheckPermission(Prisma.ModelName.Comment, PermissionAction.create)
   @ApiCustomResponseOK(Comment)
   @ResponseMessage('Bình luận thành công')
@@ -69,6 +69,7 @@ export class CommentController {
   }
 
   @Patch(':id')
+  @ApiAuthJwt()
   @ApiCustomResponseOK(Comment)
   @CheckPermission(Prisma.ModelName.Comment, PermissionAction.update)
   @ResponseMessage('Cập nhật bình luận thành công')
@@ -84,6 +85,7 @@ export class CommentController {
   }
 
   @Delete(':id')
+  @ApiAuthJwt()
   @ApiCustomResponseOK(null)
   @CheckPermission(Prisma.ModelName.Comment, PermissionAction.delete)
   @ResponseMessage('Xoá bình luận thành công')

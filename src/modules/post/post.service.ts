@@ -151,9 +151,6 @@ export class PostService {
 
     const andCondition: Prisma.PostWhereInput[] = [];
 
-    console.log(categoryIds, categoryIds === null);
-    console.log(tagIds, tagIds === null);
-
     if (ids?.length) andCondition.push({ id: { in: ids } });
 
     if (excludeIds?.length) andCondition.push({ id: { notIn: excludeIds } });
@@ -161,7 +158,11 @@ export class PostService {
     if (categoryIds)
       andCondition.push({ categories: { some: { id: { in: categoryIds } } } });
 
+    if (categoryIds === null) andCondition.push({ categories: { none: {} } });
+
     if (tagIds) andCondition.push({ tags: { some: { id: { in: tagIds } } } });
+
+    if (tagIds === null) andCondition.push({ tags: { none: {} } });
 
     if (categoryPath)
       andCondition.push({

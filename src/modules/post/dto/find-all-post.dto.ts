@@ -16,6 +16,7 @@ import { OrderDir } from '@/common/enum/filter.enum';
 import { PostOrderBy } from '@/modules/post/post.enum';
 import { QUERY_SEPARATOR } from '@/common/constant/util';
 import { SplitToArrayNumber } from '@/common/decorator/to-array.decorator';
+import { ToNullable } from '@/common/decorator/to-nullable.decorator';
 import { ValidateMessage } from '@/common/utils/validate-message.util';
 
 export class FindAllPostDto extends IntersectionType(
@@ -27,9 +28,10 @@ export class FindAllPostDto extends IntersectionType(
   FilterOrderDirDto(OrderDir.desc),
 ) {
   @ApiPropertyOptional({ type: String, description: 'ex: id,id' })
-  @IsInt({ each: true, message: ValidateMessage.isArrayInt().exceptionMsg() })
-  @SplitToArrayNumber(QUERY_SEPARATOR, true)
   @NormalizeString()
+  @ToNullable()
+  @SplitToArrayNumber(QUERY_SEPARATOR, true)
+  @IsInt({ each: true, message: ValidateMessage.isArrayInt().exceptionMsg() })
   @IsOptional()
   categoryIds?: number[] | null;
 
@@ -39,12 +41,13 @@ export class FindAllPostDto extends IntersectionType(
   categoryPath?: string | null;
 
   @ApiPropertyOptional({ type: String, description: 'ex: id,id' })
+  @NormalizeString()
+  @ToNullable()
+  @SplitToArrayNumber(QUERY_SEPARATOR, true)
   @IsString({
     each: true,
     message: ValidateMessage.isArrayString().exceptionMsg(),
   })
-  @SplitToArrayNumber(QUERY_SEPARATOR, true)
-  @NormalizeString()
   @IsOptional()
   tagIds?: string[] | null;
 
