@@ -23,7 +23,7 @@ import {
   PostRelation,
 } from '@/modules/post/entities/post.entity';
 import { plainToInstance } from 'class-transformer';
-import { BaseFindAllData } from '@/shared/types/response';
+import { ResponseFindAllData } from '@/shared/dto/response.dto';
 import { DatabaseUltil } from '@/common/utils/database.util';
 import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
 import { ApiAuthJwt } from '@/common/decorator/api-auth.decorator';
@@ -59,7 +59,7 @@ export class PostController {
   async findAll(@Query() query: FindAllPostDto) {
     const { items, total } = await this.postService.findAllAndCount(query);
 
-    return {
+    return new ResponseFindAllData({
       items: items?.map((item) =>
         plainToInstance(PostEntity, item, {
           excludeExtraneousValues: true,
@@ -70,7 +70,7 @@ export class PostController {
         limit: query.limit,
         totalItems: total,
       }),
-    } as BaseFindAllData;
+    });
   }
 
   @Get(':slug')

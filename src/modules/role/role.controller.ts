@@ -13,7 +13,7 @@ import {
   ApiCustomResponseOK,
   ApiCustomResponseOKFindAll,
 } from '@/common/decorator/api-response-ok.decorator';
-import { BaseFindAllData } from '@/shared/types/response';
+import { ResponseFindAllData } from '@/shared/dto/response.dto';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { DatabaseUltil } from '@/common/utils/database.util';
 import { FindAllRoleDto } from '@/modules/role/dto/find-all-role.dto';
@@ -51,14 +51,14 @@ export class RoleController {
   async findAll(@Query() query: FindAllRoleDto) {
     const { total, items } = await this.roleService.findAllOrCount(query);
 
-    return {
+    return new ResponseFindAllData({
       items: items.map((item) => plainToInstance(Role, item)),
       meta: DatabaseUltil.getPaginationMeta({
         currentPage: query.page,
         limit: query.limit,
         totalItems: total,
       }),
-    } as BaseFindAllData;
+    });
   }
 
   @Get(':id')

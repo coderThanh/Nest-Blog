@@ -30,6 +30,18 @@ export class ApiResponseOkDto<T> {
   }
 }
 
+export class ResponseFindAllData<T> {
+  @ApiProperty()
+  items: T[];
+
+  @ApiProperty()
+  meta: ApiResponseDataFindAllMeta | ResponseFindAllDataMetaCursor<any>;
+
+  constructor(payload: ResponseFindAllData<T>) {
+    Object.assign(this, payload);
+  }
+}
+
 export class ApiResponseDataFindAllMeta {
   @ApiProperty()
   currentPage: number;
@@ -45,4 +57,23 @@ export class ApiResponseDataFindAllMeta {
 
   @ApiProperty()
   limit: number;
+
+  constructor(payload: ApiResponseDataFindAllMeta) {
+    Object.assign(this, payload);
+  }
+}
+
+export class ResponseFindAllDataMetaCursor<T extends string | number> {
+  @ApiProperty()
+  lastCursor: T;
+
+  @ApiProperty()
+  totalItems: number;
+
+  @ApiProperty()
+  limit: number;
+
+  constructor(payload: ResponseFindAllDataMetaCursor<T>) {
+    Object.assign(this, payload);
+  }
 }

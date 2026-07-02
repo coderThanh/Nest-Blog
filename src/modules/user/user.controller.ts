@@ -19,7 +19,7 @@ import {
   ApiCustomResponseOKFindAll,
 } from '@/common/decorator/api-response-ok.decorator';
 import { FindAllUserDto } from '@/modules/user/dto/find-all-user.dto';
-import { BaseFindAllData } from '@/shared/types/response';
+import { ResponseFindAllData } from '@/shared/dto/response.dto';
 import { DatabaseUltil } from '@/common/utils/database.util';
 import { UserProfileService } from '@/modules/user/user-profile.service';
 import { GetUser } from '@/common/decorator/get-user.decorator';
@@ -58,7 +58,7 @@ export class UserController {
   async findAll(@Query() query: FindAllUserDto) {
     const { items, total } = await this.userService.findAllAndCount(query);
 
-    return {
+    return new ResponseFindAllData({
       items: items.map((item) =>
         plainToInstance(User, item, { excludeExtraneousValues: true }),
       ),
@@ -67,7 +67,7 @@ export class UserController {
         limit: query.limit,
         totalItems: total,
       }),
-    } as BaseFindAllData;
+    });
   }
 
   @Get('me')

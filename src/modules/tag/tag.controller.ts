@@ -20,7 +20,7 @@ import {
   ApiCustomResponseOKFindAll,
 } from '@/common/decorator/api-response-ok.decorator';
 import { DatabaseUltil } from '@/common/utils/database.util';
-import { BaseFindAllData } from '@/shared/types/response';
+import { ResponseFindAllData } from '@/shared/dto/response.dto';
 import { ApiAuthJwt } from '@/common/decorator/api-auth.decorator';
 import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
 import { ResponseMessage } from '@/common/decorator/response-message.decorator';
@@ -52,7 +52,7 @@ export class TagController {
   async findAll(@Query() query: FindAllTagDto) {
     const { total, items } = await this.tagService.findAllAndCount(query);
 
-    return {
+    return new ResponseFindAllData({
       items: items?.map((item) =>
         plainToInstance(Tag, item, {
           excludeExtraneousValues: true,
@@ -63,7 +63,7 @@ export class TagController {
         limit: query.limit,
         totalItems: total,
       }),
-    } as BaseFindAllData;
+    });
   }
 
   @Get(':slug')

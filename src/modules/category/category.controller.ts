@@ -18,7 +18,7 @@ import {
   CategoryFindAll,
   CategoryRelation,
 } from '@/modules/category/entities/category.entity';
-import { BaseFindAllData } from '@/shared/types/response';
+// import { ResponseFindAllData } from '@/shared/types/response';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { DatabaseUltil } from '@/common/utils/database.util';
@@ -36,6 +36,7 @@ import { Public } from '@/common/decorator/public.decorator';
 import { AuthorGuard } from '@/common/guards/author.guard';
 import { CheckAuthor } from '@/common/decorator/check-author.decorator';
 import { ParseIntPipeCustom } from '@/common/pipes/parse-int-custom.pipe';
+import { ResponseFindAllData } from '@/shared/dto/response.dto';
 
 @Controller('categorys')
 @UseGuards(JwtAuthGuard, PermissionGuard)
@@ -57,7 +58,7 @@ export class CategoryController {
   async findAll(@Query() query: FindAllCategoryDto) {
     const { items, total } = await this.categoryService.findAllAndCount(query);
 
-    return {
+    return new ResponseFindAllData({
       items: plainToInstance(CategoryFindAll, items, {
         excludeExtraneousValues: true,
       }),
@@ -66,7 +67,7 @@ export class CategoryController {
         limit: query.limit,
         totalItems: total,
       }),
-    } as BaseFindAllData;
+    });
   }
 
   @Get(':slug')
