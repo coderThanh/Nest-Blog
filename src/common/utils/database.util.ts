@@ -1,3 +1,4 @@
+import { FindAllDataMeta } from '@/shared/types/response';
 import { RecordStatus } from '@prisma/client';
 
 export class DatabaseUltil {
@@ -9,13 +10,7 @@ export class DatabaseUltil {
     currentPage: number;
     limit: number;
     totalItems: number;
-  }): {
-    currentPage: number;
-    nextPage: number | null;
-    totalPage: number;
-    totalItems: number;
-    limit: number;
-  } {
+  }): FindAllDataMeta {
     const { limit, currentPage, totalItems } = params;
 
     const totalPage: number = Math.ceil(totalItems / limit);

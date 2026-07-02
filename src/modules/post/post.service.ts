@@ -3,7 +3,7 @@ import { endOfDay, startOfDay } from 'date-fns';
 import { Category } from '@/modules/category/entities/category.entity';
 import { CreatePostDto } from './dto/create-post.dto';
 import { DatabaseUltil } from '@/common/utils/database.util';
-import { DatabaseValidate } from '@/common/utils/database-validate..util';
+import { DatabaseValidate } from '@/common/utils/database-validate.util';
 import { DbValidateService } from '@/prisma/db-validate.service';
 import { FileEntity } from '@/modules/file/entities/file.entity';
 import { FindAllPostDto } from '@/modules/post/dto/find-all-post.dto';

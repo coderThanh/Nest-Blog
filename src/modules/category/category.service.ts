@@ -9,7 +9,7 @@ import { CategoryOrderBy } from '@/modules/category/category.enum';
 import { CategoryRepository } from '@/modules/category/category.repository';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { DatabaseUltil } from '@/common/utils/database.util';
-import { DatabaseValidate } from '@/common/utils/database-validate..util';
+import { DatabaseValidate } from '@/common/utils/database-validate.util';
 import { DbValidateService } from '@/prisma/db-validate.service';
 import { FileEntity } from '@/modules/file/entities/file.entity';
 import { FindAllCategoryDto } from '@/modules/category/dto/find-all-category.dto';

@@ -12,7 +12,7 @@ import {
   IsString,
 } from 'class-validator';
 
-import { FilterFromToDateDto } from '@/shared/dto/filter-from-to-date';
+import { FilterFromToDateDto } from '@/shared/dto/filter-from-to-date.dto';
 import { FilterIdsStringDto } from '@/shared/dto/filter-ids.dto';
 import { FilterOrderDirDto } from '@/shared/dto/filter-order-dir.dto';
 import { FilterPaginationDto } from '@/shared/dto/filter-pagination.dto';
