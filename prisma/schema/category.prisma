@@ -21,7 +21,6 @@ model Category {
 
     posts Post[] @relation("PostToCategory")
 
-    @@unique([name, parentId])
     @@index([search(ops: raw("gin_trgm_ops"))], type: Gin)
     @@index([path])
 }
